@@ -44,9 +44,8 @@ SAMPLE_5.csv
 SAMPLE_6.csv
 SAMPLE_7.csv
 SAMPLE_8.csv
-```
-
 
 MODULES:
 python: python_path
 htseq: htseq_path
+```
