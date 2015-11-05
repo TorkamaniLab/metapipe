@@ -2,7 +2,7 @@
 
 import os, sys
 
-sys.path.insert(0, '../')
+sys.path.insert(0, '../metapipe')
 from parser import lexer
 
 
@@ -19,6 +19,10 @@ class ParserTest(object):
 if __name__ == '__main__':
     
     pt = ParserTest()
-    print(pt.test_lexer())
+    lt = pt.test_lexer()
+    print 'magic',lt.magic
+    print 'cmds',lt.cmds
+    print 'files',lt.files
+    print 'paths',lt.paths
 
 

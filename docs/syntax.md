@@ -15,7 +15,7 @@ The syntax for .mp files is as follows.
 #{STOP_ON_ERR}
 #{NO_RETRY}
 
-COMMANDS:
+>COMMANDS:
 # Cut all the files listed in the files list and save them to another file.
 1. cut -f 1 {||} > {o}
 
@@ -35,7 +35,7 @@ independent).
 # You can even reuse files from other steps.
 6. cat {4.1,3.2||3.4,5.6||1.1,1} >> somefile
 
-FILES:
+>FILES:
 SAMPLE_1.csv
 SAMPLE_2.csv
 SAMPLE_3.csv
@@ -45,7 +45,7 @@ SAMPLE_6.csv
 SAMPLE_7.csv
 SAMPLE_8.csv
 
-MODULES:
+>PATHS:
 python: python_path
 htseq: htseq_path
 ```
