@@ -4,10 +4,9 @@
 from collections import namedtuple
 
 
-LexerResult = namedtuple('LexerResult', 'magic cmds files paths')
+LexerResult  = namedtuple('LexerResult', 'magic cmds files paths')
 ParserResult = namedtuple('ParserResult', 'settings cmds')
-
-File = namedtuple('File', 'filename alias number')
+FileResult   = namedtuple('File', 'filename alias')
 
 def lexer(text):
     """ Given a config string, return a list of commands for that pipeline. """
@@ -71,11 +70,17 @@ def parse_cmd(cmd, files, paths=[]):
     pass
 
 
-def parse_file(file):
+def parse_file(lexer_file):
     """ Given a line containing a file definition/alias,
     return the file obj.
     """
-    pass
+    for file_info in lexer_file:
+        file_info  = file_info.split(':')
+        file_alias = file_info[0].strip()
+        file_name  = file_info[1].strip()
+    
+        yield FileResult(file_name, file_alias)
+
 
 
 def parse_magic(magics):
