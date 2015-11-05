@@ -135,5 +135,3 @@ class Job(object):
         if qstat and err:
             return True
         return False
-
-
