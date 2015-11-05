@@ -12,32 +12,40 @@ File = namedtuple('File', 'filename alias number')
 def lexer(text):
     """ Given a config string, return a list of commands for that pipeline. """
     magic = []
-    cmds = []
+    cmds  = []
     files = []
     paths = []
-    mode = 'cmd'
+    mode  = 'cmd'
+
     for line in text.split('\n'):
         line = line.strip()
-        if line !== '':
-            if line[0:1] == '#{':     # Magic comments
+
+        if line != '':
+            if line[0:1] == '#{':       # Magic comments
                 magic.append(line)
-            elif line[0] != '#':
-                if 'COMMANDS:' in line
+            elif line[0] == '#':
+                pass
+
+            elif line[0] == '>':        # Mode detection 
+                if 'COMMANDS:' in line:
                     mode = 'cmd'
-                elif mode == 'cmd':
-                    cmds.append(line)
-                elif 'FILES:' in line
+                elif 'FILES:' in line:
                     mode = 'file'
+                elif 'PATHS:' in line:
+                    mode = 'path'
+                else:
+                    quit('Invalid config file: '+line)
+            else:
+                if mode == 'cmd':
+                    cmds.append(line)
                 elif mode == 'file':
                     files.append(line)
-                elif 'PATHS:' in line
-                    mode = 'path'
                 elif mode == 'path':
                     paths.append(line)
                 else:
                     quit('Invalid config file.')
 
-    return LexerResult(magic, files, paths, cmds)
+    return LexerResult(magic, cmds, files, paths)
 
 
 def parser(lexerResult):
