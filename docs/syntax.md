@@ -15,6 +15,8 @@ The syntax for .mp files is as follows.
 #{STOP_ON_ERR}
 #{NO_RETRY}
 
+# File.Step - Naming convention for files
+
 >COMMANDS:
 # Cut all the files listed in the files list and save them to another file.
 1. cut -f 1 {||} > {o}
@@ -35,15 +37,18 @@ independent).
 # You can even reuse files from other steps.
 6. cat {4.1,3.2||3.4,5.6||1.1,1} >> somefile
 
+# No explicitly specified output file
+7. python blah_blah.py {*.6} {o: *.6.counts }
+
 >FILES:
-SAMPLE_1.csv
-SAMPLE_2.csv
-SAMPLE_3.csv
-SAMPLE_4.csv
-SAMPLE_5.csv
-SAMPLE_6.csv
-SAMPLE_7.csv
-SAMPLE_8.csv
+1: SAMPLE_1.csv
+2: SAMPLE_2.csv
+3: SAMPLE_3.csv
+4: SAMPLE_4.csv
+5: SAMPLE_5.csv
+Label1: SAMPLE_6.csv
+Label2: SAMPLE_7.csv
+Label3: SAMPLE_8.csv
 
 >PATHS:
 python: python_path
