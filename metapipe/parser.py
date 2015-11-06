@@ -6,41 +6,47 @@ import re
 
 from models.job import Job
 
-LexerResult = namedtuple('LexerResult', 'magic cmds files paths')
+LexerResult  = namedtuple('LexerResult', 'magic cmds files paths')
 ParserResult = namedtuple('ParserResult', 'settings cmds')
-
-File = namedtuple('File', 'filename alias number')
+FileResult   = namedtuple('File', 'filename alias')
 
 
 def lexer(text):
     """ Given a config string, return a list of commands for that pipeline. """
     magic = []
-    cmds = []
+    cmds  = []
     files = []
     paths = []
-    mode = 'cmd'
+    mode  = 'cmd'
+
     for line in text.split('\n'):
         line = line.strip()
         if line != '':
-            if line[0:1] == '#{':     # Magic comments
+            if line[0:1] == '#{':       # Magic comments
                 magic.append(line)
-            elif line[0] != '#':
+            elif line[0] == '#':
+                pass
+
+            elif line[0] == '>':        # Mode detection 
                 if 'COMMANDS:' in line:
                     mode = 'cmd'
-                elif mode == 'cmd':
-                    cmds.append(line)
                 elif 'FILES:' in line:
                     mode = 'file'
-                elif mode == 'file':
-                    files.append(line)
                 elif 'PATHS:' in line:
                     mode = 'path'
+                else:
+                    quit('Invalid config file: '+line)
+            else:
+                if mode == 'cmd':
+                    cmds.append(line)
+                elif mode == 'file':
+                    files.append(line)
                 elif mode == 'path':
                     paths.append(line)
                 else:
                     quit('Invalid config file.')
 
-    return LexerResult(magic, files, paths, cmds)
+    return LexerResult(magic, cmds, files, paths)
 
 
 def parser(lexerResult):
@@ -76,11 +82,17 @@ def parse_job(cmd, jobs=[], files=[], paths=[]):
     return jobs
 
 
-def parse_file(file):
+def parse_file(lexer_file):
     """ Given a line containing a file definition/alias,
     return the file obj.
     """
-    pass
+    for file_info in lexer_file:
+        file_info  = file_info.split(':')
+        file_alias = file_info[0].strip()
+        file_name  = file_info[1].strip()
+    
+        yield FileResult(file_name, file_alias)
+
 
 
 def parse_magic(magics):

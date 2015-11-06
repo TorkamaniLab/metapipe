@@ -2,7 +2,7 @@
 
 import sys, sure
 
-from metapipe import parser
+from metapipe import parser, lexer
 
 
 def test_split_params():
@@ -59,3 +59,22 @@ def test_complex_job():
     jobs[2].depends_on.should.contain(jobs[1])
     len(jobs[3].depends_on).should.equal(0)
 
+
+class ParserTest(object):
+
+    def test_lexer(self):
+        os.chdir('..')
+        test_file_path = os.path.join(os.getcwd(),'docs','syntax.md') 
+        test_file_text = open(test_file_path).read()
+
+        return lexer(test_file_text)
+
+
+if __name__ == '__main__':
+    
+    pt = ParserTest()
+    lt = pt.test_lexer()
+    print 'magic',lt.magic
+    print 'cmds',lt.cmds
+    print 'files',lt.files
+    print 'paths',lt.paths
