@@ -30,7 +30,7 @@ def call(args, remote=None):
 
 class Job(object):
 
-    def __init__(self, job_cmd, name, depends_on=[], queue='work'):
+    def __init__(self, name, raw_cmd, input_files, output_files=[], depends_on=[], queue='work'):
         """ Create an new job with the given name, and command.
         If the job depends on another job, give the names of the jobs
         it depends on.
@@ -40,8 +40,10 @@ class Job(object):
             include 'Done!' as the completion criteria.
         """
         self.depends_on = depends_on
-        self.job_cmd = job_cmd
+        self.raw_cmd = raw_cmd
         self.name = name
+        self.input_files = input_files
+        self.output_files = output_files
         self.queue = queue
         self.id = None
         self.waiting = True     # The job has yet to be submitted.
@@ -52,7 +54,7 @@ class Job(object):
             f.write('')
 
     def __repr__(self):
-        return '<Job: {}>'.format(job.id)
+        return '<Job: {}>'.format(self.cmd)
 
     def submit(self):
         args = ['qsub'] + [self.job_cmd]
@@ -99,6 +101,11 @@ class Job(object):
             elif status_type == 'error' and code != '0':
                 return True
         return False
+
+    @property
+    def cmd(self):
+        return self.raw_cmd.replace('{in}', ' '.join([f.filename for f in
+            self.input_files]))
 
     @property
     def running(self):
