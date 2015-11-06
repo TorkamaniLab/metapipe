@@ -22,8 +22,9 @@ def lexer(text):
     for line in text.split('\n'):
         line = line.strip()
         if line != '':
-            if line[0:1] == '#{':       # Magic comments
+            if line[0:2] == '#{':       # Magic comments
                 magic.append(line)
+
             elif line[0] == '#':
                 pass
 
@@ -131,6 +132,6 @@ def _split_params(cmd):
     else:
         breakout_cmds.append((cmd, params, output))
 
-    return breakout_cmdsza
+    return breakout_cmds
 
 
