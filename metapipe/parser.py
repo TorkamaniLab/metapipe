@@ -28,7 +28,7 @@ def lexer(text):
             elif line[0] == '#':
                 pass
 
-            elif line[0] == '>':        # Mode detection 
+            elif line[0] == '>':        # Mode detection
                 if 'COMMANDS:' in line:
                     mode = 'cmd'
                 elif 'FILES:' in line:
@@ -91,7 +91,7 @@ def parse_file(lexer_file):
         file_info  = file_info.split(':')
         file_alias = file_info[0].strip()
         file_name  = file_info[1].strip()
-    
+
         yield FileResult(file_name, file_alias)
 
 

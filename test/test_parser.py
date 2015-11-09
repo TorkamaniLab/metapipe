@@ -28,10 +28,9 @@ def test_parse_job():
     len(jobs).should.equal(3)
     jobs[0].raw_cmd.should.equal('cut -hf --someflag {in}')
 
-    jobs[1].depends_on.should.contain(jobs[0])
-    jobs[2].depends_on.should.contain(jobs[0])
-    jobs[2].depends_on.should.contain(jobs[0])
-    jobs[2].depends_on.should.contain(jobs[1])
+    jobs[0].input_files.should.contain(files[0])
+    jobs[1].input_files.should.contain(files[0])
+    jobs[2].input_files.shouldnt.contain(files[0])
 
 
 def test_complex_job():
@@ -46,7 +45,7 @@ def test_complex_job():
 
     jobs = parser.parse_job(cmd, jobs, files, paths)
 
-    cmd = 'python somescript -f {o:*.counts} {2,4||5}'
+    cmd = 'python somescript -f {o:$INPUT.counts} {2||5}'
     jobs = parser.parse_job(cmd, jobs, files, paths)
 
 
@@ -120,7 +119,4 @@ htseq: htseq_path
     named_tuple.magic.should.contain('#{CLEANUP}')
     named_tuple.files.should.contain('1: SAMPLE_1.csv')
     named_tuple.paths.should.contain('python: python_path')
-
-    		
-
 
