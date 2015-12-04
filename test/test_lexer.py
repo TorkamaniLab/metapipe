@@ -27,7 +27,6 @@ def test_condense():
     tokens[46].type.should.equal('CLOSE')
 
     tokens = lexer.condense()
-    print tokens
     tokens[0].type.should.equal('LTR_NUM')
     tokens[0].text.should.equal('some ')
     tokens[1].type.should.equal('QUOTE')
