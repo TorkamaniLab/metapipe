@@ -17,7 +17,7 @@ class Token(object):
 
 class Lexer(object):
 
-    NO_GROUP = {'AND', 'OPEN', 'CLOSE'}
+    NO_GROUP = ['AND', 'OPEN', 'CLOSE']
 
     def __init__(self, input):
         self.input = input
