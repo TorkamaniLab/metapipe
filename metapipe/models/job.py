@@ -14,7 +14,7 @@ stderr = '/tmp/queuemanager.err'
 RETRY_ATTEMPTS = 2
 
 
-def call(args, remote=None):
+def call(args):
     """ Calls the given arguments in a seperate process
     and returns the contents of standard out.
     """
@@ -30,7 +30,7 @@ def call(args, remote=None):
 
 class Job(object):
 
-    def __init__(self, name, raw_cmd, input_files, output_files=[], depends_on=[], queue='work'):
+    def __init__(self, name, job_cmd, input_files, output_files=[], depends_on=[], queue='work'):
         """ Create an new job with the given name, and command.
         If the job depends on another job, give the names of the jobs
         it depends on.
@@ -40,7 +40,7 @@ class Job(object):
             include 'Done!' as the completion criteria.
         """
         self.depends_on = depends_on
-        self.raw_cmd = raw_cmd
+        self.job_cmd = job_cmd
         self.name = name
         self.input_files = input_files
         self.output_files = output_files
@@ -56,10 +56,10 @@ class Job(object):
     def __repr__(self):
         return '<Job: {}>'.format(self.cmd)
 
-    def submit(self):
-        args = ['qsub'] + [self.job_cmd]
+    @staticmethod
+    def submit(job):
         self.attempts += 1
-        out = call(args, remote=self.remote)
+        out = call(job.sh)
         self.waiting = False
         self.id = out[:out.index('.')]
 
@@ -94,17 +94,21 @@ class Job(object):
         res = call(args)
         exit_status = [line for line in res.split('\n')
                 if 'exit_status' in line]
-        if len(exit_status) > 0:
+        try:
             _, __, code = exit_status[0].split()
-            if status_type == 'complete' and code == '0':
-                return True
-            elif status_type == 'error' and code != '0':
-                return True
-        return False
+        except KeyError:
+            code = None
+
+        if status_type == 'complete' and code == '0':
+            return True
+        elif status_type == 'error' and code != '0':
+            return True
+        else:
+            return False
 
     @property
     def cmd(self):
-        return self.raw_cmd.replace('{in}', ' '.join([f.filename for f in
+        return self.job_cmd.replace('{in}', ' '.join([f.filename for f in
             self.input_files]))
 
     @property

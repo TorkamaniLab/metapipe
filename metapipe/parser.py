@@ -6,64 +6,68 @@ import re
 
 from models.job import Job
 
-LexerResult  = namedtuple('LexerResult', 'magic cmds files paths')
+LexerResult  = namedtuple('LexerResult', 'cmds files paths')
 ParserResult = namedtuple('ParserResult', 'settings cmds')
-FileResult   = namedtuple('File', 'filename alias')
-
+FileResult = namedtuple('File', 'filename alias')
+CmdResult = namedtuple('Cmd', 'cmd magics')
 
 def lexer(text):
     """ Given a config string, return a list of commands for that pipeline. """
-    magic = []
     cmds  = []
     files = []
     paths = []
     mode  = 'cmd'
 
+    active_cmd = []
+    active_magic = []
+    line_cont = False
     for line in text.split('\n'):
         line = line.strip()
         if line != '':
-            if line[0:2] == '#{':       # Magic comments
-                magic.append(line)
-
-            elif line[0] == '#':
-                pass
-
-            elif line[0] == '>':        # Mode detection
+            if (not line_cont) and (line[0] == '>' or line[0] == '#'):        # Mode detection
                 if 'COMMANDS:' in line:
                     mode = 'cmd'
                 elif 'FILES:' in line:
                     mode = 'file'
                 elif 'PATHS:' in line:
                     mode = 'path'
+                elif line[0:2] == '#{':
+                    mode = 'magic'
+                elif line[0] == '#':
+                    pass
                 else:
                     quit('Invalid config file: '+line)
             else:
                 if mode == 'cmd':
-                    cmds.append(line)
+                    active_cmd.append(line)
+                    if not line_cont:
+                        cmds.append((active_cmd, active_magic))
+                        active_cmd = []
+                elif mode == 'magic':
+                    active_magic.append(line)
                 elif mode == 'file':
                     files.append(line)
                 elif mode == 'path':
                     paths.append(line)
                 else:
                     quit('Invalid config file.')
+            line_cont = True if line[-1] == '\\' else False
 
-    return LexerResult(magic, cmds, files, paths)
+    return LexerResult(cmds, files, paths)
 
 
 def parser(lexerResult):
     """ Given the output of the lexer, parse the output and create the req
     commands. """
-    magic = lexerResult.magic
-    settings = parse_magic(magic) if len(magic) > 0 else DEFAULT_SETTINGS
-
+    files = [parse_file(file) for file in lexerResult.files]
+    paths = [parse_path(path) for path in lexerResult.paths]
     jobs = []
-    # TODO: Finish
+    for cmd, magic in lexerResult.cmds:
+        jobs.append(parse_job(cmd, jobs, files, paths, magic))
+    return jobs
 
 
-    return ParserResult(settings, cmds)
-
-
-def parse_job(cmd, jobs=[], files=[], paths=[]):
+def parse_job(cmd, jobs=[], files=[], paths=[], magic=[]):
     """ Break down the grammar of the cmd and fill in the jobs. """
     breakout_cmds = _split_params(cmd)
 
@@ -73,10 +77,10 @@ def parse_job(cmd, jobs=[], files=[], paths=[]):
 
     for new_cmd, aliases, output_pattern in breakout_cmds:
         new_files = map(lambda a: matches(a, files), aliases)
-        depends_on = []
-        # Fix this. It's ugly.
-        [depends_on.extend(map(lambda a: matches(a, files), job.output_files)) for job in
-            jobs]
+
+        # Dependency Tracking
+
+
 
         jobs.append(Job(new_cmd, new_cmd, new_files, depends_on))
 
@@ -93,7 +97,6 @@ def parse_file(lexer_file):
         file_name  = file_info[1].strip()
 
         yield FileResult(file_name, file_alias)
-
 
 
 def parse_magic(magics):
