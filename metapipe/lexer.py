@@ -17,7 +17,7 @@ class Token(object):
 
 class Lexer(object):
 
-    NO_GROUP = ['AND', 'OPEN', 'CLOSE']
+    NO_GROUP = ['AND', 'OPEN', 'CLOSE', 'QUOTE', 'ESCAPE']
 
     def __init__(self, input):
         self.input = input
@@ -25,7 +25,7 @@ class Lexer(object):
 
     def consume(self):
         """ Using the input, return a list of tokens for that input. """
-        self.tokens = [token for token in self.nextToken()]
+        self.tokens = [token for token in self.next_token()]
         return self.tokens
 
     def condense(self):
@@ -49,7 +49,7 @@ class Lexer(object):
         return self._condense(next, tokens)
 
 
-    def nextToken(self):
+    def next_token(self):
         for c in self.input:
             if c == '|':
                 yield Token('OR', c)
@@ -63,6 +63,8 @@ class Lexer(object):
                 yield Token('QUOTE', c)
             elif c == '\\':
                 yield Token('ESCAPE', c)
+            elif c == '\n' or c == '\r':
+                yield Token('NEWLINE', c)
             else:
                 yield Token('LTR_NUM', c)
 
