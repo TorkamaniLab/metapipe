@@ -7,7 +7,7 @@ since: 2015-12-4
 
 class Token(object):
 
-    def __init__(self, type, textg):
+    def __init__(self, type, text):
         self.type = type
         self.text = text
 
