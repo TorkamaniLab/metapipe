@@ -4,5 +4,5 @@ from models.job import Job
 
 
 class Parser(object):
-	pass
-	
+    pass
+
