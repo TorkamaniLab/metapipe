@@ -1,7 +1,10 @@
 """ A parser and other parser related classes. """
 
-from lexer import Token
-
+try:	
+	from metapipe.lexer import Token 	# Python3
+except ImportError:
+	from lexer import Token
+	
 
 class Parser(object):
 
