@@ -68,7 +68,7 @@ class Lexer(object):
                         and mid.type == 'LTR_NUM'
                         and end.type == 'CLOSE'
                         and mid.text == 'o'):
-					return True
+                    return True
             except IndexError:
                 pass
             return False
