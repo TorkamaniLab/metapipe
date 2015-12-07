@@ -59,9 +59,7 @@ class Parser(object):
 			raise SyntaxError('Invalid Syntax: Statement is never closed.')
 			
 		cmd_buffer = self._seperate_or(cmd_buffer)
-		
-		print cmd_buffer, other_buffer
-		
+				
 		for cmds in cmd_buffer:
 			statement = []
 			for token in other_buffer:
