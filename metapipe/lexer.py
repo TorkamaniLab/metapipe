@@ -33,6 +33,13 @@ class Lexer(object):
         self.tokens = self._condense(start=0, tokens=self.tokens)
         return self.tokens
 
+    def detect_outputs(self):
+        """ Given a list of tokens, detect the output tokens from the corret
+        combination of input tokens.
+        """
+        self.tokens = self._detect_outputs(start=0, tokens=self.tokens)
+        return self.tokens
+
     def _condense(self, start, tokens):
         """ From start, combine all similar tokens. """
         next = start+1
@@ -48,6 +55,30 @@ class Lexer(object):
 
         return self._condense(next, tokens)
 
+    def _detect_outputs(self, start, tokens):
+        """ Detect the output tokens and insert them. """
+        try:
+            curr_token, next_token, next_next_token = tokens[start], tokens[start+1], tokens[start+2]
+        except IndexError:
+            return tokens
+
+        def is_output_token(beg, mid, end):
+            try:
+                if (beg.type == 'OPEN'
+                        and mid.type == 'LTR_NUM'
+                        and end.type == 'CLOSE'
+                        and mid.text == 'o'):
+					return True
+            except IndexError:
+                pass
+            return False
+
+        if is_output_token(curr_token, next_token, next_next_token):
+            tokens[start+2] = Token('OUTPUT', next_token.text)
+            del tokens[start], tokens[start]
+            self._detect_outputs(start+1, tokens)
+
+        return self._detect_outputs(start+1, tokens)
 
     def next_token(self):
         for c in self.input:

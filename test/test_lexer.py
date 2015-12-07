@@ -32,3 +32,15 @@ def test_condense():
     tokens[1].type.should.equal('QUOTE')
     tokens[2].text.should.equal('string')
     tokens[3].type.should.equal('QUOTE')
+    
+def test_detect_outputs():
+	input = 'some "string" with\ncomplex\tinput {1,2,3||4,3,5} \\woo boy! {o}'
+	lexer = Lexer(input)
+	lexer.consume()
+	tokens = lexer.condense()
+	tokens[23].type.should.equal('OPEN')
+	tokens[24].text.should.equal('o')
+	tokens[25].type.should.equal('CLOSE')
+	
+	tokens = lexer.detect_outputs()
+	tokens[23].type.should.equal('OUTPUT')
