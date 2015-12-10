@@ -4,15 +4,10 @@ author: Brian Schrader
 since: 2015-12-4
 """
 
-
-class Token(object):
-
-    def __init__(self, type, text):
-        self.type = type
-        self.text = text
-
-    def __repr__(self):
-        return '<Token: %s (%s)>' % (self.type, self.text)
+try:	
+	from metapipe.models.tokens import Token 	# Python3
+except ImportError:
+	from models.tokens import Token
 
 
 class Lexer(object):
@@ -94,6 +89,8 @@ class Lexer(object):
                 yield Token('QUOTE', c)
             elif c == '\\':
                 yield Token('ESCAPE', c)
+            elif c == '#':
+                yield Token('COMMENT', c)
             elif c == '\n' or c == '\r':
                 yield Token('NEWLINE', c)
             else:

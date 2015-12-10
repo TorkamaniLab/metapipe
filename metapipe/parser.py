@@ -1,29 +1,41 @@
 """ A parser and other parser related classes. """
 
-try:	
-	from metapipe.lexer import Token 	# Python3
+try:
+    from metapipe.models.tokens import Token 	# Python3
 except ImportError:
-	from lexer import Token
-	
+    from models.tokens import Token
+
 
 class Parser(object):
 
     def __init__(self, lexer_tokens):
         self.tokens = lexer_tokens
         self.statements = []
+        self.paths = []
+        self.files = []
 
     def consume(self):
         """ Converts the lexer tokens into valid statements. This process
         also checks command syntax.
         """
+        self.files = [s for s in self.next_file()]
+        self.paths = [s for s in self.next_path()]
         self.statements = [s for s in self.next_token()]
         self.statements = [s for s in self.next_statement()]
-        return self.statements
+        return self.statements, self.files, self.paths
+
+    def next_file(self):
+        """ Given a list of statements, pull out the files. """
+        return self._next_file(start=0, file_mode=False)
+
+    def next_path(self):
+        """ Given a list of statements, pull out the paths. """
+        return self._next_path(start=0, path_mode=False)
 
     def next_statement(self):
         """ Given a list of statements, expand them into independent commands. """
         for statement in self.statements:
-            for sub_statement in self._parse_statement(statement):
+            for sub_statement in self._next_statement(statement):
                 yield sub_statement
 
     def next_token(self):
@@ -41,7 +53,7 @@ class Parser(object):
                     statement = []
             escape_next = False
 
-    def _parse_statement(self, statement):
+    def _next_statement(self, statement):
         """ Given a statement, break it down and return a list of substatements. """
         cmd_buffer, other_buffer = [], []
 
@@ -74,6 +86,57 @@ class Parser(object):
                     statement.append(Token('CLOSE', ''))
             yield statement
 
+    def _next_file(self, start, file_mode):
+        result = []
+
+        try:
+            token = self.tokens[start]
+        except IndexError:
+            return result
+
+        next = start + 1
+        type, text = token.type, token.text.strip()
+        if type == 'LTR_NUM' and text == 'FILES:':
+            file_mode = True
+        elif text == 'COMMANDS:' or text == 'PATHS:':
+            file_mode = False
+        elif file_mode and type == 'LTR_NUM':
+            del self.tokens[start]
+            next = start
+            result.append(token)
+        elif file_mode:
+            del self.tokens[start]
+            next = start
+        else:
+            pass
+
+        return result + self._next_file(next, file_mode)
+
+    def _next_path(self, start, path_mode):
+        result = []
+
+        try:
+            token = self.tokens[start]
+        except IndexError:
+            return result
+
+        next = start + 1
+        type, text = token.type, token.text.strip()
+        if type == 'LTR_NUM' and text == 'PATHS:':
+            path_mode = True
+        elif text == 'COMMANDS:' or text == 'FILES:':
+            path_mode = False
+        elif path_mode and type == 'LTR_NUM':
+            del self.tokens[start]
+            next = start
+            result.append(token)
+        elif path_mode:
+            del self.tokens[start]
+            next = start
+        else:
+            pass
+        return result + self._next_path(next, path_mode)
+
     def _seperate_or(self, buffer):
         res = [[]]
         for token in buffer:
@@ -82,6 +145,3 @@ class Parser(object):
             else:
                 res.append([])
         return res
-
-
-
