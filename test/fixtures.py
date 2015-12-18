@@ -1,46 +1,30 @@
+cmd = """python somescript.py -i {1,2,3||4,5,6} -o {o} -fgh \
+ somefile.txt
+"""
 
-from metapipe.lexer import Token
+file = """1. somedir/somefile.ext"""
 
-tokens = [
-        Token('LTR_NUM', 'cut -f '),	# Statement 1
-        Token('OPEN', '{'),
-        Token('LTR_NUM', '1'),
-        Token('AND', ','),
-        Token('LTR_NUM', '2'),
-        Token('OR', '||'),		# Sub_statement 1.1
-        Token('LTR_NUM', '3'),
-        Token('AND', ','),
-        Token('LTR_NUM', '4'),
-        Token('CLOSE', '}'),
-        Token('NEWLINE', '\n'),
+path = """python /usr/bin/python"""
 
-        Token('LTR_NUM', 'paste -d \',\''),	# Statement 2
-        Token('OPEN', '{'),
-        Token('LTR_NUM', '2'),
-        Token('LTR_NUM', '3'),
-        Token('CLOSE', '}'),
-        Token('ESCAPE', '\\'),
-        Token('NEWLINE', '\n'),
+overall = """
+# Somethng
+[COMMANDS]
+python somescript.py -i {1,2,3||4,5,6} -o {o} -fgh somefile.txt
+python somescript.py -i {1.2,2.2,3.2||4.2,5.2,6.2} -o {o} -fgh \
+somefile.txt
+python somescript.py -i {1.1,2.1,3.1||4.1,5.1,6.1} >> somefile
+# Somethng
 
-        Token('LTR_NUM', '>'), 	# Still statement 2
-        Token('OUTPUT', ''),
-        Token('NEWLINE', '\n')
-]
+[FILES]
+1. somefile.1
+2. somefile.2
+3. somefile.3
+4. somefile.4
 
-file_tokens = [
-        Token('LTR_NUM', 'FILES:'),
-        Token('NEWLINE', '\n'),
-        Token('LTR_NUM', '1. somefile'),
-        Token('NEWLINE', '\n'),
-        Token('LTR_NUM', '2. somefile'),
-        Token('NEWLINE', '\n'),
-]
+[PATHS]
+python /usr/bin/python
+bash /usr/bin/bash
+rb /usr/bin/ruby
+"""
 
-path_tokens = [
-        Token('LTR_NUM', 'PATHS:'),
-        Token('NEWLINE', '\n'),
-        Token('LTR_NUM', '1. somepath'),
-        Token('NEWLINE', '\n'),
-        Token('LTR_NUM', '2. somepath'),
-        Token('NEWLINE', '\n'),
-]
+

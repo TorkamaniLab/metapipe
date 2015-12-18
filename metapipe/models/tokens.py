@@ -1,5 +1,7 @@
 """ Various Token Types. """
 
+import shlex
+
 
 class Token(object):
 
@@ -21,25 +23,34 @@ class FileToken(Token):
 			super(Token, self).__init__('File', text)
 		
 	def __repr__(self):
-		return '<File: %s (%s)>' % (self.number, self.text)
+		return '<FileToken: %s (%s)>' % (self.number, self.text)
 	
-	@classmethod
+	@staticmethod
 	def from_token(token):
-		pass
+		try:
+			number, text = shlex.split(token.text)
+		except ValueError:
+			raise SyntaxError('Invalid Syntax: File must have a number and path.')
+		return FileToken(text, number)
 
 
 class PathToken(Token):
 	
-	def __init__(self, text):
+	def __init__(self, alias, path):
+		self.alias = alias
 		try:
-			super().__init__('Path', text)
+			super().__init__('Path', path)
 		except Exception:
-			super(Token, self).__init__('Path', text)
+			super(Token, self).__init__('Path', path)
 		
 	def __repr__(self):
-		return '<Path: %s (%s)>' % (self.alias, self.path)
+		return '<PathToken: %s (%s)>' % (self.alias, self.text)
 		
-	@classmethod
+	@staticmethod
 	def from_token(token):
-		pass
+		try:
+			alias, path = shlex.split(token.text)
+		except ValueError:
+			raise SyntaxError('Invalid Syntax: File must have a number and path.')
+		return PathToken(alias, path)
 
