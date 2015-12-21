@@ -2,10 +2,7 @@
 
 import sure
 
-try:
-	from metapipe.parser import Parser
-except Exception:
-	from parser import Parser
+from metapipe.parser import Parser
 
 from fixtures import *
 
