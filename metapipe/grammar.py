@@ -62,7 +62,7 @@ class Grammar(object):
                 Word(approved_printables).setResultsName('filename')
                 )
 
-        @classproperty
+    @classproperty
     @staticmethod
     def path():
         """ Grammar for paths found in the overall input files. """
@@ -72,7 +72,7 @@ class Grammar(object):
                 Word(approved_printables).setResultsName('path')
                 )
 
-        @classproperty
+    @classproperty
     @staticmethod
     def command():
         """ Grammar for commands found in the overall input files. """
