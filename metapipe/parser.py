@@ -22,11 +22,11 @@ class Parser(object):
         """
         first_pass = Grammar.overall.parseString(self.string)
         lowered = { key.lower(): val for key, val in first_pass.iteritems() }
-        
+
         txt_files = [''.join(f) for f in lowered['files'].asList()]
         txt_paths = [''.join(p) for p in lowered['paths'].asList()]
         txt_commands = [''.join(c) for c in lowered['commands'].asList()]
-        
+
         self.commands = [Grammar.command.parseString(c) for c in txt_commands]
         self.files = [Grammar.file.parseString(f) for f in txt_files]
         self.paths = [Grammar.path.parseString(p) for p in txt_paths]
