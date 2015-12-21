@@ -2,7 +2,10 @@
 
 import sure
 
-from metapipe.parser import Parser
+try:
+	from metapipe.parser import Parser
+except Exception:
+	from parser import Parser
 
 from fixtures import *
 
@@ -10,9 +13,7 @@ from fixtures import *
 def test_consume():
 	parser = Parser(overall)
 	parser.consume()
-	
-	print parser.commands
-	
+		
 	parser.paths[0].alias.should.equal('python')
 	parser.paths[0].path.should.equal('/usr/bin/python')
 	parser.paths[1].alias.should.equal('bash')

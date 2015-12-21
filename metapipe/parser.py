@@ -2,8 +2,6 @@
 
 from __future__ import print_function
 
-from pyparsing import originalTextFor
-
 try:
     from metapipe.grammar import Grammar 	# Python3
 except ImportError:

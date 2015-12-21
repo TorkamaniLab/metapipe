@@ -29,7 +29,7 @@ class Grammar(object):
 					Optional('.' + Word(nums))
 				) + 
 				Suppress(Optional(','))
-			)) +				
+			)) +
 			Suppress(Optional('||'))
 		) +
 		Suppress('}')
@@ -38,7 +38,7 @@ class Grammar(object):
 	__command_out = (
 		Suppress('{') + 'o' + Suppress('}')
 	)
-		
+	
 	@classproperty
 	@staticmethod
 	def overall():
