@@ -10,8 +10,8 @@ python -c "
 import pickle
 
 with open('{temp}', 'rb') as f:
-    entry = pickle.load(f)
-    entry.run()
+    queuemanager = pickle.load(f)
+    queuemanager.submit_all()
 "
 """
 

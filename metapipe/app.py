@@ -7,8 +7,10 @@ since: 2015-12-22
 from __future__ import print_function
 import argparse, pickle, sys
 
+from queuemanager import Queue
 from parser import Parser
 from models.command import Command
+from models.job import Job
 from template import make_script
 
 
@@ -44,7 +46,10 @@ def main():
         return 
     
     # TODO: Construct pipeline.
-    pipeline = None
+    pipeline = Queue()
+    for cmd in commands:
+        job = Job(name=cmd.alias, job_cmd=cmd)
+        pipeline.push(job)
     
     with open(args.temp, 'wb') as f:
         pickle.dump(pipeline, f)

@@ -30,7 +30,7 @@ def call(args):
 
 class Job(object):
 
-    def __init__(self, name, job_cmd, input_files, output_files=[], depends_on=[], queue='work'):
+    def __init__(self, name, job_cmd, depends_on=[], queue='work'):
         """ Create an new job with the given name, and command.
         If the job depends on another job, give the names of the jobs
         it depends on.
@@ -39,19 +39,14 @@ class Job(object):
             i.e. Upon completion the job prints 'Done!' to a log file
             include 'Done!' as the completion criteria.
         """
-        self.depends_on = depends_on
         self.job_cmd = job_cmd
+        self.depends_on = depends_on
         self.name = name
-        self.input_files = input_files
-        self.output_files = output_files
         self.queue = queue
         self.id = None
         self.waiting = True     # The job has yet to be submitted.
         self.attempts = 0
         self.retry = RETRY_ATTEMPTS
-
-        with open(stdout, 'w') as f:
-            f.write('')
 
     def __repr__(self):
         return '<Job: {}>'.format(self.cmd)
@@ -59,7 +54,7 @@ class Job(object):
     @staticmethod
     def submit(job):
         self.attempts += 1
-        out = call(job.sh)
+        out = call(job.cmd)
         self.waiting = False
         self.id = out[:out.index('.')]
 
@@ -108,8 +103,7 @@ class Job(object):
 
     @property
     def cmd(self):
-        return self.job_cmd.replace('{in}', ' '.join([f.filename for f in
-            self.input_files]))
+        return self.job_cmd.eval()
 
     @property
     def running(self):

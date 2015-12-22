@@ -17,3 +17,15 @@ class Command(object):
 
     def __repr__(self):
         return '<Command: {}>'.format(self.alias)
+
+    def dependencies(self, all_commands):
+        """ Given a list of all the commands to be executed, determine which 
+        jobs the given job depends on.
+        """
+        pass
+        
+    def eval(self):
+        """ Evaluate the given job and return a complete shell script to be run
+        by the job manager.
+        """
+        pass  
