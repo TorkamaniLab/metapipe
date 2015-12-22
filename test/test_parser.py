@@ -28,8 +28,17 @@ def test_consume():
 		cmd.should.equal(vals[i])
 	
 	vals = [['1', '2', '3'], ['4', '5', '6']]
-	for i, _in in enumerate(parser.commands[0]._in):
+	for i, _in in enumerate(parser.commands[0]._in[0]):
 		for j, __in in enumerate(_in):
 			__in.should.equal(vals[i][j])
-			
-	parser.commands[2]._out.should.equal('')
+
+	vals = [['*.counts'], ',']
+	vals[0][0].should.equal(parser.commands[5]._in[0][0][0])
+	vals[1].should.equal(parser.commands[5]._in[0][0][1])
+	
+	vals = [['*.counts'], '||']
+	vals[0][0].should.equal(parser.commands[4]._in[0][0][0])
+	vals[1].should.equal(parser.commands[4]._in[0][1])
+
+	vals = 'o:*.bam'
+	vals.should.equal(parser.commands[5]._in[1][0][0])

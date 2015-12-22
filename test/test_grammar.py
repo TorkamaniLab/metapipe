@@ -3,6 +3,7 @@
 import sure
 
 from metapipe.grammar import Grammar 
+
 from fixtures import *
 
 
@@ -13,13 +14,15 @@ def test_cmd():
 	for i, c in enumerate(res.command):
 		c.should.equal(val[i])
 		
-	res._in[0][0].should.equal('1')
-	res._in[0][1].should.equal('2')
-	res._in[0][2].should.equal('3')
-	res._in[1][0].should.equal('4')
-	res._in[1][1].should.equal('5')
-	res._in[1][2].should.equal('6')
-	res._out[0].should.equal('o')
+	print(res._in)
+
+	res._in[0][0][0].should.equal('1')
+	res._in[0][0][1].should.equal('2')
+	res._in[0][0][2].should.equal('3')
+	res._in[0][1][0].should.equal('4')
+	res._in[0][1][1].should.equal('5')
+	res._in[0][1][2].should.equal('6')
+	res._in[1][0][0].should.equal('o')
 
 
 def test_file():
