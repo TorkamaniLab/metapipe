@@ -1,11 +1,11 @@
 """ A parser and other parser related classes. """
 
-from __future__ import print_function
-
 try:
-    from metapipe.grammar import Grammar 	# Python3
+    from metapipe.grammar import Grammar
+    from metapipe.models.command import Command
 except ImportError:
-    from grammer import Grammar
+    from grammar import Grammar
+    from models.command import Command
 
 
 class Parser(object):
@@ -30,3 +30,19 @@ class Parser(object):
         self.commands = [Grammar.command.parseString(c) for c in txt_commands]
         self.files = [Grammar.file.parseString(f) for f in txt_files]
         self.paths = [Grammar.path.parseString(p) for p in txt_paths]
+        
+        def matches_in(x, in_):
+            for file in in_:
+                if str(file) == str(x.alias):
+                    return True
+            return False
+
+        final_commands =[]
+        for i, command in enumerate(self.commands):
+            for j, in_files in enumerate(command._in):
+                input = filter(lambda x: matches_in(x, in_files), self.files)
+                paths = filter(lambda x: any(True for cmd in command.command if x.alias in cmd.split()), self.paths)
+                alias = '{}.{}'.format(i+1, j+1)
+                final_commands.append(Command(alias, command, input, paths))
+
+        return final_commands

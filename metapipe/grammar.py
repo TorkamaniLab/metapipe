@@ -20,23 +20,22 @@ class Grammar(object):
     _section = lbrack + Word(alphas) + rbrack
     _line = ~lbrack + Word(printables) + restOfLine
 
-    __command_in = (
+    __command = (
         Suppress('{') +
         OneOrMore(
         Group(OneOrMore(
                 Combine(
-                    Word(nums) +
+                    Word(alphanums+'.*:') +
                     Optional('.' + Word(nums))
-                    ) +
-                Suppress(Optional(','))
-                )) +
-            Suppress(Optional('||'))
-            ) +
+                ) +
+                Optional(
+                    (Literal(',') + FollowedBy('}')) ^
+                    Suppress(Literal(','))
+        ))) + (
+            Optional( 
+                (Literal('||') + FollowedBy('}')) ^                    Suppress(Literal('||'))
+            ))) + 
         Suppress('}')
-        )
-
-    __command_out = (
-        Suppress('{') + 'o' + Suppress('}')
         )
 
     @classproperty
@@ -79,6 +78,5 @@ class Grammar(object):
         return OneOrMore(
                 Word(approved_printables+' ').setResultsName('command',
                     listAllMatches=True) ^
-                Grammar.__command_in.setResultsName('_in') ^
-                Grammar.__command_out.setResultsName('_out')
+                Grammar.__command.setResultsName('_in', listAllMatches=True)
                 )
