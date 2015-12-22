@@ -1,3 +1,6 @@
+.metapipe
+**.mp
+**sample**
 *.sh
 notes/
 *.pyc
