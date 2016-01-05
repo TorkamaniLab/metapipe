@@ -25,15 +25,17 @@ class Grammar(object):
         OneOrMore(
         Group(OneOrMore(
                 Combine(
-                    Word(alphanums+'.*:') +
+                    Word(alphanums+'.*:/') +
                     Optional('.' + Word(nums))
                 ) +
                 Optional(
-                    (Literal(',') + FollowedBy('}')) ^
-                    Suppress(Literal(','))
+                    (',' + FollowedBy('}')).setResultsName('_and',
+                        listAllMatches=True) ^
+                    Suppress(',')
         ))) + (
             Optional( 
-                (Literal('||') + FollowedBy('}')) ^                    Suppress(Literal('||'))
+                ('||' + FollowedBy('}')).setResultsName('_or') ^                    
+                    Suppress('||')
             ))) + 
         Suppress('}')
         )
@@ -77,6 +79,7 @@ class Grammar(object):
         """ Grammar for commands found in the overall input files. """
         return OneOrMore(
                 Word(approved_printables+' ').setResultsName('command',
-                    listAllMatches=True) ^
-                Grammar.__command.setResultsName('_in', listAllMatches=True)
+                    listAllMatches=True) +
+                Optional(Grammar.__command.setResultsName('_in', 
+                    listAllMatches=True))
                 )

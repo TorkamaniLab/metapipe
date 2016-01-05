@@ -2,10 +2,10 @@
 
 try:
     from metapipe.grammar import Grammar
-    from metapipe.models.command import Command
+    from metapipe.models import Command, Input, Output, input_token
 except ImportError:
     from grammar import Grammar
-    from models.command import Command
+    from models import Command, Input, Output, input_token
 
 
 class Parser(object):
@@ -20,7 +20,9 @@ class Parser(object):
         """ Converts the lexer tokens into valid statements. This process
         also checks command syntax.
         """
-        first_pass = Grammar.overall.parseString(self.string)
+        grammar = Grammar.overall
+        grammar.ignore(Grammar.comment)
+        first_pass = grammar.parseString(self.string)
         lowered = { key.lower(): val for key, val in first_pass.iteritems() }
 
         txt_files = [''.join(f) for f in lowered['files'].asList()]
@@ -30,19 +32,92 @@ class Parser(object):
         self.commands = [Grammar.command.parseString(c) for c in txt_commands]
         self.files = [Grammar.file.parseString(f) for f in txt_files]
         self.paths = [Grammar.path.parseString(p) for p in txt_paths]
+
+        return [i for i in self._next_command()]
         
-        def matches_in(x, in_):
-            for file in in_:
-                if str(file) == str(x.alias):
-                    return True
-            return False
+    def _next_command(self):
+        """ Given the output of a parsed command, return a command object
+        that represents that command.
+        """
+        def new_output(output_token, alias):
+            try:
+                output = Output(output_token.alias, command_alias=alias)
+            except AttributeError:
+                output = None
+            return output
 
-        final_commands =[]
-        for i, command in enumerate(self.commands):
-            for j, in_files in enumerate(command._in):
-                input = filter(lambda x: matches_in(x, in_files), self.files)
-                paths = filter(lambda x: any(True for cmd in command.command if x.alias in cmd.split()), self.paths)
+        for i, parsed_cmd in enumerate(self.commands):            
+            input_sets, output_token = self._separate_in_out(parsed_cmd._in)
+            paths = self._get_paths(parsed_cmd)
+
+            if len(input_sets) == 0:
+                alias = '{}.{}'.format(i+1, 0)
+                command = Command(alias=alias, cmds=parsed_cmd, 
+                    input=input_sets, output=new_output(output_token, alias), 
+                    paths=paths)
+                yield command
+            
+            skip_last = False 
+            for j, input_files in enumerate(input_sets):
+                if skip_last and j == len(input_sets) - 1: 
+                    continue
                 alias = '{}.{}'.format(i+1, j+1)
-                final_commands.append(Command(alias, command, input, paths))
+                command = Command(alias=alias, cmds=parsed_cmd, 
+                    input=input_files, output=new_output(output_token, alias), 
+                    paths=paths)
+                    
+                # If magic syntax, ignore next command or input.
+                if command._or: 
+                    skip_last = True
+                if command._and: 
+                    command.input = command.input[:-1]
 
-        return final_commands
+                yield command
+                       
+    def _separate_in_out(self, filesets):
+        """ Given a list of input and output filesets, return the input tokens
+        and output token respectively.
+        """
+        if len(filesets) > 2:
+            raise ValueError('Too many inputs/outputs.')
+
+        input_sets, output_token = [], None
+        for in_files in filesets:
+            if self._is_output(in_files):
+                output_token = self._get_output(in_files)
+            else:
+                input_sets = [self._get_input(in_set) for in_set in in_files]
+        return input_sets, output_token
+
+    def _get_paths(self, command):
+        """ Given a command, return the paths that it requires. """
+        return filter(lambda x: any(True for cmd in command.command 
+            if x.alias in cmd.split()), self.paths)
+            
+    def _get_input(self, filenames):
+        """ Given a list of file aliases, return a list of matching 
+        input file tokens. 
+        """
+        matches = []
+        for f in self.files:
+            if any(f.alias == filename for filename in filenames):
+                matches.append(Input(f))
+        
+        known_aliases = { f.alias for f in self.files }
+        for name in filenames:
+            if name not in known_aliases:
+                matches.append(Input(input_token(name, None)))
+        return matches
+
+    def _get_output(self, filenames):
+        """ Given a list of file aliases, return a list of matching 
+        output file tokens.
+        """
+        return Output(filenames[0][0])
+        
+    def _is_output(self, files):
+        """ Determine if the given list is of output files. """
+        try:
+            return files[0][0][0] == 'o'
+        except IndexError:
+            return False

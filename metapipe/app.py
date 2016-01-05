@@ -9,8 +9,7 @@ import argparse, pickle, sys
 
 from queuemanager import Queue
 from parser import Parser
-from models.command import Command
-from models.job import Job
+from models import Command, Job
 from template import make_script
 
 
@@ -52,13 +51,15 @@ def main():
         pipeline.push(job)
     
     with open(args.temp, 'wb') as f:
-        pickle.dump(pipeline, f)
+        pickle.dump(pipeline, f, protocol=2)
     
     script = make_script(temp=args.temp, shell=args.shell)
     
     if args.run:
         print('Initiating pipeline...')
         pass
+        
+    # TODO: Add the scripts to the output file in the comments.
     try:
         f = open(args.output, 'w')
         args.output = f

@@ -3,7 +3,7 @@
 author: Brian Schrader
 since: 2015-08-27
 """
-
+# TODO: Abstract this class.
 
 import os
 from subprocess import Popen, PIPE
