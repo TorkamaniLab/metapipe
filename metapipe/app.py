@@ -7,6 +7,8 @@ since: 2015-12-22
 from __future__ import print_function
 import argparse, pickle, sys
 
+from pyparsing import ParseError
+
 from queuemanager import Queue
 from parser import Parser
 from models import Command, Job
