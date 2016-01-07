@@ -8,7 +8,6 @@ from metapipe.parser import Parser
 def test_eval():
     parser = Parser(overall)
     cmds = parser.consume()
-    print len(cmds)
     for i, cmd in enumerate(cmds):
         cmd.find_dependencies(cmds) 
 
