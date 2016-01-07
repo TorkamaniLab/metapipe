@@ -59,10 +59,10 @@ class Input(Token):
         """ 
         try:
             return ' '.join(glob.glob(self.filename))
-        except AttributeError:
+        except (AttributeError, TypeError):
             try:
                 return ' '.join(glob.glob(self.alias))
-            except AttributeError:
+            except (AttributeError, TypeError):
                 raise ValueError('No such file found for pattern %s or %s' % (
                     self.filename, self.alias))
     
