@@ -22,6 +22,9 @@ def call(args, stdout=PIPE, stderr=PIPE):
 class Job(object):
     """ A template job class that just runs the given command script locally.
     To make your own custom jobs, subclass this Job and override the status methods, the submit method, and cmd property.
+    
+    Submitting a job cannot block execution. The submit call should return 
+    immediately so that other jobs can be executed, and tracked.
     """
     
     JOB_FILE_PATTERN = 'metapipe.{}.job'

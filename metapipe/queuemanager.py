@@ -23,16 +23,6 @@ class Queue(object):
     def __repr__(self):
         return '<Queue: jobs=%s>' % len(self.queue)
 
-    def log(self, message, log_file='queue.log', mode='a'):
-        """ Writes to the main log file. """
-        try:
-            log = '{0}{1}'.format(self.log_dir, log_file)
-            with open(log, mode) as f:
-                f.write('%s\n' % message)
-        except OSError:
-            print('You don\'t have permission to make log files.')
-
-
     def ready(self, job):
         """ Determines if the job is ready to be sumitted to the
         queue. It checks if the job depends on any currently
@@ -88,8 +78,7 @@ class Queue(object):
                 if (not self.ready(job)) or job.is_running()]
             if self.locked() and self.on_locked():
                 return 2, 'Queue is locked'
-            print(map(lambda j: j.is_running(), self.queue))
-            time.sleep(2)
+            time.sleep(1)
         self.on_end()
         return 0
         
@@ -108,7 +97,7 @@ class Queue(object):
         If this callback returns True, then the queue will be restarted,
         else it will be terminated.
         """
-        self.log(('The queue is locked. Please check the logs. %s')
+        self.logger.log(('The queue is locked. Please check the logs. %s')
                 % self.log_dir)
         return True
     
