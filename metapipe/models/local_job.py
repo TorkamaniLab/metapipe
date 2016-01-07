@@ -1,7 +1,7 @@
 import subprocess
 import threading
 
-from job import Job, call
+from . import Job, call
 
 
 class LocalJobCallThread(threading.Thread):
