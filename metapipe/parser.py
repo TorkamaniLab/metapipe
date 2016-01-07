@@ -114,8 +114,8 @@ class Parser(object):
 
     def _get_paths(self, command):
         """ Given a command, return the paths that it requires. """
-        return filter(lambda x: any(True for cmd in command.command 
-            if x.alias in cmd.split()), self.paths)
+        return [path for cmd in command.command for path in self.paths 
+            if path.alias in cmd.split()]
             
     def _get_input(self, filenames):
         """ Given a list of file aliases, return a list of matching 

@@ -4,7 +4,7 @@ import sure
 
 from metapipe.grammar import Grammar 
 
-from fixtures import *
+from .fixtures import *
 
 
 def test_cmd():

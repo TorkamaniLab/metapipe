@@ -6,7 +6,7 @@ import sure
 
 from metapipe.parser import Parser
 
-from fixtures import *
+from .fixtures import *
 
 
 def test_consume():

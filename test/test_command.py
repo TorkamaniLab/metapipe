@@ -1,6 +1,6 @@
 """ Tests for the command class. """
 
-from fixtures import *
+from .fixtures import *
 
 from metapipe.parser import Parser
 
