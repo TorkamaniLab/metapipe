@@ -8,20 +8,15 @@ import os
 from subprocess import Popen, PIPE
 
 
-stdout = '/tmp/queuemanager.out'
-stderr = '/tmp/queuemanager.err'
-
-
-def call(args):
+def call(args, stdout=PIPE, stderr=PIPE):
     """ Calls the given arguments in a seperate process
     and returns the contents of standard out.
     """
-    with open(stdout, 'w+') as f1, open(stderr, 'w+') as f2:
-        p = Popen(args, stdout=f1, stderr=f2)
-        p.communicate()
-        f1.seek(0)
-        out = f1.read()
-    return out
+    print('Opening')
+    p = Popen(args, stdout=stdout, stderr=stderr)
+    out, err = p.communicate()
+    print('Done')
+    return out, err
 
 
 class Job(object):
@@ -30,22 +25,23 @@ class Job(object):
     """
     
     JOB_FILE_PATTERN = 'metapipe.{}.job'
-    
-    def __init__(self, alias, job_cmd, depends_on=[]):
+
+    def __init__(self, alias, command, depends_on=[]):
         """ Create an new job with the given name, and command. """
-        self.job_cmd = job_cmd
+        self.command = command
         self.depends_on = depends_on
         self.alias = alias
         self.attempts = 0
-        self.filename = JOB_FILE_PATTERN.format(self.alias)
+        self.filename = self.JOB_FILE_PATTERN.format(self.alias)
 
     def __repr__(self):
         return '<Job: {}>'.format(self.cmd)
 
     def make(self):
         """ Evaluate the command, and write it to a file. """
+        print(self.cmd)
         with open(self.filename, 'w') as f:
-            f.write(self.cmd.eval())
+            f.write(self.command.eval())
             
     # Override these...
 
@@ -83,43 +79,4 @@ class Job(object):
         """ Checks to see if the job errored out. """
         pass
         
-
-class LocalJob(Job):
-    """ A subclass of job for local calculations. """
-    
-    def __init__(self, alias, cmd, depends_on=[], shell='bash')
-        super().__init__(alias, cmd, depends_on)
-        self.shell = shell
-        
-        self._running = False
-    
-    @property
-    def cmd(self):
-        return [shell, self.filename]
-
-    def submit(self, job):
-        self._running = True
-        call(self.cmd)
-        
-    def is_running(self):
-        return self._running
-
-    def is_queued(self):
-        """ Returns False since local jobs are not submitted to an 
-        external queue.
-        """
-        return False
-            
-    def is_complete(self):
-        """ Returns whether the job is complete or not. """
-        pass
-
-    def is_error(self):
-        """ Checks to see if the job errored out. """
-        pass
-        
-
-
-
-
 

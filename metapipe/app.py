@@ -7,11 +7,11 @@ since: 2015-12-22
 from __future__ import print_function
 import argparse, pickle, sys
 
-from pyparsing import ParseError
+import pyparsing
 
 from queuemanager import Queue
 from parser import Parser
-from models import Command, Job
+from models import Command, LocalJob
 from template import make_script
 
 
@@ -36,24 +36,23 @@ def main():
             config = f.read()    
     except IOError:
         print('No valid config file found.')
-        return 
+        return -1
     
     parser = Parser(config)
     
     try:
         commands = parser.consume()
-    except ParseError as e:
+    except ValueError as e:
         print('Syntax Error: Invalid config file. \n%s' % e)
         return 
     
-    # TODO: Construct pipeline.
     pipeline = Queue()
     for cmd in commands:
-        job = Job(name=cmd.alias, job_cmd=cmd)
+        job = LocalJob(alias=cmd.alias, command=cmd)
         pipeline.push(job)
     
     with open(args.temp, 'wb') as f:
-        pickle.dump(pipeline, f, protocol=2)
+        pickle.dump(pipeline, f)
     
     script = make_script(temp=args.temp, shell=args.shell)
     

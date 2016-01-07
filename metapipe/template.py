@@ -19,4 +19,4 @@ with open('{temp}', 'rb') as f:
 """
 
 def make_script(shell='/bin/bash', temp='.metapipe', commands=''):
-    return _script.format(temp=temp, shell=shell, commands=commands)
+    return _script.format(temp=temp, shell=shell, commands='')

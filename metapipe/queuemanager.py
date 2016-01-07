@@ -39,7 +39,7 @@ class Queue(object):
         running or queued operations.
         """
         all_complete = all(j.complete for j in self.queue
-                if j.name in job.depends_on)
+                if j.alias in job.depends_on)
         none_failed = not any(True for j in self.failed
                 if j.name in job.depends_on)
         return all_complete and none_failed
@@ -58,15 +58,16 @@ class Queue(object):
         """ Given all of the jobs currently in the queue, determine their 
         individual dependencies.
         """
-        all_cmds = [job.job_cmd for job in self.queue]
+        all_cmds = [job.command for job in self.queue]
         for job in self.queue:
-            job.job_cmd.dependencies(all_cmds)
+            job.depends_on = job.command.find_dependencies(all_cmds)
 
     def submit_all(self):
         """ Submits all the given jobs in the queue and watches their
         progress as they proceed.
         """
         self.on_start()
+        self.determine_dependencies()
         while True:
             if len(self.queue) == 0:
                 break
@@ -75,7 +76,7 @@ class Queue(object):
                     pass
                 elif job.is_complete():
                     self.on_complete(job)
-                elif job.error:
+                elif job.is_error():
                     self.on_error(job)
                 elif self.ready(job):
                     self.on_ready(job)
@@ -84,9 +85,10 @@ class Queue(object):
                 else:
                     pass
             self.queue = [job for job in self.queue 
-                if job.running or job.queued or job.waiting]
+                if (not self.ready(job)) or job.is_running()]
             if self.locked() and self.on_locked():
                 return 2, 'Queue is locked'
+            print(map(lambda j: j.is_running(), self.queue))
             time.sleep(2)
         self.on_end()
         return 0
@@ -114,24 +116,25 @@ class Queue(object):
         """ Called when a job is ready to be submitted. 
         :param job: The given job that is ready.
         """ 
-        pass
+        print('Ready: %s' % job.alias)
         
     def on_submit(self, job):
         """ Called when a job has been submitted. 
         :param job: The given job that has been submitted.
         """ 
-        pass
+        print('Submitted: %s' % job.alias)
         
     def on_complete(self, job):
         """ Called when a job has completed. 
         :param job: The given job that has completed.
         """ 
-        pass
+        print('Complete: %s' % job.alias)
         
     def on_error(self, job):
         """ Called when a job has errored. 
         :param job: The given job that has errored.
         """ 
+        print('Error: %s' % job.alias)
         if job.attempts < job.retry:
             self.logger.log('Error: Job %s has failed, retrying (%s/%s)'
                     % (job.name, str(job.attempts), str(job.retry)))
