@@ -11,7 +11,7 @@ import pyparsing
 
 from queuemanager import Queue
 from parser import Parser
-from models import Command, LocalJob
+from models import Command, LocalJob, PBSJob
 from template import make_script
 
 
@@ -27,8 +27,12 @@ def main():
                    help='A desired metapipe binary file. This is used to store temp data between generation and execution. (Default: "%(default)s")', default='.metapipe')
     parser.add_argument('-s', '--shell',
                    help='The path to the shell to be used when executing the pipeline. (Default: "%(default)s)"', default='/bin/bash')
-    parser.add_argument('-r', '--run',
-                   help='Run the pipeline as soon as it\'s ready.', action='store_true')
+#     parser.add_argument('-r', '--run',
+#                    help='Run the pipeline as soon as it\'s ready.', action='store_true')
+    parser.add_argument('-j', '--job-type',
+                   help='The destination for calculations (i.e. local, a PBS ' 'queue on a cluster, etc).\n'
+                   'Options: local, pbs. (Default: "%(default)s)"', 
+                   default='local')
     args = parser.parse_args()
     
     try:
@@ -48,7 +52,10 @@ def main():
     
     pipeline = Queue()
     for cmd in commands:
-        job = LocalJob(alias=cmd.alias, command=cmd)
+        if args.job_type == 'pbs':
+            job = LocalJob(alias=cmd.alias, command=cmd)
+        else:
+            job = PBSJob(alias=cmd.alias, command=cmd)    
         pipeline.push(job)
     
     with open(args.temp, 'wb') as f:
@@ -56,9 +63,8 @@ def main():
     
     script = make_script(temp=args.temp, shell=args.shell)
     
-    if args.run:
-        print('Initiating pipeline...')
-        pass
+#     if args.run:
+#         print('Initiating pipeline...')
         
     # TODO: Add the scripts to the output file in the comments.
     try:
