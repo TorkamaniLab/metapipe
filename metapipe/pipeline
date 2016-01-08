@@ -1,0 +1,12 @@
+#! /bin/bash
+set -e;
+
+
+
+python -c "
+import pickle
+
+with open('.metapipe', 'rb') as f:
+    queuemanager = pickle.load(f)
+    queuemanager.submit_all()
+"

@@ -1,4 +1,3 @@
-import subprocess
 import threading
 
 from . import Job, call
