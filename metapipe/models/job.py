@@ -12,10 +12,8 @@ def call(args, stdout=PIPE, stderr=PIPE):
     """ Calls the given arguments in a seperate process
     and returns the contents of standard out.
     """
-    print('Opening')
     p = Popen(args, stdout=stdout, stderr=stderr)
     out, err = p.communicate()
-    print('Done')
     return out, err
 
 
@@ -28,6 +26,7 @@ class Job(object):
     """
     
     JOB_FILE_PATTERN = 'metapipe.{}.job'
+    MAX_RETRY = 5
 
     def __init__(self, alias, command, depends_on=[]):
         """ Create an new job with the given name, and command. """

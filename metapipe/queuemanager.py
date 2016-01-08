@@ -124,7 +124,7 @@ class Queue(object):
         :param job: The given job that has errored.
         """ 
         print('Error: %s' % job.alias)
-        if job.attempts < job.retry:
+        if job.attempts < job.MAX_RETRY:
             self.logger.log('Error: Job %s has failed, retrying (%s/%s)'
                     % (job.name, str(job.attempts), str(job.retry)))
             self.push(job)
