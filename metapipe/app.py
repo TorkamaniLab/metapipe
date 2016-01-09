@@ -15,6 +15,21 @@ from models import Command, LocalJob, PBSJob
 from template import make_script
 
 
+PIPELINE_ALIAS = "metapipe.queue.job"
+
+
+def get_job(command, job_type='local'):
+    """ Given a command and a type, contruct a job.
+    :returns job:
+    :rtype Job subclass:
+    """
+    if job_type == 'pbs':
+        job = PBSJob(alias=cmd.alias, command=cmd)
+    else:
+        job = LocalJob(alias=cmd.alias, command=cmd)    
+    return job
+    
+
 def main():
     """ Given a config file, spit out the script to run the analysis. """
     parser = argparse.ArgumentParser(
@@ -43,30 +58,30 @@ def main():
         return -1
     
     parser = Parser(config)
-    
     try:
         commands = parser.consume()
     except ValueError as e:
-        print('Syntax Error: Invalid config file. \n%s' % e)
-        return 
+        raise SyntaxError('Invalid config file. \n%s' % e)
     
     pipeline = Queue()
-    for cmd in commands:
-        if args.job_type == 'pbs':
-            job = LocalJob(alias=cmd.alias, command=cmd)
-        else:
-            job = PBSJob(alias=cmd.alias, command=cmd)    
-        pipeline.push(job)
-    
+    for command in commands:
+        pipeline.push(get_job(command, args.job_type))
+        
     with open(args.temp, 'wb') as f:
         pickle.dump(pipeline, f)
-    
     script = make_script(temp=args.temp, shell=args.shell)
     
-#     if args.run:
-#         print('Initiating pipeline...')
+    if args.run:
+        if args.output != sys.stdout: 
+            run_cmd = [args.shell, args.output]
+            submit_command = Command(alias=PIPELINE_ALIAS, cmds=run_cmd)
+            submit_job = get_job(submit_command, args.job_type)
+            submit_job.make()
+            submit_job.submit()
+        else:
+            raise ValueError('Invalid output destination. When running '
+            'immediately, you must specify an output location.')
         
-    # TODO: Add the scripts to the output file in the comments.
     try:
         f = open(args.output, 'w')
         args.output = f

@@ -49,12 +49,12 @@ class Parser(object):
             self.files = [Grammar.file.parseString(f) 
                 for f in txt_files]
         except pyparsing.ParseException:
-            raise ValueError('Invalid command.')
+            raise ValueError('Invalid file.')
         try:
             self.paths = [Grammar.path.parseString(p) 
                 for p in txt_paths]
         except pyparsing.ParseException:
-            raise ValueError('Invalid command.')
+            raise ValueError('Invalid path.')
 
         return [i for i in self._next_command()]
         

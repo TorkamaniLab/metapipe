@@ -4,7 +4,7 @@ from . import Job, call
 class PBSJob(Job):
     """ A job subclass for running tasks on a PBS queue. """
     
-    def __init__(self, name, command, depends_on=[], queue='work'):
+    def __init__(self, alias, command, depends_on=[], queue='work'):
         super(PBSJob, self).__init__(alias, command, depends_on)
         self.queue = queue
         self.id = None

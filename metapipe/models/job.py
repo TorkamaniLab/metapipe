@@ -41,9 +41,9 @@ class Job(object):
 
     def make(self):
         """ Evaluate the command, and write it to a file. """
-        print(self.cmd)
         with open(self.filename, 'w') as f:
             f.write(self.command.eval())
+            print(self.command.eval())
             
     # Override these...
 
