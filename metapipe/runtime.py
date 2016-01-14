@@ -4,13 +4,16 @@ author: Brian Schrader
 since: 2015-01-13
 """
 
-from queue import Queue
+from time import sleep
+
+from models import Queue
 
 
 class Runtime(object):
     
-    def __init__(self, command_templates, job_type='local'):
+    def __init__(self, command_templates, job_type='local', job_types):
         
+        self.job_types = job_types
         self.job_type = job_type
         self.templates = command_templates
         self.queue = Queue()
@@ -20,11 +23,8 @@ class Runtime(object):
         :returns job:
         :rtype Job subclass:
         """
-        if self.job_type == 'pbs':
-            job = PBSJob(alias=cmd.alias, command=cmd)
-        else:
-            job = LocalJob(alias=cmd.alias, command=cmd)    
-        return job
+        job_constructor = self.job_types[self.job_type]
+        return job_constructor(alias=cmd.alias, command=cmd)
     
     def run(self):
         """ Begins the runtime execution. """
@@ -38,4 +38,5 @@ class Runtime(object):
                 self.queue.tick()
             except StopIteration:
                 break
+            sleep(0.5)
             

@@ -18,6 +18,11 @@ from template import make_script
 
 PIPELINE_ALIAS = "metapipe.queue.job"
 
+JOB_TYPES = {
+    'local': LocalJob,
+    'pbs': PBSJob
+}
+
 
 def main():
     """ Given a config file, spit out the script to run the analysis. """
@@ -52,7 +57,7 @@ def main():
     except ValueError as e:
         raise SyntaxError('Invalid config file. \n%s' % e)
     
-    pipeline = Runtime(command_templates, args.job_type)
+    pipeline = Runtime(command_templates, args.job_type, job_types=JOB_TYPES)
         
     with open(args.temp, 'wb') as f:
         pickle.dump(pipeline, f)

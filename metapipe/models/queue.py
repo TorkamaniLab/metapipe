@@ -7,7 +7,7 @@ author: Brian Schrader
 since: 2015-08-27
 """
 
-import os, time, logging
+import logging
 
 
 class Queue(object):
