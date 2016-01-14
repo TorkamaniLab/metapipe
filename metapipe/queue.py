@@ -7,7 +7,6 @@ author: Brian Schrader
 since: 2015-08-27
 """
 
-from __future__ import print_function
 import os, time, logging
 
 
@@ -44,20 +43,13 @@ class Queue(object):
         """ Push a job onto the queue. This does not submit the job. """
         self.queue.append(job)
         
-    def determine_dependencies(self):
-        """ Given all of the jobs currently in the queue, determine their 
-        individual dependencies.
-        """
-        all_cmds = [job.command for job in self.queue]
-        for job in self.queue:
-            job.depends_on = job.command.find_dependencies(all_cmds)
-
-    def submit_all(self):
+    def tick(self):
         """ Submits all the given jobs in the queue and watches their
-        progress as they proceed.
+        progress as they proceed. This function yields at the end of 
+        each iteration of the queue.
+        :raises RuntimeError: If queue is locked.
         """
         self.on_start()
-        self.determine_dependencies()
         while True:
             if len(self.queue) == 0:
                 break
@@ -77,10 +69,9 @@ class Queue(object):
             self.queue = [job for job in self.queue 
                 if (not self.ready(job)) or job.is_running()]
             if self.locked() and self.on_locked():
-                return 2, 'Queue is locked'
-            time.sleep(1)
+                raise RuntimeError
+            yield
         self.on_end()
-        return 0
         
     # Callbacks...
         

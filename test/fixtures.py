@@ -20,17 +20,14 @@ path = """python /usr/bin/python"""
 
 overall = """
 [COMMANDS]
-# Different types of commands
 python somescript.py -i {1,2,3||4,5,6} -o {o} -fgh somefile.txt
 bash somescript.sh -i {1.1||1.2} -o {o} -fgh somefile.txt
 rb somescript.rb -i {2.1||2.2||1.1,1.2} >> somefile
 cut -f *.counts > something.file
 paste *.counts > {o:some.file}
 
-# Compound And/Or
 ./somescript {1,2,3,4||test/files/*.counts,}
 
-# And/Or
 #rb somescript.rb -i {test/files/*.counts||}
 python somescript.py -i {test/files/*.counts,} > {o:*.bam}
 

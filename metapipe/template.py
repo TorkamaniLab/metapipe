@@ -11,8 +11,8 @@ python -c "
 import pickle
 
 with open('{temp}', 'rb') as f:
-    queuemanager = pickle.load(f)
-    queuemanager.submit_all()
+    runtime = pickle.load(f)
+    runtime.run()
 "
 """
 

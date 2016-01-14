@@ -27,24 +27,24 @@ def test_consume():
 
     vals = ['python somescript.py -i ', '-o ', '-fgh somefile.txt']
     len(res[0].input).should.equal(3)
-    res[0].output.filename.should.equal('1.1')
+    res[0].output.alias.should.equal('1.1')
     for cmd, val in zip([cmd for cmd in res[0].cmds
             if isinstance(cmd, str)], vals):
         cmd.should.equal(val)
     len(res[1].input).should.equal(3)
-    res[1].output.filename.should.equal('1.2')
+    res[1].output.alias.should.equal('1.2')
     for cmd, val in zip([cmd for cmd in res[1].cmds
             if isinstance(cmd, str)], vals):
         cmd.should.equal(val)
 
     vals = ['bash somescript.sh -i ', '-o ', '-fgh somefile.txt']
     len(res[2].input).should.equal(1)
-    res[2].output.filename.should.equal('2.1')
+    res[2].output.alias.should.equal('2.1')
     for cmd, val in zip([cmd for cmd in res[2].cmds
             if isinstance(cmd, str)], vals):
         cmd.should.equal(val)
     len(res[3].input).should.equal(1)
-    res[3].output.filename.should.equal('2.2')
+    res[3].output.alias.should.equal('2.2')
     for cmd, val in zip([cmd for cmd in res[3].cmds
             if isinstance(cmd, str)], vals):
         cmd.should.equal(val)
@@ -75,8 +75,8 @@ def test_consume():
 
     vals = ['paste *.counts > ']
     len(res[8].input).should.equal(0)
-    res[8].output.filename.should.equal('5.0')
-    res[8].output.alias.should.equal('o:some.file')
+    res[8].output.alias.should.equal('5.0')
+    res[8].output.magic.should.equal('some.file')
     for cmd, val in zip([cmd for cmd in res[8].cmds
             if isinstance(cmd, str)], vals):
         cmd.should.equal(val)
@@ -104,8 +104,8 @@ def test_consume():
 
     vals = ['python somescript.py -i ']
     len(res[11].input).should.equal(1)
-    res[11].output.alias.should.equal('o:*.bam')
-    res[11].output.filename.should.equal('7.1')
+    res[11].output.magic.should.equal('*.bam')
+    res[11].output.alias.should.equal('7.1')
     res[11]._and.should.equal(True)
     for cmd, val in zip([cmd for cmd in res[11].cmds
             if isinstance(cmd, str)], vals):

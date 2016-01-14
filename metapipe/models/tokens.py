@@ -10,26 +10,50 @@ import glob, re
 
 
 file_pattern = 'metapipe.{}.output'
-input_token = namedtuple('token', 'alias filename')
 
 
-class Token(object):
+class Path(object):
+    """ A model for a given path. """
+    
+    def __init__(self, alias, path):
+        self.alias = alias
+        self.path = path
+    
+    def __eq__(self, other):
+        try:
+            return (self.alias == other.alias or 
+                self.path == other.path)
+        except AttributeError:
+            return False
+
+
+class FileToken(object):
     """ An abc for input/output data classes. Provides various common 
     methods. 
     Warning: This class should not be used directly.
     """
-    pass
+    
+    def __init__(self, alias, filename=''):
+        self.alias = alias
+        self.filename = filename
+    
+    def __eq__(self, other):
+        try:
+            return (self.alias == other.alias or 
+                self.filename == other.filename)
+        except AttributeError:
+            return False
                 
 
-class Input(Token):
+class Input(FileToken):
     """ A model of a single input to a given command. Input tokens can be 
     evaluated to obtain their actual filename(s).
     """
-    
-    def __init__(self, file_parse_result):
-        self.alias = file_parse_result.alias
-        self.filename = file_parse_result.filename
         
+    def __init__(self, alias, filename='', and_or=''):
+        super(Input, self).__init__(alias, filename)
+        self.and_or = and_or
+
     def __repr__(self):
         eval = '?'
         try:
@@ -38,61 +62,60 @@ class Input(Token):
             pass
         return '<Input: {}->[{}]>'.format(self.alias, eval)
     
-    def matches_output(self, output):
-        """ Given an output token, determine if the output references this 
-        input. 
-        """
-        try:
-            return (self.alias == output.filename) 
-        except AttributeError:
-            return False
-                                    
-    def matches_command(self, command_alias):
-        """ Given a command alias, determine if the input is dependent 
-        on it. 
-        """
-        return command_alias == self._alias_step_marker
-        
     def eval(self):
         """ Evaluates the given input and returns a string containing the 
-        actual filenames represented.
-        """ 
-        try:
-            return ' '.join(glob.glob(self.filename))
-        except (AttributeError, TypeError):
-            try:
-                return ' '.join(glob.glob(self.alias))
-            except (AttributeError, TypeError):
-                raise ValueError('No such file found for pattern %s or %s' % (
-                    self.filename, self.alias))
-    
-    @property
-    def _alias_step_marker(self):
-        """ Return the section of the input alias that cooresponds to the 
-        command alias step.
+        actual filenames represented. If the input token represents multiple 
+        independent files, then eval will return a list of all the files needed,
+        otherwise it returns the filenames in a string.
+        """
+        if self.and_or == 'or':
+            return self.files
+         return ' '.join(self.files)
+            
+    @property         
+    def files(self):
+        """ Returns a list of all the files that match the given 
+        input token.
         """
         try:
-            return '.'.join(self.alias.split('.')[1:])
-        except IndexError:
-            return None
-    
-    
-class Output(Token):
+            return glob.glob(self.filename)
+        except (AttributeError, TypeError):
+            try:
+                return glob.glob(self.alias)
+            except (AttributeError, TypeError):
+                return []
+        
+        
+class Output(FileToken):
     """ A model of a single output to a given command. Output tokens can be 
     evaluated to obtain their actual filename(s).
     """
-
-    def __init__(self, file_parse_result, command_alias=''):
-        self.alias = file_parse_result
-        self.filename = command_alias
+    
+    def __init__(self, alias, filename='', magic=''):
+        super(Output, self).__init__(alias, filename)
+        self.magic = self._clean_magic(magic)
         
     def __repr__(self):
-        return '<Output: {}->[{}]>'.format(self.alias, self.eval())
+        return '<Output: {}->[{}]{}>'.format(self.alias, self.eval(), 
+            (' ' + self.magic) if self.magic else '')
 
     def eval(self):
         """ Returns a filename to be used for script output. """
-        return file_pattern.format(self.filename)
+        if self.magic:
+            return ''
+        if not self.filename:
+            return file_pattern.format(self.alias)
+        return self.filename
             
     def as_input(self):
         """ Returns an input token for the given output. """
-        return Input(self)
+        filename = self.filename if self.filename else self.magic
+        return Input(self.alias, self.filename)
+        
+    def _clean_magic(self, magic):
+        """ Given a magic string, remove the output tag designator. """
+        if magic.lower() == 'o':
+            return ''
+        elif magic[:2].lower() == 'o:':
+            return magic[2:]
+        return magic

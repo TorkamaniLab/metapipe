@@ -9,26 +9,15 @@ import argparse, pickle, sys
 
 import pyparsing
 
-from queuemanager import Queue
+from queue import Queue
 from parser import Parser
 from models import Command, LocalJob, PBSJob
+from runtime import Runtime
 from template import make_script
 
 
 PIPELINE_ALIAS = "metapipe.queue.job"
 
-
-def get_job(command, job_type='local'):
-    """ Given a command and a type, contruct a job.
-    :returns job:
-    :rtype Job subclass:
-    """
-    if job_type == 'pbs':
-        job = PBSJob(alias=cmd.alias, command=cmd)
-    else:
-        job = LocalJob(alias=cmd.alias, command=cmd)    
-    return job
-    
 
 def main():
     """ Given a config file, spit out the script to run the analysis. """
@@ -42,8 +31,8 @@ def main():
                    help='A desired metapipe binary file. This is used to store temp data between generation and execution. (Default: "%(default)s")', default='.metapipe')
     parser.add_argument('-s', '--shell',
                    help='The path to the shell to be used when executing the pipeline. (Default: "%(default)s)"', default='/bin/bash')
-#     parser.add_argument('-r', '--run',
-#                    help='Run the pipeline as soon as it\'s ready.', action='store_true')
+    parser.add_argument('-r', '--run',
+                   help='Run the pipeline as soon as it\'s ready.', action='store_true')
     parser.add_argument('-j', '--job-type',
                    help='The destination for calculations (i.e. local, a PBS ' 'queue on a cluster, etc).\n'
                    'Options: local, pbs. (Default: "%(default)s)"', 
@@ -59,13 +48,11 @@ def main():
     
     parser = Parser(config)
     try:
-        commands = parser.consume()
+        command_templates = parser.consume()
     except ValueError as e:
         raise SyntaxError('Invalid config file. \n%s' % e)
     
-    pipeline = Queue()
-    for command in commands:
-        pipeline.push(get_job(command, args.job_type))
+    pipeline = Runtime(command_templates, args.job_type)
         
     with open(args.temp, 'wb') as f:
         pickle.dump(pipeline, f)
