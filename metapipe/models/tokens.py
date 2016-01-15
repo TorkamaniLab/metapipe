@@ -12,12 +12,15 @@ import glob, re
 file_pattern = 'metapipe.{}.output'
 
 
-class Path(object):
+class PathToken(object):
     """ A model for a given path. """
     
     def __init__(self, alias, path):
         self.alias = alias
         self.path = path
+        
+    def __repr__(self):
+        return '<Path {}: {}>'.format(self.alias, self.path)
     
     def __eq__(self, other):
         try:
@@ -60,7 +63,8 @@ class Input(FileToken):
              eval = self.eval()
         except Exception:
             pass
-        return '<Input: {}->[{}]>'.format(self.alias, eval)
+        return '<Input: {}->[{}]{}>'.format(self.alias, eval, 
+            ' _{}_'.format(self.and_or) if self.and_or else '')
     
     def eval(self):
         """ Evaluates the given input and returns a string containing the 
@@ -70,7 +74,7 @@ class Input(FileToken):
         """
         if self.and_or == 'or':
             return self.files
-         return ' '.join(self.files)
+        return ' '.join(self.files)
             
     @property         
     def files(self):
@@ -84,6 +88,15 @@ class Input(FileToken):
                 return glob.glob(self.alias)
             except (AttributeError, TypeError):
                 return []
+                
+    @staticmethod  
+    def from_string(string, _or=''):
+        """ Parse a given string and turn it into an input token. """
+        if _or:
+            and_or = 'or'
+        else:
+            and_or = ''
+        return Input(string, and_or=and_or)
         
         
 class Output(FileToken):
@@ -119,3 +132,11 @@ class Output(FileToken):
         elif magic[:2].lower() == 'o:':
             return magic[2:]
         return magic
+
+    @staticmethod  
+    def from_string(string):
+        """ Parse a given string and turn it into an output token. """
+        return Output('', magic=string)
+        
+        
+        

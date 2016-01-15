@@ -2,7 +2,7 @@
 
 import sure
 
-from metapipe.grammar import Grammar 
+from metapipe.models.grammar import Grammar 
 
 from .fixtures import *
 
@@ -22,6 +22,7 @@ def test_cmd():
     res._in[0][1][2].should.equal('6')
     res._in[1][0][0].should.equal('o')
 
+
 def test_cmd_magic1():
     res = Grammar.command.parseString(cmd_magic1)
     val = ['python somescript.py ', '> someout']
@@ -30,7 +31,7 @@ def test_cmd_magic1():
         c.should.equal(val[i])
     
     res._in[0][0][0].should.equal('*.counts')
-    res._or[0].should.equal('||')
+    res._or[0].should.equal('<<OR>>')
 
 
 def test_cmd_magic2():
@@ -40,12 +41,11 @@ def test_cmd_magic2():
     for i, c in enumerate(res.command):
         c.should.equal(val[i])
     res._in[0][0][0].should.equal('*.counts')
-    res._in[0][0]._and[0][0].should.equal(',')
 
 
 def test_cmd_compund1():
     res = Grammar.command.parseString(cmd_compound1)
-    val = ['./somescript ', ['1', '2', '3', '4'], ['test/files/*.counts'], '||']
+    val = ['./somescript ', ['1', '2', '3', '4'], ['test/files/*.counts'], '<<OR>>']
 
     for i, c in enumerate(res.command):
         c.should.equal(val[i])
@@ -55,7 +55,7 @@ def test_cmd_compund1():
     res._in[0][0][2].should.equal('3')
     res._in[0][0][3].should.equal('4')
     res._in[0][1][0].should.equal('test/files/*.counts')
-    res._or[0].should.equal('||')
+    res._or[0].should.equal('<<OR>>')
 
 
 def test_cmd_compund2():
@@ -70,7 +70,6 @@ def test_cmd_compund2():
     res._in[0][0][2].should.equal('3')
     res._in[0][0][3].should.equal('4')
     res._in[0][1][0].should.equal('test/files/*.counts')
-    res._in[0][1]._and[0][0].should.equal(',')
 
 
 def test_file():

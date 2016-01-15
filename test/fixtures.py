@@ -28,7 +28,7 @@ paste *.counts > {o:some.file}
 
 ./somescript {1,2,3,4||test/files/*.counts,}
 
-#rb somescript.rb -i {test/files/*.counts||}
+rb somescript.rb -i {test/files/*.counts||}
 python somescript.py -i {test/files/*.counts,} > {o:*.bam}
 
 [FILES]

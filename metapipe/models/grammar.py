@@ -8,6 +8,8 @@ approved_printables = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTU
 lbrack = Literal('[').suppress()
 rbrack = Literal(']').suppress()
 
+OR_TOKEN = '<<OR>>'
+
 
 class classproperty(property):
     def __get__(self, cls, owner):
@@ -29,12 +31,12 @@ class Grammar(object):
                     Optional('.' + Word(nums))
                 ) +
                 Optional(
-                    (',' + FollowedBy('}')).setResultsName('_and',
-                        listAllMatches=True) ^
+                    Suppress(',' + FollowedBy('}')) ^
                     Suppress(',')
         ))) + (
             Optional( 
-                ('||' + FollowedBy('}')).setResultsName('_or') ^                    
+                ('||' + FollowedBy('}')).addParseAction(replaceWith(OR_TOKEN)
+                ).setResultsName('_or') ^                    
                     Suppress('||')
             ))) + 
         Suppress('}')

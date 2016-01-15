@@ -2,14 +2,9 @@
 
 import pyparsing
 
-try:
-    from metapipe.grammar import Grammar
-    from metapipe.command_factory import CommandFactory
-    from metapipe.models import Command, Input, Output
-except ImportError:
-    from grammar import Grammar
-    from command_factory import CommandFactory
-    from models import Command, Input, Output
+
+from .models import Command, Input, Output, Grammar
+import metapipe.models.command_template_factory as ctf
 
 
 class Parser(object):
@@ -58,6 +53,12 @@ class Parser(object):
         except pyparsing.ParseException:
             raise ValueError('Invalid path.')
 
-        paths = CommandFactory.get_paths(self.paths)
-        files = CommandFactory.get_files(self.files)
-        return CommandFactory.get_commands(self.commands, files, paths)
+        self.paths = ctf.get_paths(self.paths)
+        self.files = ctf.get_files(self.files)
+        
+        self.paths.reverse()
+        self.files.reverse()
+        self.commands.reverse()
+        
+        return ctf.get_command_templates(self.commands, self.files[:], 
+            self.paths[:])
