@@ -66,6 +66,21 @@ class Input(FileToken):
         return '<Input: {}->[{}]{}>'.format(self.alias, eval, 
             ' _{}_'.format(self.and_or) if self.and_or else '')
     
+    def fuzzy_match(self, other):
+        """ Given another token, see if either the major alias identifier 
+        matches the other alias, or if magic matches the alias.
+        """
+        magic, fuzzy = False, False
+        try:
+            magic = self.alias == other.magic
+        except AttributeError:
+            return False
+
+        if '.' in self.alias:
+            major = self.alias.split('.')[0]
+            fuzzy = major == other.alias 
+        return magic or fuzzy
+
     def eval(self):
         """ Evaluates the given input and returns a string containing the 
         actual filenames represented. If the input token represents multiple 

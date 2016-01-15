@@ -5,10 +5,12 @@ author: Brian Schrader
 since: 2016-01-12
 """
 
+
 from .tokens import Input, Output, PathToken 
 from .command import Command
 from .command_template import CommandTemplate
 from .grammar import OR_TOKEN
+
 
 def get_command_templates(command_tokens, file_tokens=[], path_tokens=[]):
     """ Given a list of tokens from the grammar, return a 
@@ -91,6 +93,8 @@ def _get_command_templates(command_tokens, files=[], paths=[], count=1):
             parts.append(cut)
             
     command_template = CommandTemplate(alias=str(count), parts=parts)
+    [setattr(p, 'alias', command_template.alias) 
+        for p in command_template.output_parts]
     return [command_template] + _get_command_templates(command_tokens,
         files, paths, count+1)
     
@@ -101,11 +105,15 @@ def _get_prelim_dependencies(command_template, all_templates):
     dependencies and before calling each command, ensure that it's 
     requirements are  met.
     """
-    deps = set()
-    for template in all_templates:
-        for part in template.parts:
-            if part in command_template.file_parts:
-                deps.add(template)
+    deps = []
+    for input in command_template.input_parts:
+        if '.' not in input.alias:
+            continue
+        for template in all_templates:
+            for output in template.output_parts:
+                if input.fuzzy_match(output) and template not in deps:
+                    deps.append(template)
+                    break
     return deps
     
     

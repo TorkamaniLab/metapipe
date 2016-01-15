@@ -4,7 +4,7 @@ author: Brian Schrader
 since: 2016-01-13
 """
 
-from .tokens import FileToken, PathToken
+from .tokens import Input, Output, FileToken, PathToken
 
 
 class CommandTemplate(object):
@@ -13,13 +13,37 @@ class CommandTemplate(object):
         self.alias = alias
         self.parts = parts
         self.dependencies = dependencies
+        
+    def __repr__(self):
+        return '<CommandTemplate: {}, {} part(s), {} dep(s)>'.format(self.alias, 
+            len(self.parts), len(self.dependencies))
+
+    @property
+    def input_parts(self):
+        """ Returns a list of the input tokens in the list of parts. """
+        return [part for part in self.file_parts
+            if isinstance(part, Input)]
+        
+    @property
+    def output_parts(self):
+        """ Returns a list of the output tokens in the list of parts. """
+        return [part for part in self.file_parts
+            if isinstance(part, Output)]
 
     @property
     def file_parts(self):
         """ Returns a list of the file tokens in the list of parts. """
-        return [part for part in self.parts
-            if isinstance(part, FileToken)]
-
+        file_parts = []
+        for part in self.parts:
+            try:
+                for sub_part in part:
+                    if isinstance(sub_part, FileToken):
+                        file_parts.append(sub_part)
+            except TypeError:
+                if isinstance(part, FileToken):
+                    file_parts.append(part)
+        return file_parts
+        
     @property
     def path_parts(self):
         """ Returns a list of the path tokens in the list of parts. """
