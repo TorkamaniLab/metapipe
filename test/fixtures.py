@@ -24,20 +24,21 @@ python somescript.py -i {1,2,3||4,5,6} -o {o} -fgh somefile.txt
 bash somescript.sh -i {1.1||1.2} -o {o} -fgh somefile.txt
 rb somescript.rb -i {2.1||2.2||1.1,1.2} >> somefile
 cut -f *.counts > something.file
-paste *.counts > {o:some.file}
+paste *.counts > some.file #{o:some.file}
 
-./somescript {1,2,3,4||test/files/*.counts,}
+./somescript {1,2,3,4||*.counts,}
 
-rb somescript.rb -i {test/files/*.counts||}
-python somescript.py -i {test/files/*.counts,} > {o:*.bam}
+rb somescript.rb -i {*.counts||}
+python somescript.py -i {*.counts,}  #{o:*.bam}
+cat {*.bam,}
 
 [FILES]
-1. test/files/somefile.1
-2. test/files/somefile.2
-3. test/files/somefile.3
-4. test/files/somefile.4
-5. test/files/somefile.5
-6. test/files/somefile.6
+1. somefile.1
+2. somefile.2
+3. somefile.3
+4. somefile.4
+5. somefile.5
+6. somefile.6
 
 [PATHS]
 python /usr/bin/python

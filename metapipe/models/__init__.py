@@ -5,5 +5,5 @@ from .job import Job, call
 from .local_job import LocalJob
 from .grammar import Grammar
 from .pbs_job import PBSJob
-from .queue import Queue
+from .queue import JobQueue, Queue
 from .tokens import FileToken, Input, Output, PathToken

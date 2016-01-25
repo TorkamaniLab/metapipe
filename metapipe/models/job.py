@@ -56,7 +56,7 @@ class Job(object):
         """
         pass
 
-    def submit(self, job):
+    def submit(self):
         """ Submits the job to be run. If an external queue system is used,
         this method submits itself to that queue. Else it runs the job itself.
         :see: call

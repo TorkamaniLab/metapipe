@@ -9,9 +9,8 @@ import argparse, pickle, sys
 
 import pyparsing
 
-from queue import Queue
 from parser import Parser
-from models import Command, LocalJob, PBSJob
+from models import Command, LocalJob, PBSJob, JobQueue
 from runtime import Runtime
 from template import make_script
 
@@ -57,10 +56,10 @@ def main():
     except ValueError as e:
         raise SyntaxError('Invalid config file. \n%s' % e)
     
-    pipeline = Runtime(command_templates, args.job_type, job_types=JOB_TYPES)
+    pipeline = Runtime(command_templates, JOB_TYPES, args.job_type)
         
     with open(args.temp, 'wb') as f:
-        pickle.dump(pipeline, f)
+        pickle.dump(pipeline, f, 2)
     script = make_script(temp=args.temp, shell=args.shell)
     
     if args.run:

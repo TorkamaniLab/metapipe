@@ -27,9 +27,9 @@ def test_consume_files():
     res = parser.consume()
         
     parser.files[0].alias.should.equal('1')
-    parser.files[0].filename.should.equal('test/files/somefile.1')
+    parser.files[0].filename.should.equal('somefile.1')
     parser.files[1].alias.should.equal('2')
-    parser.files[1].filename.should.equal('test/files/somefile.2')
+    parser.files[1].filename.should.equal('somefile.2')
   
     
 def test_consume_commands_1():
@@ -113,7 +113,7 @@ def test_consume_commands_5():
     res[4].parts[0].should.equal('paste')
     res[4].parts[1].should.equal('*.counts')
     res[4].parts[2].should.equal('>')
-    res[4].parts[3].should.equal(Output('', magic='some.file'))
+    res[4].parts[5].should.equal(Output('', magic='some.file'))
     res[4].dependencies.should.have.length_of(0)
 
     
@@ -124,10 +124,10 @@ def test_consume_commands_6():
     print(res[5].parts)
     res[5].alias.should.equal('6')
     res[5].parts[0].should.equal('./somescript')
-    res[5].parts[1][0].should.equal(Input('1', 'test/files/somefile.1'))
-    res[5].parts[1][1].should.equal(Input('2', 'test/files/somefile.2'))
-    res[5].parts[1][2].should.equal(Input('3', 'test/files/somefile.3'))
-    res[5].parts[2][0].should.equal(Input('4', 'test/files/*.counts'))
+    res[5].parts[1][0].should.equal(Input('1', 'somefile.1'))
+    res[5].parts[1][1].should.equal(Input('2', 'somefile.2'))
+    res[5].parts[1][2].should.equal(Input('3', 'somefile.3'))
+    res[5].parts[2][0].should.equal(Input('4', '*.counts'))
     res[5].dependencies.should.have.length_of(0)
 
 
@@ -140,8 +140,8 @@ def test_consume_commands_7():
     res[6].parts[0].should.equal(parser.paths[2])
     res[6].parts[1].should.equal('somescript.rb')
     res[6].parts[2].should.equal('-i')
-    res[6].parts[3][0].should.equal(Input('test/files/*.counts',         
-                                        'test/files/*.counts'))
+    res[6].parts[3][0].should.equal(Input('*.counts',         
+                                        '*.counts'))
     res[6].parts.should.have.length_of(4)
     res[6].dependencies.should.have.length_of(0)
 
@@ -155,8 +155,19 @@ def test_consume_commands_8():
     res[7].parts[0].should.equal(parser.paths[0])
     res[7].parts[1].should.equal('somescript.py')
     res[7].parts[2].should.equal('-i')
-    res[7].parts[3][0].should.equal(Input('test/files/*.counts', 
-                                filename='test/files/*.counts'))
-    res[7].parts[4].should.equal('>')
+    res[7].parts[3][0].should.equal(Input('*.counts', 
+                                filename='*.counts'))
     res[7].parts[5].should.equal(Output('', magic='*.bam'))
     res[7].dependencies.should.have.length_of(0)
+
+
+def test_consume_commands_9():
+    parser = Parser(overall)
+    res = parser.consume()
+        
+    print(res[8].parts)
+    res[8].alias.should.equal('9')
+    res[8].parts[0].should.equal('cat')
+    res[8].parts[1][0].should.equal(Input('*.bam', 
+                                filename='*.bam'))
+    res[8].dependencies.should.have.length_of(1)

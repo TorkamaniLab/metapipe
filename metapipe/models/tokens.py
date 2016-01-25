@@ -28,6 +28,9 @@ class PathToken(object):
                 self.path == other.path)
         except AttributeError:
             return False
+    
+    def eval(self):
+        return self.path
 
 
 class FileToken(object):
@@ -36,9 +39,13 @@ class FileToken(object):
     Warning: This class should not be used directly.
     """
     
-    def __init__(self, alias, filename=''):
+    def __init__(self, alias, filename='', cwd=''):
         self.alias = alias
         self.filename = filename
+
+        if len(cwd) > 0 and cwd[-1] != '/':
+            cwd += '/' 
+        self.cwd = cwd
     
     def __eq__(self, other):
         try:
@@ -46,6 +53,13 @@ class FileToken(object):
                 self.filename == other.filename)
         except AttributeError:
             return False
+    
+    def __hash__(self):
+        return hash(self.alias)
+        
+    @property
+    def path(self):
+        return '{}{}'.format(self.cwd, self.filename)
                 
 
 class Input(FileToken):
@@ -53,16 +67,15 @@ class Input(FileToken):
     evaluated to obtain their actual filename(s).
     """
         
-    def __init__(self, alias, filename='', and_or=''):
-        super(Input, self).__init__(alias, filename)
+    def __init__(self, alias, filename='', cwd='', and_or=''):
+        super(Input, self).__init__(alias, filename, cwd)
         self.and_or = and_or
 
     def __repr__(self):
-        eval = '?'
         try:
-             eval = self.eval()
+            eval = self.eval()
         except Exception:
-            pass
+            eval = '?'
         return '<Input: {}->[{}]{}>'.format(self.alias, eval, 
             ' _{}_'.format(self.and_or) if self.and_or else '')
     
@@ -74,7 +87,7 @@ class Input(FileToken):
         try:
             magic = self.alias == other.magic
         except AttributeError:
-            return False
+            pass
 
         if '.' in self.alias:
             major = self.alias.split('.')[0]
@@ -97,7 +110,7 @@ class Input(FileToken):
         input token.
         """
         try:
-            return glob.glob(self.filename)
+            return glob.glob(self.path)
         except (AttributeError, TypeError):
             try:
                 return glob.glob(self.alias)
@@ -119,26 +132,35 @@ class Output(FileToken):
     evaluated to obtain their actual filename(s).
     """
     
-    def __init__(self, alias, filename='', magic=''):
-        super(Output, self).__init__(alias, filename)
+    def __init__(self, alias, filename='', cwd='', magic=''):
+        super(Output, self).__init__(alias, filename, cwd)
         self.magic = self._clean_magic(magic)
         
     def __repr__(self):
         return '<Output: {}->[{}]{}>'.format(self.alias, self.eval(), 
             (' ' + self.magic) if self.magic else '')
 
+    def __eq__(self, other):
+        """ Overrides the token eq to allow for magic : alias comparison for     
+        magic inputs. Defaults to the super() eq otherwise. 
+        """
+        try:
+            return (self.magic == other.alias or 
+                super(Output, self).__eq__(other))
+        except AttributeError:
+            return False
+
     def eval(self):
         """ Returns a filename to be used for script output. """
         if self.magic:
-            return ''
+            return self.magic
         if not self.filename:
             return file_pattern.format(self.alias)
-        return self.filename
+        return self.path
             
     def as_input(self):
         """ Returns an input token for the given output. """
-        filename = self.filename if self.filename else self.magic
-        return Input(self.alias, self.filename)
+        return Input(self.alias, self.eval())
         
     def _clean_magic(self, magic):
         """ Given a magic string, remove the output tag designator. """

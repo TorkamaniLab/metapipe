@@ -2,9 +2,12 @@
 
 import pyparsing
 
-
-from .models import Command, Input, Output, Grammar
-import metapipe.models.command_template_factory as ctf
+try:
+    from models import Command, Input, Output, Grammar
+    import models.command_template_factory as ctf
+except ImportError:
+    from metapipe.models import Command, Input, Output, Grammar
+    import metapipe.models.command_template_factory as ctf
 
 
 class Parser(object):

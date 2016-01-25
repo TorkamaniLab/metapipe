@@ -6,37 +6,82 @@ since: 2015-01-13
 
 from time import sleep
 
-from models import Queue
+try:
+    from metapipe.models import JobQueue
+except ImportError:
+    from models import JobQueue
 
 
 class Runtime(object):
     
-    def __init__(self, command_templates, job_type='local', job_types):
+    def __init__(self, command_templates, job_types, job_type='local', 
+        sleep_time=1):
         
         self.job_types = job_types
         self.job_type = job_type
         self.templates = command_templates
-        self.queue = Queue()
-
-    def get_job(command):
+        self.prev_commands = []
+        self.queue = JobQueue()
+        self.sleep_time = sleep_time
+    
+    def run(self):
+        """ Begins the runtime execution. """
+        iterations = 0
+        queue = self.queue.tick()        
+        while True:
+            new_commands = self._get_new_commands()
+            for command in new_commands:
+                command.update_dependent_files(self.prev_commands)
+                self.prev_commands.append(command)
+            
+            new_jobs = []
+            print(new_commands)
+            for command in new_commands:        
+                new_jobs.append(self._get_job(command))
+            
+            [self.queue.push(job) for job in new_jobs]
+            
+            try:
+                next(queue)
+            except StopIteration:
+                break
+                
+            iterations += 1
+            sleep(self.sleep_time)
+            
+        return iterations
+            
+    # Private Methods
+            
+    def _get_job(self, command):
         """ Given a command and a type, contruct a job.
         :returns job:
         :rtype Job subclass:
         """
         job_constructor = self.job_types[self.job_type]
-        return job_constructor(alias=cmd.alias, command=cmd)
-    
-    def run(self):
-        """ Begins the runtime execution. """
-        while True:
-            new_jobs = []
-            
-            # Get new jobs.
-            
-            self.queue.push(new_jobs)
-            try:
-                self.queue.tick()
-            except StopIteration:
-                break
-            sleep(0.5)
-            
+        job = job_constructor(alias=command.alias, command=command)
+        return job
+        
+    def _ready(self, command_template):
+        """ Check if the template's dependencies are resolved and return if
+        the template is ready to be evaluated. 
+        """
+        if len(command_template.dependencies) == 0:
+            return True
+        else: 
+            return all(False for dep in command_template.dependencies
+                for template in self.templates
+                    if dep in template.dependencies)
+                    
+    def _get_new_commands(self):
+        """ Returns a list of new commands to be run, and removes them from
+        the global pending list.
+        """
+        new_commands, not_ready = [], []
+        for template in self.templates:
+            if self._ready(template):
+                new_commands.extend(template.eval())
+            else:
+                not_ready.append(template)
+        self.templates = not_ready
+        return new_commands
