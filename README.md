@@ -11,7 +11,7 @@ Metapipe's goal is to improve **readability**, and **maintainability** when buil
 
 In addition to helping you generate and maintain complex pipelines, **metapipe also helps you debug them**! How? Well metapipe watches your jobs execute and keeps tabs on them. This means, unlike conventional batch queue systems like PBS/Torque alone, metapipe can give you accurate error information, and even resubmit failing jobs! Metapipe enhances the power of any PBS/Torque queue! 
 
-- What if I [don't use PBS/Torque](#other-queues), or [a queue system at all?](#no-queue-no-problem)
+- What if I [don't use PBS/Torque](#other-queue-systems), or [a queue system at all?](#no-queue-no-problem)
 
 
 ## How do I get it?
