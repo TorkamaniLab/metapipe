@@ -32,6 +32,9 @@ rb somescript.rb -i {*.counts||}
 python somescript.py -i {*.counts,}  #{o:*.bam}
 cat {*.bam,}
 
+cat {2.1} > something.my_output #{o:*.my_output}
+cat {*.my_output,}
+
 [FILES]
 1. somefile.1
 2. somefile.2
