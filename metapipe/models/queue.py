@@ -84,6 +84,7 @@ class Queue(object):
             self.clean()
             if self.locked() and self.on_locked():
                 raise RuntimeError
+            self.on_tick()
             yield
         self.on_end()
         
@@ -103,6 +104,10 @@ class Queue(object):
         else it will be terminated.
         """
         return True
+        
+    def on_tick(self):
+        """ Called when a tick of the queue is complete. """
+        print('------- tick ---------')
     
     def on_ready(self, job):
         """ Called when a job is ready to be submitted. 

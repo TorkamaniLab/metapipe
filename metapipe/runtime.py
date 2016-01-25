@@ -14,8 +14,7 @@ except ImportError:
 
 class Runtime(object):
     
-    def __init__(self, command_templates, job_types, job_type='local', 
-        sleep_time=1):
+    def __init__(self, command_templates, job_types, job_type='local', sleep_time=1):
         
         self.job_types = job_types
         self.job_type = job_type
@@ -23,7 +22,20 @@ class Runtime(object):
         self.prev_commands = []
         self.queue = JobQueue()
         self.sleep_time = sleep_time
-    
+
+    @property
+    def is_empty(self):
+        return len(self.templates) == 0
+        
+    @property
+    def should_stop(self):
+        if self.queue.locked() and self.is_empty:
+            return True
+        elif self.queue.is_empty and self.is_empty:
+            return True
+        else:
+            return False
+  
     def run(self):
         """ Begins the runtime execution. """
         iterations = 0
@@ -35,7 +47,6 @@ class Runtime(object):
                 self.prev_commands.append(command)
             
             new_jobs = []
-            print(new_commands)
             for command in new_commands:        
                 new_jobs.append(self._get_job(command))
             
@@ -44,10 +55,13 @@ class Runtime(object):
             try:
                 next(queue)
             except StopIteration:
+                pass
+            
+            if self.should_stop:
                 break
-                
-            iterations += 1
-            sleep(self.sleep_time)
+            else:
+                iterations += 1
+                sleep(self.sleep_time)
             
         return iterations
             
@@ -69,9 +83,8 @@ class Runtime(object):
         if len(command_template.dependencies) == 0:
             return True
         else: 
-            return all(False for dep in command_template.dependencies
-                for template in self.templates
-                    if dep in template.dependencies)
+            return not any(True for dep in command_template.dependencies
+                if dep in self.templates)
                     
     def _get_new_commands(self):
         """ Returns a list of new commands to be run, and removes them from

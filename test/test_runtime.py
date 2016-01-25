@@ -117,31 +117,88 @@ def test_run_1():
     parser = Parser(overall)
     cmds = parser.consume()[:1]
     
+    pipeline = Runtime(cmds, JOB_TYPES, 'mock', sleep_time=0.01)
+    iters = pipeline.run()
+    iters.should.equal(1)
+
+
+def test_run_2():
+    parser = Parser(overall)
+    cmds = parser.consume()[:2]
+    
     print(cmds)
     pipeline = Runtime(cmds, JOB_TYPES, 'mock', sleep_time=0.01)
     iters = pipeline.run()
     iters.should.equal(2)
 
 
-# def test_run_2():
-#     parser = Parser(overall)
-#     cmds = parser.consume()[:2]
-#     
-#     print(cmds)
-#     pipeline = Runtime(cmds, JOB_TYPES, 'mock', sleep_time=0.01)
-#     iters = pipeline.run()
-#     iters.should.equal(1)
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
+def test_run_3():
+    parser = Parser(overall)
+    cmds = parser.consume()[:3]
+    
+    print(cmds)
+    pipeline = Runtime(cmds, JOB_TYPES, 'mock', sleep_time=0.01)
+    iters = pipeline.run()
+    iters.should.equal(3)
+
+
+def test_run_4():
+    parser = Parser(overall)
+    cmds = parser.consume()[:4]
+    
+    print(cmds)
+    pipeline = Runtime(cmds, JOB_TYPES, 'mock', sleep_time=0.01)
+    iters = pipeline.run()
+    iters.should.equal(3)
+
+
+def test_run_5():
+    parser = Parser(overall)
+    cmds = parser.consume()[:5]
+    
+    print(cmds)
+    pipeline = Runtime(cmds, JOB_TYPES, 'mock', sleep_time=0.01)
+    iters = pipeline.run()
+    iters.should.equal(3)
+
+
+def test_run_6():
+    parser = Parser(overall)
+    cmds = parser.consume()[:6]
+    
+    print(cmds)
+    pipeline = Runtime(cmds, JOB_TYPES, 'mock', sleep_time=0.01)
+    iters = pipeline.run()
+    iters.should.equal(3)
+
+
+def test_run_7():
+    parser = Parser(overall)
+    cmds = parser.consume()[:7]
+    
+    print(cmds)
+    pipeline = Runtime(cmds, JOB_TYPES, 'mock', sleep_time=0.01)
+    iters = pipeline.run()
+    iters.should.equal(3)
+
+
+def test_run_8():
+    parser = Parser(overall)
+    cmds = parser.consume()[:8]
+    
+    print(cmds)
+    pipeline = Runtime(cmds, JOB_TYPES, 'mock', sleep_time=0.01)
+    iters = pipeline.run()
+    iters.should.equal(3)
+
+
+def test_run_9():
+    parser = Parser(overall)
+    cmds = parser.consume()[:9]
+    
+    print(cmds)
+    pipeline = Runtime(cmds, JOB_TYPES, 'mock', sleep_time=0.01)
+    iters = pipeline.run()
+    iters.should.equal(3)
+
+
