@@ -14,7 +14,7 @@ Metapipe's goal is to improve **readability**, and **maintainability** when buil
 
 In the bad old days (before metapipe), if you wanted to make an analysis pipeline, you needed to know how to code. **Not anymore!** Metapipe makes it easy to build and run your analysis pipelines! **No more code, just commands!** This makes your pipelines easy to understand and change! 
 
-**Here's a sample!**
+### Here's a sample!
 
 Let's say I have a few command-line tools that I want to string together into a pipeline. I used to have to know Python, Perl, Bash, or some other scripting language; now I can use Metapipe!
 
@@ -41,7 +41,7 @@ python my_custom_code.py {metapipe.3.*.output,} #{o:hardcoded_output.csv}
 
 # Now you want to compare your results to some controls? Ok!
 # Metapipe wil compare your hardcoded_output to all 3 controls at the same time!
-python my_compare_script.py {hardcoded_output.csv} --compare-to {1||2||3}
+python my_compare_script.py --compare-to {1||2||3} {hardcoded_output.csv} 
 
 # Finally, you want to make some pretty graphs? No problem!
 # But wait! You want R 2.0 for this code? Just create an alias for R!
