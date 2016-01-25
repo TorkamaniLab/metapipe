@@ -1,3 +1,4 @@
+pipeline
 .metapipe
 **.mp
 **sample**
@@ -5,3 +6,4 @@
 notes/
 *.pyc
 *.swp
+htmlcov/

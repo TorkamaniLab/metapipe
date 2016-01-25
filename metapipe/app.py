@@ -9,10 +9,18 @@ import argparse, pickle, sys
 
 import pyparsing
 
-from queuemanager import Queue
 from parser import Parser
-from models import Command, LocalJob
+from models import Command, LocalJob, PBSJob, JobQueue
+from runtime import Runtime
 from template import make_script
+
+
+PIPELINE_ALIAS = "metapipe.queue.job"
+
+JOB_TYPES = {
+    'local': LocalJob,
+    'pbs': PBSJob
+}
 
 
 def main():
@@ -29,6 +37,10 @@ def main():
                    help='The path to the shell to be used when executing the pipeline. (Default: "%(default)s)"', default='/bin/bash')
     parser.add_argument('-r', '--run',
                    help='Run the pipeline as soon as it\'s ready.', action='store_true')
+    parser.add_argument('-j', '--job-type',
+                   help='The destination for calculations (i.e. local, a PBS ' 'queue on a cluster, etc).\n'
+                   'Options: local, pbs. (Default: "%(default)s)"', 
+                   default='local')
     args = parser.parse_args()
     
     try:
@@ -39,28 +51,28 @@ def main():
         return -1
     
     parser = Parser(config)
-    
     try:
-        commands = parser.consume()
+        command_templates = parser.consume()
     except ValueError as e:
-        print('Syntax Error: Invalid config file. \n%s' % e)
-        return 
+        raise SyntaxError('Invalid config file. \n%s' % e)
     
-    pipeline = Queue()
-    for cmd in commands:
-        job = LocalJob(alias=cmd.alias, command=cmd)
-        pipeline.push(job)
-    
+    pipeline = Runtime(command_templates, JOB_TYPES, args.job_type)
+        
     with open(args.temp, 'wb') as f:
-        pickle.dump(pipeline, f)
-    
+        pickle.dump(pipeline, f, 2)
     script = make_script(temp=args.temp, shell=args.shell)
     
     if args.run:
-        print('Initiating pipeline...')
-        pass
+        if args.output != sys.stdout: 
+            run_cmd = [args.shell, args.output]
+            submit_command = Command(alias=PIPELINE_ALIAS, cmds=run_cmd)
+            submit_job = get_job(submit_command, args.job_type)
+            submit_job.make()
+            submit_job.submit()
+        else:
+            raise ValueError('Invalid output destination. When running '
+            'immediately, you must specify an output location.')
         
-    # TODO: Add the scripts to the output file in the comments.
     try:
         f = open(args.output, 'w')
         args.output = f
