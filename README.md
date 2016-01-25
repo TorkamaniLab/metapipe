@@ -34,7 +34,7 @@ In the bad old days (before metapipe), if you wanted to make an analysis pipelin
 
 ### Here's a sample!
 
-Let's say I have a few command-line tools that I want to string together into a pipeline. I used to have to know Python, Perl, Bash, or some other scripting language; now I can use Metapipe!
+Let's say you have a few command-line tools that you want to string together into a pipeline. You used to have to know Python, Perl, Bash, or some other scripting language; now you can use Metapipe!
 
 ```bash
 [COMMANDS]
