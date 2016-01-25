@@ -27,7 +27,7 @@ class Grammar(object):
         OneOrMore(
         Group(OneOrMore(
                 Combine(
-                    Word(alphanums+'.*:/') +
+                    Word(alphanums+'.*:/_') +
                     Optional('.' + Word(nums))
                 ) +
                 Optional(

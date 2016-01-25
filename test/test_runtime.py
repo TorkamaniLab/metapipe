@@ -202,3 +202,23 @@ def test_run_9():
     iters.should.equal(3)
 
 
+def test_run_10():
+    parser = Parser(overall)
+    cmds = parser.consume()[:10]
+    
+    print(cmds)
+    pipeline = Runtime(cmds, JOB_TYPES, 'mock', sleep_time=0.01)
+    iters = pipeline.run()
+    iters.should.equal(3)
+
+
+def test_run_11():
+    parser = Parser(overall)
+    cmds = parser.consume()[:11]
+    
+    print(cmds[-1].parts)
+    pipeline = Runtime(cmds, JOB_TYPES, 'mock', sleep_time=0.01)
+    iters = pipeline.run()
+    iters.should.equal(4)
+
+
