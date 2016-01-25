@@ -49,8 +49,8 @@ Rscript my_cool_graphing_code.r {metapipe.5.*.output} > {o}
 
 [FILES]
 1. controls.1.csv
-2. controls.1.csv
-3. controls.1.csv
+2. controls.2.csv
+3. controls.3.csv
 
 [PATHS]
 Rscript ~/path/to/my/custom/R/version
