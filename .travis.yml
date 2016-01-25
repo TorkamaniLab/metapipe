@@ -4,7 +4,7 @@ python:
   - "3.4"
   - "3.5"
 before_script:
-  - pip install -r requirements.txt --use-mirrors
-script: nosetests
+  - pip install -r requirements.txt
+script: nosetests --with-cov --cov-report html --cov-config .coveragerc  --cov metapipe test/
 after_success:
   - coveralls
