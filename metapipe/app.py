@@ -5,14 +5,19 @@ since: 2015-12-22
 """
 
 from __future__ import print_function
+
+
+__version__ = '0.1'
+
+
 import argparse, pickle, sys
 
 import pyparsing
 
-from parser import Parser
-from models import Command, LocalJob, PBSJob, JobQueue
-from runtime import Runtime
-from template import make_script
+from .parser import Parser
+from .models import Command, LocalJob, PBSJob, JobQueue
+from .runtime import Runtime
+from .template import make_script
 
 
 PIPELINE_ALIAS = "metapipe.queue.job"

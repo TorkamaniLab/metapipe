@@ -9,7 +9,7 @@ from time import sleep
 try:
     from metapipe.models import JobQueue
 except ImportError:
-    from models import JobQueue
+    from .models import JobQueue
 
 
 class Runtime(object):
