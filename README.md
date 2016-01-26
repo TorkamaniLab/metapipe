@@ -96,7 +96,3 @@ To run metapipe locally, see the app's help menu!
 ## Other Queue Systems
 
 Metapipe is a very modular tool, and is designed to support any execution backend. Right now we only support PBS, but if you know just a little bit of Python, you can add support for any queue easily! *More information coming soon!*
-
-
-## Complete Developer and User Documentation Coming Soon!
-
