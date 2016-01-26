@@ -34,7 +34,7 @@ In the bad old days (before metapipe), if you wanted to make an analysis pipelin
 
 ## Documentation
 
-[Check out the full documentation at ReadTheDocs &#8594;](file:///Users/ifoundit/Dropbox/Scripps/projects/misc/metapipe/docs/_build/html/index.html) 
+[Check out the full documentation at ReadTheDocs &#8594;](http://metapipe.readthedocs.org/en/latest/index.html) 
 
 
 ### Here's a sample!
