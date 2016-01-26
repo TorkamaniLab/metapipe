@@ -14,8 +14,8 @@ Contents:
    what_is_metapipe.md
    getting_started.md
    syntax.md
-   developers.md
-
+   scripting.md
+   extending.md
 
 
 Indices and tables
