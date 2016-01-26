@@ -1,0 +1,389 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Extending Metapipe &mdash; metapipe 0.1 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="metapipe 0.1 documentation" href="index.html"/>
+        <link rel="prev" title="Scripting Metapipe" href="scripting.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> metapipe
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="what_is_metapipe.html">Metapipe</a></li>
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="syntax.html">Metapipe Syntax</a></li>
+<li class="toctree-l1"><a class="reference internal" href="scripting.html">Scripting Metapipe</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="">Extending Metapipe</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#custom-job-types">Custom Job types</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#the-root-job-class">The Root Job Class</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#custom-queues">Custom Queues</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#the-root-queue-class">The Root Queue class</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#using-your-custom-code">Using Your Custom Code</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#building-your-custom-pipeline">Building your custom pipeline</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">metapipe</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="index.html">Docs</a> &raquo;</li>
+      
+    <li>Extending Metapipe</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="_sources/extending.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="extending-metapipe">
+<span id="extending-metapipe"></span><h1>Extending Metapipe<a class="headerlink" href="#extending-metapipe" title="Permalink to this headline">¶</a></h1>
+<p>Metapipe provides 2 extension points for developers to extend it&#8217;s functionality: custom Queues and custom Job Types. In most cases, custom queues are an advanced feature that most users and developers will not need to worry about, but if you must, it is there.</p>
+<p>To add support for a queue system not included with metapipe, all you need to do is add a job type.</p>
+<div class="section" id="custom-job-types">
+<span id="custom-job-types"></span><h2>Custom Job types<a class="headerlink" href="#custom-job-types" title="Permalink to this headline">¶</a></h2>
+<p>All job types are subclasses of the <code class="docutils literal"><span class="pre">metapipe.models.Job</span></code> class. The base job class implements a lot of the functionality that is common between all job types, and has method stubs for the required functionality that needs to be implemented by any subclass. This section will cover what duty job subclasses have, how to subclass the main <code class="docutils literal"><span class="pre">Job</span></code> and what to fill in.</p>
+<div class="section" id="the-root-job-class">
+<span id="the-root-job-class"></span><h3>The Root Job Class<a class="headerlink" href="#the-root-job-class" title="Permalink to this headline">¶</a></h3>
+<p>The code for the main job class can be found <a class="reference external" href="https://github.com/TorkamaniLab/metapipe/blob/master/metapipe/models/job.py#L20">here</a>. To create your own job type, simply subclass this as follows:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">metapipe.models</span> <span class="kn">import</span> <span class="n">Job</span>
+
+<span class="k">class</span> <span class="nc">MyCustomJob</span><span class="p">(</span><span class="n">Job</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s1">&#39;&lt;MyCustomJob: {}&gt;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cmd</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>There are 6 methods you need to fill in to have a complete job class. Your full job subclass should have the following form:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">MyCustomJob</span><span class="p">(</span><span class="n">Job</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s1">&#39;&lt;MyCustomJob: {}&gt;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cmd</span><span class="p">)</span>
+
+    <span class="c1"># Override these...</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">cmd</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns the command needed to submit the calculations. </span>
+<span class="sd">        Normally, this would be just running the command, however if </span>
+<span class="sd">        using a queue system, then this should return the command to </span>
+<span class="sd">        submit the command to the queue.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span>
+
+    <span class="k">def</span> <span class="nf">submit</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Submits the job to be run. If an external queue system is used,</span>
+<span class="sd">        this method submits itself to that queue. Else it runs the job itself.</span>
+<span class="sd">        :see: call</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span>
+        
+    <span class="k">def</span> <span class="nf">is_running</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns whether the job is running or not. &quot;&quot;&quot;</span>
+        <span class="k">pass</span>
+
+    <span class="k">def</span> <span class="nf">is_queued</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns whether the job is queued or not. </span>
+<span class="sd">        This function is only used if jobs are submitted to an external queue.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span>
+        
+    <span class="k">def</span> <span class="nf">is_complete</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns whether the job is complete or not. &quot;&quot;&quot;</span>
+        <span class="k">pass</span>
+
+    <span class="k">def</span> <span class="nf">is_error</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Checks to see if the job errored out. &quot;&quot;&quot;</span>
+        <span class="k">pass</span>
+</pre></div>
+</div>
+<p>The duty of the job types is to submit the jobs when asked by the queue, and to inform the queue about the status of jobs. The queue needs to know when a job is running, queued, complete, or when an error has occurred.</p>
+<p>Each of the <code class="docutils literal"><span class="pre">is_*</span></code> callbacks should return a boolean value, and the cmd property should return the bash command (as an array of strings) that can be called to run the job. The job class has an attribute <code class="docutils literal"><span class="pre">filename</span></code> that contains the value of the bash script containing the job command (i.e. <code class="docutils literal"><span class="pre">['bash',</span> <span class="pre">self.filename]</span></code>).</p>
+<p><strong>IMPORTANT:</strong> All of the above handlers are required for custom job types to function properly.</p>
+<p>Here is the code for the <code class="docutils literal"><span class="pre">cmd</span></code> property of the <code class="docutils literal"><span class="pre">PBSJob</span></code> class:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">PBSJob</span><span class="p">(</span><span class="n">Job</span><span class="p">):</span>
+    <span class="c1">#...</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">cmd</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">[</span><span class="s1">&#39;qsub&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">]</span>
+    <span class="c1">#...</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal"><span class="pre">submit</span></code> call should do any logic pertaining to submitting the job or tracking the number of total submissions. For example, here is the code for submitting a job to the PBS queue:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">PBSJob</span><span class="p">(</span><span class="n">Job</span><span class="p">):</span>
+    <span class="c1">#...</span>
+    <span class="k">def</span> <span class="nf">submit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">job</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">attempts</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">job</span><span class="o">.</span><span class="n">make</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">attempts</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="n">call</span><span class="p">(</span><span class="n">job</span><span class="o">.</span><span class="n">cmd</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">waiting</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="n">out</span><span class="p">[:</span><span class="n">out</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)]</span>
+    <span class="c1">#...</span>
+</pre></div>
+</div>
+<p>As you can see, it keeps track of the number of times the job was submitted, and then calls the <code class="docutils literal"><span class="pre">call</span></code> function, provided in the root job module, to execute the job. Since PBS assigns job ids to each job at submission-time, it also captures that information and saves it for later use.</p>
+</div>
+</div>
+<div class="section" id="custom-queues">
+<span id="custom-queues"></span><h2>Custom Queues<a class="headerlink" href="#custom-queues" title="Permalink to this headline">¶</a></h2>
+<p>In the event that your analysis requires more control over the submission process for jobs, the metapipe module also allows for the customization of queue logic by subclassing <code class="docutils literal"><span class="pre">metapipe.models.Queue</span></code>. This section will cover how to subclass the root queue, but it is left to the reader to determine why you might want to do this. From personal experience, customizing the queue should be a very rare requirement.</p>
+<div class="section" id="the-root-queue-class">
+<span id="the-root-queue-class"></span><h3>The Root Queue class<a class="headerlink" href="#the-root-queue-class" title="Permalink to this headline">¶</a></h3>
+<p>As is the case for custom job types, all queues inherit from the root Queue in <code class="docutils literal"><span class="pre">metapipe.models.Queue</span></code>, including the main <code class="docutils literal"><span class="pre">JobQueue</span></code> that is used by the metapipe command line tool.</p>
+<p>To customize the response of the queue to various types of events subclass it and fill in the following methods, all the methods are optional so just omit any handlers that you don&#8217;t need.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">MyCustomQueue</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+                    
+    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s1">&#39;&lt;MyCustomQueue: jobs=</span><span class="si">%s</span><span class="s1">&gt;&#39;</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">queue</span><span class="p">)</span>
+                        
+    <span class="c1"># Callbacks...</span>
+        
+    <span class="k">def</span> <span class="nf">on_start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Called when the queue is starting up. &quot;&quot;&quot;</span>
+        <span class="k">pass</span>
+
+    <span class="k">def</span> <span class="nf">on_end</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Called when the queue is shutting down. &quot;&quot;&quot;</span>
+        <span class="k">pass</span>
+    
+    <span class="k">def</span> <span class="nf">on_locked</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Called when the queue is locked and no jobs can proceed. </span>
+<span class="sd">        If this callback returns True, then the queue will be restarted,</span>
+<span class="sd">        else it will be terminated.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">True</span>
+        
+    <span class="k">def</span> <span class="nf">on_tick</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Called when a tick of the queue is complete. &quot;&quot;&quot;</span>
+        <span class="k">pass</span>
+    
+    <span class="k">def</span> <span class="nf">on_ready</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">job</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Called when a job is ready to be submitted. </span>
+<span class="sd">        :param job: The given job that is ready.</span>
+<span class="sd">        &quot;&quot;&quot;</span> 
+        <span class="k">pass</span>
+        
+    <span class="k">def</span> <span class="nf">on_submit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">job</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Called when a job has been submitted. </span>
+<span class="sd">        :param job: The given job that has been submitted.</span>
+<span class="sd">        &quot;&quot;&quot;</span> 
+        <span class="k">pass</span>
+        
+    <span class="k">def</span> <span class="nf">on_complete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">job</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Called when a job has completed. </span>
+<span class="sd">        :param job: The given job that has completed.</span>
+<span class="sd">        &quot;&quot;&quot;</span> 
+        <span class="k">pass</span>
+        
+    <span class="k">def</span> <span class="nf">on_error</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">job</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Called when a job has errored. </span>
+<span class="sd">        :param job: The given job that has errored.</span>
+<span class="sd">        &quot;&quot;&quot;</span> 
+        <span class="k">pass</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="using-your-custom-code">
+<span id="using-your-custom-code"></span><h2>Using Your Custom Code<a class="headerlink" href="#using-your-custom-code" title="Permalink to this headline">¶</a></h2>
+<p>Once you have subclassed and filled in the required code for your custom job type or queue, it is time to use your code. If your code adapts metapipe to work on a common computing platform, or system then please consider contributing to the metapipe project. This helps the rest of the community use a broader range of hardware to solve our problems!</p>
+<div class="section" id="building-your-custom-pipeline">
+<span id="building-your-custom-pipeline"></span><h3>Building your custom pipeline<a class="headerlink" href="#building-your-custom-pipeline" title="Permalink to this headline">¶</a></h3>
+<p>Use the following code to build your pipeline. This code is taken directly from [metapipe&#8217;s app.py][app] tool which is the command line tool that metapipe uses to build pipelines.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">MyCustomJob</span>
+
+<span class="n">JOB_TYPES</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;my_custom_job_type&#39;</span><span class="p">:</span> <span class="n">MyCustomJob</span>
+<span class="p">}</span>
+
+<span class="n">parser</span> <span class="o">=</span> <span class="n">Parser</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">command_templates</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">consume</span><span class="p">()</span>
+<span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+    <span class="k">raise</span> <span class="ne">SyntaxError</span><span class="p">(</span><span class="s1">&#39;Invalid config file. </span><span class="se">\n</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">e</span><span class="p">)</span>
+
+<span class="n">pipeline</span> <span class="o">=</span> <span class="n">Runtime</span><span class="p">(</span><span class="n">command_templates</span><span class="p">,</span> <span class="n">JOB_TYPES</span><span class="p">,</span> <span class="s1">&#39;my_custom_job_type&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>IMPORTANT:</strong> Adding custom queues is coming soon!</p>
+<p>For more information on how to script metapipe once you have custom jobs, see <a class="reference external" href="scripting.html">Scripting Metapipe</a></p>
+</div>
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href="scripting.html" class="btn btn-neutral" title="Scripting Metapipe" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, Brian Schrader.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'0.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>
