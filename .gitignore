@@ -1,3 +1,9 @@
+*cache*
+*egg*
+build/
+dist/
+MANIFEST
+docs/
 pipeline
 .metapipe
 **.mp
