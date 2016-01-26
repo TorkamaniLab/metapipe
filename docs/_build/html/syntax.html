@@ -1,0 +1,383 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Metapipe Syntax &mdash; metapipe 0.1 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="metapipe 0.1 documentation" href="index.html"/>
+        <link rel="prev" title="Getting Started" href="getting_started.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> metapipe
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting Started</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="">Metapipe Syntax</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#structure">Structure</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#input-patterns">Input Patterns</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#running-a-script-with-multiple-inputs">Running a script with multiple inputs</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#multiple-steps-and-file-names">Multiple steps and file names</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#output-patterns">Output Patterns</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#implicit-or-hardcoded-output">Implicit or Hardcoded output</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#sample-config-mp-file">Sample config.mp file</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="index.html">metapipe</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="index.html">Docs</a> &raquo;</li>
+      
+    <li>Metapipe Syntax</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="_sources/syntax.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="metapipe-syntax">
+<span id="metapipe-syntax"></span><h1>Metapipe Syntax<a class="headerlink" href="#metapipe-syntax" title="Permalink to this headline">¶</a></h1>
+<p>The syntax for .mp files is as follows.</p>
+<div class="section" id="structure">
+<span id="structure"></span><h2>Structure<a class="headerlink" href="#structure" title="Permalink to this headline">¶</a></h2>
+<p>Each command in the pipeline should be on their own line and have the following
+structure:</p>
+<div class="highlight-python"><div class="highlight"><pre>[command alias] command [flags] {input/output pattern} 
+
+Example
+-------
+
+1. cut -f 1 some_file &gt; {o}
+</pre></div>
+</div>
+<p>In this example, the command cut is given the alias <code class="docutils literal"><span class="pre">1</span></code> and cuts column 1
+from <code class="docutils literal"><span class="pre">some_file</span></code> and puts it in an output file called <code class="docutils literal"><span class="pre">some_file.1</span></code>.</p>
+<p><strong>Note:</strong> The alias for a file can be anything, as long as it&#8217;s unique in the
+pipeline.</p>
+<div class="section" id="input-patterns">
+<span id="input-patterns"></span><h3>Input Patterns<a class="headerlink" href="#input-patterns" title="Permalink to this headline">¶</a></h3>
+<p>Consider the following command:</p>
+<div class="highlight-python"><div class="highlight"><pre>[COMMANDS]
+python somescript {1||2||3}
+
+[FILES]
+1. some_file1.txt
+2. some_file2.txt
+3. some_file3.txt
+</pre></div>
+</div>
+<p>This command will run the python script 3 times in parallel, once with each
+file specified. The output will look something like this:</p>
+<div class="highlight-python"><div class="highlight"><pre>Output
+------
+
+python somescript some_file1.txt
+python somescript some_file2.txt
+python somescript some_file3.txt
+</pre></div>
+</div>
+<div class="section" id="running-a-script-with-multiple-inputs">
+<span id="running-a-script-with-multiple-inputs"></span><h4>Running a script with multiple inputs<a class="headerlink" href="#running-a-script-with-multiple-inputs" title="Permalink to this headline">¶</a></h4>
+<p>Let&#8217;s say that you have a script with takes multiple files as input. In this
+case the syntax becomes:</p>
+<div class="highlight-python"><div class="highlight"><pre>[COMMANDS]
+python somescript {1,2,3}
+
+[FILES]
+1. some_file1.txt
+2. some_file2.txt
+3. some_file3.txt
+
+Output
+------
+
+&gt;&gt;&gt; python somescript some_file1.txt some_file2.txt some_file3.txt
+</pre></div>
+</div>
+</div>
+<div class="section" id="multiple-steps-and-file-names">
+<span id="multiple-steps-and-file-names"></span><h4>Multiple steps and file names<a class="headerlink" href="#multiple-steps-and-file-names" title="Permalink to this headline">¶</a></h4>
+<p>[TODO]</p>
+</div>
+</div>
+<div class="section" id="output-patterns">
+<span id="output-patterns"></span><h3>Output Patterns<a class="headerlink" href="#output-patterns" title="Permalink to this headline">¶</a></h3>
+<p>Whenever a script would take an explicit output filename you can use the output
+pattern syntax to tell metapipe where/what it should use.</p>
+<div class="highlight-python"><div class="highlight"><pre>[COMMANDS]
+python somescript -o {o} {1||2||3}
+
+[FILES]
+1. some_file1.txt
+2. some_file2.txt
+3. some_file3.txt
+
+Output
+------
+
+python somescript -o metapipe.1.1.output some_file1.txt
+python somescript -o metapipe.1.2.output some_file2.txt
+python somescript -o metapipe.1.3.output some_file3.txt
+</pre></div>
+</div>
+<p>Metapipe will generate the filename with the command&#8217;s alias inside. An upcoming feature will provide more useful output names.</p>
+<div class="section" id="implicit-or-hardcoded-output">
+<span id="implicit-or-hardcoded-output"></span><h4>Implicit or Hardcoded output<a class="headerlink" href="#implicit-or-hardcoded-output" title="Permalink to this headline">¶</a></h4>
+<p>In a case where the script or command you want to use generates an output that
+is not passed through the command, but you need to use for another step in the
+pipeline, you can use output patterns to tell metapipe what to look for.</p>
+<p>Consider this:</p>
+<div class="highlight-python"><div class="highlight"><pre>[COMMANDS]
+./do_count {1||2}
+./analyze.sh {1.*}
+
+
+[FILES]
+1. foo.txt
+2. bar.txt
+</pre></div>
+</div>
+<p>This set of commands is invalid because the second command (<code class="docutils literal"><span class="pre">./analyze.sh</span></code>)
+doesn&#8217;t know what the output of command 1 is because it isn&#8217;t specified.
+The split command generates output based on the input filenames it is given.</p>
+<p>Since we wrote the <code class="docutils literal"><span class="pre">./do_count</span></code> script, we know that it generates files with a
+<code class="docutils literal"><span class="pre">.counts</span></code> extension. But since we don&#8217;t explicitly specify the files, in
+this case Metapipe cannot assume the file names generated by step 1 and this
+config file is invalid.</p>
+<p>We can tell metapipe what the output should look like by using an output pattern.</p>
+<div class="highlight-python"><div class="highlight"><pre>[COMMANDS]
+./do_counts {1||2} {o:*.counts}
+./analyze.sh {*.counts}
+
+[FILES]
+1. foo.txt
+2. bar.txt
+</pre></div>
+</div>
+<p>The above example tells metapipe that the output of command 1, which is
+hardcoded in the script will have an output that ends in <code class="docutils literal"><span class="pre">.counts</span></code>. Now that
+the output of command 1 is known, command 2 will wait until command 1 finishes.</p>
+<p>When the output marker has the form <code class="docutils literal"><span class="pre">{o}</span></code>, then metapipe will insert a
+pregenerated filename to the command. The output marker <code class="docutils literal"><span class="pre">{o:&lt;pattern&gt;}</span></code> means
+that the output of the script is <em>not</em> determined by the input of the script,
+but it <em>will</em> match given pattern. This means that later commands will be able
+to reference the files by name.</p>
+</div>
+</div>
+</div>
+<div class="section" id="sample-config-mp-file">
+<span id="sample-config-mp-file"></span><h2>Sample config.mp file<a class="headerlink" href="#sample-config-mp-file" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-bash"><div class="highlight"><pre><span class="o">[</span>COMMANDS<span class="o">]</span>
+<span class="c1"># Trim and cut your sample fastq files.</span>
+<span class="c1"># Metapipe will handle naming the output files for you!</span>
+<span class="c1"># Metapipe will trim all of the files at once! (see parallel)</span>
+trimmomatic -o <span class="o">{</span>o<span class="o">}</span> <span class="o">{</span>*.fastq.gz<span class="o">||}</span>
+
+<span class="c1"># Metapipe will manage your dependencies for you!</span>
+<span class="c1"># Take all the outputs of step 1 and feed them to cutadapt.</span>
+cutadapt -o <span class="o">{</span>o<span class="o">}</span> <span class="o">{</span>metapipe.1.*.output<span class="o">||}</span>
+
+<span class="c1"># Next you need to align them.</span>
+htseq &lt;alignment options&gt; -o <span class="o">{</span>o<span class="o">}</span> <span class="o">{</span>metapipe.2.*.output<span class="o">||}</span>
+
+<span class="c1"># Of course, now you&#39;ll have some custom code to put all the data together. </span>
+<span class="c1"># That&#39;s fine too!</span>
+
+<span class="c1"># Oh no! You hardcode the output name? No problem! Just tell metapipe </span>
+<span class="c1"># what the filename is.</span>
+python my_custom_code.py <span class="o">{</span>metapipe.3.*.output,<span class="o">}</span> <span class="c1">#{o:hardcoded_output.csv}</span>
+
+<span class="c1"># Now you want to compare your results to some controls? Ok!</span>
+<span class="c1"># Metapipe wil compare your hardcoded_output to all 3 controls at the same time!</span>
+python my_compare_script.py --compare-to <span class="o">{</span>1<span class="o">||</span>2<span class="o">||</span>3<span class="o">}</span> <span class="o">{</span>hardcoded_output.csv<span class="o">}</span> 
+
+<span class="c1"># Finally, you want to make some pretty graphs? No problem!</span>
+<span class="c1"># But wait! You want R 2.0 for this code? Just create an alias for R!</span>
+Rscript my_cool_graphing_code.r <span class="o">{</span>metapipe.5.*.output<span class="o">}</span> &gt; <span class="o">{</span>o<span class="o">}</span>
+
+<span class="o">[</span>FILES<span class="o">]</span>
+1. controls.1.csv
+2. controls.2.csv
+3. controls.3.csv
+
+<span class="o">[</span>PATHS<span class="o">]</span>
+Rscript ~/path/to/my/custom/R/version
+</pre></div>
+</div>
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href="getting_started.html" class="btn btn-neutral" title="Getting Started" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, Brian Schrader.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'0.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>
