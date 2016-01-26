@@ -29,7 +29,12 @@ To make it easy, metapipe runs on Python 2.7, 3.4, and 3.5!
 
 ## What does it do?
 
-In the bad old days (before metapipe), if you wanted to make an analysis pipeline, you needed to know how to code. **Not anymore!** Metapipe makes it easy to build and run your analysis pipelines! **No more code, just commands!** This makes your pipelines easy to understand and change! 
+In the bad old days (before metapipe), if you wanted to make an analysis pipeline, you needed to know how to code. **Not anymore!** Metapipe makes it easy to build and run your analysis pipelines! **No more code, just commands!** This makes your pipelines easy to understand and change!
+
+
+## Documentation
+
+[Check out the full documentation at ReadTheDocs &#8594;](file:///Users/ifoundit/Dropbox/Scripps/projects/misc/metapipe/docs/_build/html/index.html) 
 
 
 ### Here's a sample!
