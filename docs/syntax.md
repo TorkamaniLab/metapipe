@@ -50,7 +50,7 @@ python somescript some_file2.txt
 python somescript some_file3.txt
 ```
 
-Files can also be labled for simpler commands.
+Files can also be labeled for simpler commands.
 
 ```
 >COMMANDS:
@@ -69,7 +69,7 @@ Output
 >>> python somescript some_file3.txt
 ```
 
-Files are given implicit lables by default as well.
+Files are given implicit labels by default as well.
 
 ```
 >COMMANDS:
@@ -198,7 +198,7 @@ bar.txt
 
 This set of commands is invalid because the second command (`./analyze.sh`)
 doesn't know what the output of command 1 is because it isn't specified.
-The split command generates output based on the input filenames it is given. i
+The split command generates output based on the input filenames it is given.
 
 Since we wrote the `./do_count` script, we know that it generates files with a
 `.counts` extension. But since we don't explicitly specify the files, in
