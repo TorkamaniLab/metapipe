@@ -1,7 +1,7 @@
 import glob, os, shutil
 
 
-TEST_FILE_DIR = 'files/'
+TEST_FILE_DIR = 'test/files/'
 
 
 def setup():
