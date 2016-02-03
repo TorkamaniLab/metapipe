@@ -10,13 +10,6 @@ class MockJob(Job):
         self._submitted = False        
         self._done = False        
 
-    def __repr__(self):
-        return '<MockJob: {}>'.format(self.cmd)
-
-    def make(self):
-        # Nulled
-        pass
-
     def submit(self):
         self._submitted = True
         
