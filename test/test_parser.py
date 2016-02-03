@@ -10,6 +10,27 @@ from metapipe.models import Input, Output
 from .fixtures import *
 
 
+def test_no_paths():
+    parser = Parser(no_paths)
+    res = parser.consume()
+        
+    parser.paths.should.have.length_of(0)
+    
+
+def test_no_files():
+    parser = Parser(no_files)
+    res = parser.consume()
+        
+    parser.files.should.have.length_of(0)
+    
+
+def test_no_cmds():
+    parser = Parser(no_cmds)
+    res = parser.consume()
+        
+    parser.commands.should.have.length_of(0)
+    
+
 def test_consume_paths():
     parser = Parser(overall)
     res = parser.consume()

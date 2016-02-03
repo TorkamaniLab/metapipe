@@ -6,10 +6,7 @@ since: 2015-01-13
 
 from time import sleep
 
-try:
-    from metapipe.models import JobQueue
-except ImportError:
-    from .models import JobQueue
+from metapipe.models import JobQueue
 
 
 class Runtime(object):
