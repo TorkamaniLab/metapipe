@@ -192,3 +192,27 @@ def test_consume_commands_9():
     res[8].parts[1][0].should.equal(Input('*.bam', 
                                 filename='*.bam'))
     res[8].dependencies.should.have.length_of(1)
+
+
+def test_consume_multiple_inputs():
+    parser = Parser(multiple_inputs)
+    res = parser.consume()
+
+    print(res[0])
+
+    res[0].alias.should.equal('1')
+    res[0].parts[0].should.equal('bash')
+    res[0].parts[2][0].should.equal(Input('1', 
+                                filename='somefile.1'))
+    res[0].parts[2][1].should.equal(Input('2', 
+                                filename='somefile.2'))
+    res[0].parts[2][2].should.equal(Input('3', 
+                                filename='somefile.3'))
+    res[0].parts[4][0].should.equal(Input('4', 
+                                filename='somefile.4'))
+    res[0].parts[4][1].should.equal(Input('5', 
+                                filename='somefile.5'))
+    res[0].parts[4][2].should.equal(Input('6', 
+                                filename='somefile.6'))
+    res[0].dependencies.should.have.length_of(0)
+

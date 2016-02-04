@@ -9,7 +9,7 @@ since: 2016-01-12
 from .tokens import Input, Output, PathToken 
 from .command import Command
 from .command_template import CommandTemplate
-from .grammar import OR_TOKEN
+from .grammar import OR_TOKEN, AND_TOKEN
 
 
 def get_command_templates(command_tokens, file_tokens=[], path_tokens=[]):
@@ -65,19 +65,12 @@ def _get_command_templates(command_tokens, files=[], paths=[], count=1):
         return []
         
     command_token = command_tokens.pop()
-    
-    if command_token._or:
-        and_or = 'or'
-    else: 
-        and_or = 'and'    
-    
-    command_token = _remove_extra_ors(command_token)
-    
+
     parts = []
     for part in command_token:
         # Check for file
         try:
-            parts.append(_get_file_by_alias(part, files, and_or))
+            parts.append(_get_file_by_alias(part, files))
             continue
         except (AttributeError, ValueError):
             pass
@@ -91,7 +84,7 @@ def _get_command_templates(command_tokens, files=[], paths=[], count=1):
                 pass
 
             parts.append(cut)
-            
+
     command_template = CommandTemplate(alias=str(count), parts=parts)
     [setattr(p, 'alias', command_template.alias) 
         for p in command_template.output_parts]
@@ -117,7 +110,7 @@ def _get_prelim_dependencies(command_template, all_templates):
     return deps
     
     
-def _get_file_by_alias(part, files, and_or=''):
+def _get_file_by_alias(part, files):
     """ Given a command part, find the file it represents. If not found, 
     then returns a new token representing that file. 
     :throws ValueError: if the value is not a command file alias.
@@ -128,17 +121,23 @@ def _get_file_by_alias(part, files, and_or=''):
     
     # Search/Make Input
     else:
-        inputs = []
+        inputs = [[]]
         for cut in part.asList():
-            input = Input(cut, filename=cut, and_or=and_or)
+            if cut == OR_TOKEN:
+                inputs.append([])
+                continue
+            if cut == AND_TOKEN:
+                continue
+                
+            input = Input(cut, filename=cut)            
             for file in files:
                 if file.alias == cut:
                     # Override the filename
                     input.filename = file.filename
-                    inputs.append(input)
+                    inputs[-1].append(input)
                     break
             else:
-                inputs.append(input)
+                inputs[-1].append(input)
         return inputs
 
 def _get_path_by_name(part, paths):
@@ -160,15 +159,3 @@ def _is_output(part):
     else: 
         return False
    
-        
-def _remove_extra_ors(command_token):
-    """ Given a command token, remove the extraneous '||' from the 
-    input files.
-    """
-    i, inside = 0, False
-    while i < len(command_token):
-        val = command_token[i]
-        if val == OR_TOKEN:
-            del command_token[i]
-        i += 1
-    return command_token

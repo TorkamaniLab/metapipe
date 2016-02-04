@@ -58,10 +58,10 @@ class CommandTemplate(object):
         string values. Each command will track it's preliminary dependencies, 
         but these values should not be depended on for running commands. 
         """
-        max_size = _get_max_size(self.parts)                                   
+        max_size = sum(_get_max_size(self.parts))
         parts_list = _grow([[]], max_size-1)
+
         counter = 0
-        
         parts = self.parts[:]
         while len(parts) > 0:
             parts_list, counter = _get_parts_list(parts, 
@@ -106,7 +106,6 @@ def _get_parts_list(to_go, so_far=[[]], current=0):
         return _append(so_far, part), current
         
     try:
-        part.reverse()
         for sub_part in part:
             result = sub_part.eval()
             if isinstance(result, str):
@@ -143,15 +142,14 @@ def _get_max_size(parts):
     """ Given a list of parts, find the maximum number of commands 
     contained in it.
     """
-    max_size = 0
+    sizes = []
     for part in parts:
-        if not isinstance(part, list):
-            continue
-        for item in part:
-            result = item.eval()
-            if isinstance(result, list):
-                max_size += len(item.eval())
+        if isinstance(part, list):
+            if any(isinstance(e, list) for e in part):
+                new_sizes = _get_max_size(part)
+                # The inputs lists should be the same size, but just in case.
+                if sum(new_sizes) > sum(sizes):
+                    sizes.extend(new_sizes)
             else:
-                max_size += 1
-                break      
-    return max_size
+                sizes.append(len(part))
+    return sizes

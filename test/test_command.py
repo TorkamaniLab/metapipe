@@ -1,5 +1,7 @@
 """ Tests for the command class. """
 
+import sure
+
 from .fixtures import *
 
 from metapipe.parser import Parser
@@ -11,14 +13,18 @@ def test_eval_1():
 
     cmds = parser.consume()
     print(cmds[0].parts)
-    cmds[0].eval()[0].eval().should.equal('/usr/bin/python somescript.py -i somefile.1 somefile.2 somefile.3 -o metapipe.1.1.output -fgh somefile.txt')
+    cmds[0].eval()[0].eval().should.equal('/usr/bin/python somescript.py -i '
+        'somefile.1 somefile.2 somefile.3 -o metapipe.1.1.output ' 
+        '-fgh somefile.txt')
     
     
 def test_eval_2():
     parser = Parser(overall)
     cmds = parser.consume()
 
-    cmds[0].eval()[1].eval().should.equal('/usr/bin/python somescript.py -i somefile.4 somefile.5 somefile.6 -o metapipe.1.2.output -fgh somefile.txt')
+    cmds[0].eval()[1].eval().should.equal('/usr/bin/python somescript.py -i '
+        'somefile.4 somefile.5 somefile.6 -o metapipe.1.2.output '
+        '-fgh somefile.txt')
     
     
 def test_eval_3():
@@ -30,7 +36,8 @@ def test_eval_3():
 
     cmd = cmds[1].eval()[0]
     cmd.update_dependent_files(old_commands)
-    cmd.eval().should.equal('/usr/bin/bash somescript.sh -i metapipe.1.1.output -o metapipe.2.1.output -fgh somefile.txt')
+    cmd.eval().should.equal('/usr/bin/bash somescript.sh -i metapipe.1.1.output'
+        ' -o metapipe.2.1.output -fgh somefile.txt')
 
 
 def test_eval_4():
@@ -43,7 +50,8 @@ def test_eval_4():
     cmd = cmds[1].eval()[1]
     cmd.update_dependent_files(old_commands)
     print([i.filename for i in cmd.input_parts])
-    cmd.eval().should.equal('/usr/bin/bash somescript.sh -i metapipe.1.2.output -o metapipe.2.2.output -fgh somefile.txt')
+    cmd.eval().should.equal('/usr/bin/bash somescript.sh -i metapipe.1.2.output'
+        ' -o metapipe.2.2.output -fgh somefile.txt')
    
     
 def test_eval_5():
@@ -55,7 +63,8 @@ def test_eval_5():
 
     cmd = cmds[2].eval()[0]
     cmd.update_dependent_files(old_commands)
-    cmd.eval().should.equal('/usr/bin/ruby somescript.rb -i metapipe.2.1.output >> somefile')
+    cmd.eval().should.equal('/usr/bin/ruby somescript.rb -i metapipe.2.1.output'
+        ' >> somefile')
 
 
 def test_eval_6():
@@ -68,7 +77,8 @@ def test_eval_6():
     cmd = cmds[2].eval()[1]
     cmd.update_dependent_files(old_commands)
     print([i.filename for i in cmd.input_parts])
-    cmd.eval().should.equal('/usr/bin/ruby somescript.rb -i metapipe.2.2.output >> somefile')
+    cmd.eval().should.equal('/usr/bin/ruby somescript.rb -i metapipe.2.2.output'
+        ' >> somefile')
     
 
 def test_eval_7():
@@ -80,7 +90,8 @@ def test_eval_7():
 
     cmd = cmds[2].eval()[2]
     cmd.update_dependent_files(old_commands)
-    cmd.eval().should.equal('/usr/bin/ruby somescript.rb -i metapipe.1.1.output metapipe.1.2.output >> somefile')
+    cmd.eval().should.equal('/usr/bin/ruby somescript.rb -i metapipe.1.1.output'
+        ' metapipe.1.2.output >> somefile')
 
 
 def test_eval_8():
@@ -119,7 +130,8 @@ def test_eval_10():
     cmd = cmds[5].eval()[0]
     cmd.update_dependent_files(old_commands)
     print([i.filename for i in cmd.input_parts])
-    cmd.eval().should.equal('./somescript somefile.1 somefile.2 somefile.3 somefile.4')
+    cmd.eval().should.equal('./somescript somefile.1 somefile.2 '
+        'somefile.3 somefile.4')
     
 
 def test_eval_11():
@@ -132,7 +144,8 @@ def test_eval_11():
     cmd = cmds[5].eval()[1]
     cmd.update_dependent_files(old_commands)
     print([i.filename for i in cmd.input_parts])
-    cmd.eval().should.equal('./somescript somefile.1.counts somefile.2.counts somefile.3.counts somefile.4.counts')
+    cmd.eval().should.equal('./somescript somefile.1.counts somefile.2.counts '
+        'somefile.3.counts somefile.4.counts')
     
 
 def test_eval_12():
@@ -197,7 +210,8 @@ def test_eval_15():
     cmd = cmds[7].eval()[0]
     cmd.update_dependent_files(old_commands)
     print([i.eval() for i in cmd.output_parts])
-    cmd.eval().should.equal('/usr/bin/python somescript.py -i somefile.1.counts somefile.2.counts somefile.3.counts somefile.4.counts # *.bam')
+    cmd.eval().should.equal('/usr/bin/python somescript.py -i somefile.1.counts'
+        ' somefile.2.counts somefile.3.counts somefile.4.counts # *.bam')
     
 
 def test_eval_16():
@@ -224,3 +238,41 @@ def test_eval_16_deps():
     cmd.update_dependent_files(old_commands)
     #print([i.eval() for i in cmd.input_parts])
     cmd.dependencies.should.have.length_of(1)
+    
+
+def test_eval_multiple_inputs():
+    parser = Parser(multiple_inputs)
+    cmds = parser.consume()
+    old_commands = []
+
+    #print(cmds)
+    cmd = cmds[0].eval()[0]
+    print(cmd)
+    cmd.update_dependent_files(old_commands)
+    cmd.eval().should.equal('bash somescript 1 --conf 4 > metapipe.1.1.output')
+
+
+# def test_eval_multiple_inputs():
+#     parser = Parser(cmd_multiple_inputs)
+#     cmds = parser.consume()
+#     old_commands = []
+#     for cmd in cmds:
+#         old_commands.extend(cmd.eval())
+# 
+#     print(cmds)
+#     cmd = cmds[0].eval()[1]
+#     cmd.update_dependent_files(old_commands)
+#     cmd.eval().should.equal('bash somescript 2 --conf 5 > metapipe.1.2.output')
+#     
+#     
+# def test_eval_multiple_inputs():
+#     parser = Parser(cmd_multiple_inputs)
+#     cmds = parser.consume()
+#     old_commands = []
+#     for cmd in cmds:
+#         old_commands.extend(cmd.eval())
+# 
+#     print(cmds)
+#     cmd = cmds[0].eval()[2]
+#     cmd.update_dependent_files(old_commands)
+#     cmd.eval().should.equal('bash somescript 3 --conf 6 > metapipe.1.3.output')
