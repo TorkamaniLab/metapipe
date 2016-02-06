@@ -4,10 +4,22 @@ author: Brian Schrader
 since: 2016-01-13
 """
 
-import copy
+import copy, collections
 
 from .tokens import Input, Output, FileToken, PathToken
 from .command import Command
+
+
+class Ticker(object):
+    
+    def __init__(self, maxlen, value=0):
+        self.maxlen = maxlen
+        self.value = value
+        
+    def tick(self, n=1):
+        self.value += n
+        if self.value >= self.maxlen:
+            self.value -= self.maxlen
 
 
 class CommandTemplate(object):
@@ -61,16 +73,14 @@ class CommandTemplate(object):
         max_size = sum(_get_max_size(self.parts))
         parts_list = _grow([[]], max_size-1)
 
-        counter = 0
+        counter = Ticker(max_size)
         parts = self.parts[:]
         while len(parts) > 0:
             parts_list, counter = _get_parts_list(parts, 
                 parts_list, counter)
-        
+
         commands = []
-        parts_list.reverse()    # Generated backwards.
         for i, parts in enumerate(parts_list):
-            parts.reverse()
             alias = self._get_alias(i+1)
             deps = self._get_dependencies(parts)
             parts = copy.deepcopy(parts)
@@ -96,28 +106,32 @@ class CommandTemplate(object):
         return deps
         
                 
-def _get_parts_list(to_go, so_far=[[]], current=0):
+def _get_parts_list(to_go, so_far=[[]], ticker=None):
     """ Iterates over to_go, building the list of parts. To provide 
     items for the beginning, use so_far.
     """
-    part = to_go.pop()
-    
-    if isinstance(part, str):
-        return _append(so_far, part), current
-        
     try:
-        for sub_part in part:
-            result = sub_part.eval()
-            if isinstance(result, str):
-                so_far[current].append(sub_part)
-            else:
-                for token in result:
-                    so_far[current].append(token)
-                    current += 1
-        current += 1
-        return so_far, current
-    except (TypeError, AttributeError):
-        return _append(so_far, part), current
+        part = to_go.pop(0)
+    except IndexError:
+        return so_far, ticker
+
+    # Lists of lists
+    if isinstance(part, list) and any(isinstance(e, list) for e in part):
+        while len(part) > 0:
+            so_far, ticker = _get_parts_list(part, so_far, ticker)
+            ticker.tick()
+    # Single lists
+    elif isinstance(part, list):
+        for item in part:
+            so_far[ticker.value].append(item)
+    # Static inputs
+    elif isinstance(part, Input):
+        so_far[ticker.value].append(part)
+    # Everything else
+    else:
+        so_far = _append(so_far, part)
+        
+    return so_far, ticker
 
                 
 def _append(so_far, item):
@@ -143,13 +157,10 @@ def _get_max_size(parts):
     contained in it.
     """
     sizes = []
+    print('parts', parts)
     for part in parts:
         if isinstance(part, list):
-            if any(isinstance(e, list) for e in part):
-                new_sizes = _get_max_size(part)
-                # The inputs lists should be the same size, but just in case.
-                if sum(new_sizes) > sum(sizes):
-                    sizes.extend(new_sizes)
-            else:
+            # The inputs lists should be the same size, but just in case.
+            if len(part) > sum(sizes):
                 sizes.append(len(part))
     return sizes
