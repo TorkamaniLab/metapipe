@@ -9,7 +9,7 @@ lbrack = Literal('[').suppress()
 rbrack = Literal(']').suppress()
 
 OR_TOKEN = '<<OR>>'
-
+AND_TOKEN = '<<AND>>'
 
 class classproperty(property):
     def __get__(self, cls, owner):
@@ -26,19 +26,21 @@ class Grammar(object):
         Suppress('{') +
         OneOrMore(
         Group(OneOrMore(
-                Combine(
-                    Word(alphanums+'.*:/_') +
-                    Optional('.' + Word(nums))
-                ) +
-                Optional(
-                    Suppress(',' + FollowedBy('}')) ^
-                    Suppress(',')
-        ))) + (
-            Optional( 
-                ('||' + FollowedBy('}')).addParseAction(replaceWith(OR_TOKEN)
-                ).setResultsName('_or') ^                    
-                    Suppress('||')
-            ))) + 
+            Combine(
+                Word(alphanums+'.*:/_') +
+                Optional('.' + Word(nums))
+            ) +
+            Optional((
+                Suppress(',' + FollowedBy('}')) ^
+                Suppress(',')
+            ).addParseAction(replaceWith(AND_TOKEN)).setResultsName('_and')) +
+            Optional(
+                ('||' + FollowedBy('}')).addParseAction(
+                    replaceWith(OR_TOKEN)).setResultsName('magic_or') ^                    
+                Suppress('||').addParseAction(
+                    replaceWith(OR_TOKEN)).setResultsName('_or')
+            )
+        ))) + 
         Suppress('}')
         )
 

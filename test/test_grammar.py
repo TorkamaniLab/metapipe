@@ -14,12 +14,13 @@ def test_cmd():
     for i, c in enumerate(res.command):
         c.should.equal(val[i])
 
+    print(res._in)
     res._in[0][0][0].should.equal('1')
-    res._in[0][0][1].should.equal('2')
-    res._in[0][0][2].should.equal('3')
-    res._in[0][1][0].should.equal('4')
-    res._in[0][1][1].should.equal('5')
-    res._in[0][1][2].should.equal('6')
+    res._in[0][0][2].should.equal('2')
+    res._in[0][0][4].should.equal('3')
+    res._in[0][0][6].should.equal('4')
+    res._in[0][0][8].should.equal('5')
+    res._in[0][0][10].should.equal('6')
     res._in[1][0][0].should.equal('o')
 
 
@@ -31,7 +32,6 @@ def test_cmd_magic1():
         c.should.equal(val[i])
     
     res._in[0][0][0].should.equal('*.counts')
-    res._or[0].should.equal('<<OR>>')
 
 
 def test_cmd_magic2():
@@ -51,25 +51,24 @@ def test_cmd_compund1():
         c.should.equal(val[i])
     print(res)
     res._in[0][0][0].should.equal('1')
-    res._in[0][0][1].should.equal('2')
-    res._in[0][0][2].should.equal('3')
-    res._in[0][0][3].should.equal('4')
-    res._in[0][1][0].should.equal('test/files/*.counts')
-    res._or[0].should.equal('<<OR>>')
+    res._in[0][0][2].should.equal('2')
+    res._in[0][0][4].should.equal('3')
+    res._in[0][0][6].should.equal('4')
+    res._in[0][0][8].should.equal('test/files/*.counts')
 
 
 def test_cmd_compund2():
     res = Grammar.command.parseString(cmd_compound2)
-    val = ['./somescript ', ['1', '2', '3', '4'], ['test/files/*.counts', ',']]
+    val = ['./somescript ', ['1', '<<AND>>', '2', '<<AND>>', '3', '<<AND>>', '4', '<<OR>>', 'test/files/*.counts', '<<AND>>']]
 
     for i, c in enumerate(res.command):
         c.should.equal(val[i])
     print(res)
     res._in[0][0][0].should.equal('1')
-    res._in[0][0][1].should.equal('2')
-    res._in[0][0][2].should.equal('3')
-    res._in[0][0][3].should.equal('4')
-    res._in[0][1][0].should.equal('test/files/*.counts')
+    res._in[0][0][2].should.equal('2')
+    res._in[0][0][4].should.equal('3')
+    res._in[0][0][6].should.equal('4')
+    res._in[0][0][8].should.equal('test/files/*.counts')
 
 
 def test_file():
@@ -89,3 +88,9 @@ def test_overall():
 	
 	res['COMMANDS'][0][0].should.equal('python')
 	res['COMMANDS'][0][1].should.equal(' somescript.py -i {1,2,3||4,5,6} -o {o} -fgh somefile.txt')
+
+
+def test_multiple_inputs():
+	res = Grammar.command.parseString(cmd_multiple_inputs)
+	res._in.should.have.length_of(3)
+    

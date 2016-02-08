@@ -4,10 +4,22 @@ author: Brian Schrader
 since: 2016-01-13
 """
 
-import copy
+import copy, collections
 
 from .tokens import Input, Output, FileToken, PathToken
 from .command import Command
+
+
+class Ticker(object):
+    
+    def __init__(self, maxlen, value=0):
+        self.maxlen = maxlen
+        self.value = value
+        
+    def tick(self, n=1):
+        self.value += n
+        if self.value >= self.maxlen:
+            self.value -= self.maxlen
 
 
 class CommandTemplate(object):
@@ -36,16 +48,7 @@ class CommandTemplate(object):
     @property
     def file_parts(self):
         """ Returns a list of the file tokens in the list of parts. """
-        file_parts = []
-        for part in self.parts:
-            try:
-                for sub_part in part:
-                    if isinstance(sub_part, FileToken):
-                        file_parts.append(sub_part)
-            except TypeError:
-                if isinstance(part, FileToken):
-                    file_parts.append(part)
-        return file_parts
+        return _search_for_files(self.parts)
         
     @property
     def path_parts(self):
@@ -58,19 +61,17 @@ class CommandTemplate(object):
         string values. Each command will track it's preliminary dependencies, 
         but these values should not be depended on for running commands. 
         """
-        max_size = _get_max_size(self.parts)                                   
+        max_size = _get_max_size(self.parts)
         parts_list = _grow([[]], max_size-1)
-        counter = 0
         
+        counter = Ticker(max_size)
         parts = self.parts[:]
         while len(parts) > 0:
             parts_list, counter = _get_parts_list(parts, 
                 parts_list, counter)
-        
+
         commands = []
-        parts_list.reverse()    # Generated backwards.
         for i, parts in enumerate(parts_list):
-            parts.reverse()
             alias = self._get_alias(i+1)
             deps = self._get_dependencies(parts)
             parts = copy.deepcopy(parts)
@@ -96,31 +97,69 @@ class CommandTemplate(object):
         return deps
         
                 
-def _get_parts_list(to_go, so_far=[[]], current=0):
+def _get_parts_list(to_go, so_far=[[]], ticker=None):
     """ Iterates over to_go, building the list of parts. To provide 
     items for the beginning, use so_far.
     """
-    part = to_go.pop()
-    
-    if isinstance(part, str):
-        return _append(so_far, part), current
-        
     try:
-        part.reverse()
-        for sub_part in part:
-            result = sub_part.eval()
-            if isinstance(result, str):
-                so_far[current].append(sub_part)
-            else:
-                for token in result:
-                    so_far[current].append(token)
-                    current += 1
-        current += 1
-        return so_far, current
-    except (TypeError, AttributeError):
-        return _append(so_far, part), current
+        part = to_go.pop(0)
+    except IndexError:
+        return so_far, ticker
+        
+    # Lists of input groups
+    if isinstance(part, list) and any(isinstance(e, list) for e in part):
+        while len(part) > 0:
+            so_far, ticker = _get_parts_list(part, so_far, ticker)
+            ticker.tick()
+    # Input Group
+    elif isinstance(part, list) and any(isinstance(e, Input) for e in part):
+        while len(part) > 0:
+            so_far, ticker = _get_parts_list(part, so_far, ticker)
+    # Magic Inputs
+    elif isinstance(part, Input) and isinstance(part.eval(), list):
+        inputs = part.eval()
+        while len(inputs) > 0:
+            so_far, ticker = _get_parts_list(inputs, so_far, ticker)
+            ticker.tick()
+    # Normal inputs
+    elif isinstance(part, Input) and isinstance(part.eval(), str):
+        so_far[ticker.value].append(part)
+    # Everything else
+    else:
+        so_far = _append(so_far, part)
+        
+    return so_far, ticker
 
-                
+
+def _get_max_size(parts, size=1):
+    """ Given a list of parts, find the maximum number of commands 
+    contained in it.
+    """
+    max_group_size = 0
+    for part in parts:
+        if isinstance(part, list):
+            group_size = 0
+            for input_group in part:
+                group_size += 1
+            
+            if group_size > max_group_size:
+                max_group_size = group_size
+            
+    magic_size = _get_magic_size(parts)        
+    return max_group_size * magic_size
+            
+
+def _get_magic_size(parts, size=1):
+    for part in parts:
+        if isinstance(part, Input) and part.is_magic:
+            magic_size = len(part.eval())
+            if magic_size > size:
+                return magic_size
+        elif isinstance(part, list):
+            size = _get_magic_size(part, size)
+    return size   
+
+             
 def _append(so_far, item):
     """ Appends an item to all items in a list of lists. """
     for sub_list in so_far:
@@ -139,19 +178,14 @@ def _grow(list_of_lists, num_new):
     return list_of_lists  
     
     
-def _get_max_size(parts):
-    """ Given a list of parts, find the maximum number of commands 
-    contained in it.
-    """
-    max_size = 0
+def _search_for_files(parts):
+    """ Given a list of parts, return all of the nested file parts. """
+    file_parts = []
     for part in parts:
-        if not isinstance(part, list):
-            continue
-        for item in part:
-            result = item.eval()
-            if isinstance(result, list):
-                max_size += len(item.eval())
-            else:
-                max_size += 1
-                break      
-    return max_size
+        if isinstance(part, list):
+            file_parts.extend(_search_for_files(part))
+        elif isinstance(part, FileToken):
+            file_parts.append(part)
+    return file_parts
+
+    

@@ -1,3 +1,5 @@
+# Snippets
+
 cmd = """python somescript.py -i {1,2,3||4,5,6} -o {o} -fgh \
  somefile.txt
 """
@@ -14,9 +16,16 @@ cmd_compound1 = """./somescript {1,2,3,4||test/files/*.counts||}
 cmd_compound2 = """./somescript {1,2,3,4||test/files/*.counts,}
 """
 
+cmd_multiple_inputs = """bash somescript {1,2,3} --conf {4,5,6}  > {o}
+"""
+
 file = """1. somedir/somefile.ext"""
 
 path = """python /usr/bin/python"""
+
+
+# Full input files.
+
 
 overall = """
 [COMMANDS]
@@ -107,3 +116,34 @@ python /usr/bin/python
 bash /usr/bin/bash
 rb /usr/bin/ruby
 """
+
+
+multiple_inputs = """
+[COMMANDS]
+bash somescript {1||2||3} --conf {4||5||6}  > {o}
+python somescript.py {1,2,3} --conf {4,5,6}  > {o}
+
+[FILES]
+1. somefile.1
+2. somefile.2
+3. somefile.3
+4. somefile.4
+5. somefile.5
+6. somefile.6
+"""
+
+magic_inputs = """
+[COMMANDS]
+bash somescript {*.counts||}  > {o}
+bash togetherness {*.counts}  > {o}
+python somescript.py {*.counts||} --conf {*.counts||}  > {o}
+
+[FILES]
+1. somefile.1
+2. somefile.2
+3. somefile.3
+4. somefile.4
+5. somefile.5
+6. somefile.6
+"""
+
