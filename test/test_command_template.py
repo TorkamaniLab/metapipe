@@ -52,7 +52,7 @@ def test_eval_multiple_inputs1():
         Input('4', 'somefile.4'), 
         '>', Output('1.1', 'metapipe.1.1.output')]
     cmd = templates[0].eval()[0]
-    print(cmd)
+    print(cmd.parts)
     for i, part in enumerate(cmd.parts):
         vals[i].should.equal(part)
 
@@ -104,3 +104,18 @@ def test_eval_multiple_inputs4():
     print(cmd.parts)
     for i, part in enumerate(cmd.parts):
         vals[i].should.equal(part)
+        
+        
+def test_eval_magic_input():
+    parser = Parser(magic_inputs)
+
+    templates = parser.consume()
+    
+    vals = ['bash', 'somescript', 
+        Input('*.counts', 'somefile.1'), 
+        '>', Output('1.1', 'metapipe.1.1.output')]
+    cmd = templates[0].eval()[0]
+    print(cmd.parts)
+    for i, part in enumerate(cmd.parts):
+        vals[i].should.equal(part)
+    

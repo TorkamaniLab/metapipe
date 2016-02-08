@@ -122,14 +122,20 @@ def _get_file_by_alias(part, files):
     # Search/Make Input
     else:
         inputs = [[]]
+        
+        if part.magic_or:
+            and_or = 'or'
+        else:
+            and_or = 'and'
+        
         for cut in part.asList():
             if cut == OR_TOKEN:
                 inputs.append([])
                 continue
             if cut == AND_TOKEN:
                 continue
-                
-            input = Input(cut, filename=cut)            
+
+            input = Input(cut, filename=cut, and_or=and_or)            
             for file in files:
                 if file.alias == cut:
                     # Override the filename
@@ -138,7 +144,10 @@ def _get_file_by_alias(part, files):
                     break
             else:
                 inputs[-1].append(input)
-        return inputs
+                
+                    
+        return [input for input in inputs if input]
+
 
 def _get_path_by_name(part, paths):
     """ Given a command part, find the path it represents. 

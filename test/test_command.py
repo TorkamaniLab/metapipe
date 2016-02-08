@@ -158,7 +158,7 @@ def test_eval_12():
     cmd = cmds[6].eval()[0]
     cmd.update_dependent_files(old_commands)
     print([i.filename for i in cmd.input_parts])
-    cmd.eval().should.equal('/usr/bin/ruby somescript.rb -i somefile.4.counts')
+    cmd.eval().should.equal('/usr/bin/ruby somescript.rb -i somefile.1.counts')
     
 
 def test_eval_13():
@@ -171,7 +171,7 @@ def test_eval_13():
     cmd = cmds[6].eval()[1]
     cmd.update_dependent_files(old_commands)
     print([i.filename for i in cmd.input_parts])
-    cmd.eval().should.equal('/usr/bin/ruby somescript.rb -i somefile.3.counts')
+    cmd.eval().should.equal('/usr/bin/ruby somescript.rb -i somefile.2.counts')
     
     
 def test_eval_14():
@@ -184,7 +184,7 @@ def test_eval_14():
     cmd = cmds[6].eval()[2]
     cmd.update_dependent_files(old_commands)
     print([i.filename for i in cmd.input_parts])
-    cmd.eval().should.equal('/usr/bin/ruby somescript.rb -i somefile.2.counts')
+    cmd.eval().should.equal('/usr/bin/ruby somescript.rb -i somefile.3.counts')
    
    
 def test_eval_14():
@@ -197,7 +197,7 @@ def test_eval_14():
     cmd = cmds[6].eval()[3]
     cmd.update_dependent_files(old_commands)
     print([i.filename for i in cmd.input_parts])
-    cmd.eval().should.equal('/usr/bin/ruby somescript.rb -i somefile.1.counts')
+    cmd.eval().should.equal('/usr/bin/ruby somescript.rb -i somefile.4.counts')
     
   
 def test_eval_15():
@@ -249,7 +249,7 @@ def test_eval_multiple_inputs():
     cmd = cmds[0].eval()[0]
     print(cmd)
     cmd.update_dependent_files(old_commands)
-    cmd.eval().should.equal('bash somescript 1 --conf 4 > metapipe.1.1.output')
+    cmd.eval().should.equal('bash somescript somefile.1 --conf somefile.4 > metapipe.1.1.output')
 
 
 # def test_eval_multiple_inputs():

@@ -132,3 +132,18 @@ python somescript.py {1,2,3} --conf {4,5,6}  > {o}
 6. somefile.6
 """
 
+magic_inputs = """
+[COMMANDS]
+bash somescript {*.counts||}  > {o}
+bash togetherness {*.counts}  > {o}
+python somescript.py {*.counts||} --conf {*.counts||}  > {o}
+
+[FILES]
+1. somefile.1
+2. somefile.2
+3. somefile.3
+4. somefile.4
+5. somefile.5
+6. somefile.6
+"""
+

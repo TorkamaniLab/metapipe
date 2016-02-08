@@ -24,11 +24,10 @@ class Command(object):
         output of previous commands. 
         """
         for command in prev_commands:
-            for part in self.parts:
-                for other_file in command.output_parts:
-                    if (part in self.input_parts 
-                        and other_file == part):
-                        part.filename = other_file.eval()
+            for my_input in self.input_parts:
+                for their_output in command.output_parts:
+                    if their_output == my_input:
+                        my_input.filename = their_output.eval()
                                 
     def eval(self):
         """ Evaluate the given job and return a complete shell script to be run

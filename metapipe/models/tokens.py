@@ -97,13 +97,18 @@ class Input(FileToken):
     def eval(self):
         """ Evaluates the given input and returns a string containing the 
         actual filenames represented. If the input token represents multiple 
-        independent files, then eval will return a list of all the files needed,
-        otherwise it returns the filenames in a string.
+        independent files, then eval will return a list of all the input files
+        needed, otherwise it returns the filenames in a string.
         """
         if self.and_or == 'or':
-            return self.files
+            return [Input(self.alias, file, self.cwd, 'and') 
+                for file in self.files]
         return ' '.join(self.files)
-            
+         
+    @property
+    def is_magic(self):
+        return isinstance(self.eval(), list)
+
     @property         
     def files(self):
         """ Returns a list of all the files that match the given 
@@ -125,7 +130,7 @@ class Input(FileToken):
         else:
             and_or = ''
         return Input(string, and_or=and_or)
-        
+                
         
 class Output(FileToken):
     """ A model of a single output to a given command. Output tokens can be 

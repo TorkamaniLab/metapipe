@@ -34,10 +34,12 @@ class Grammar(object):
                 Suppress(',' + FollowedBy('}')) ^
                 Suppress(',')
             ).addParseAction(replaceWith(AND_TOKEN)).setResultsName('_and')) +
-            Optional((
-                ('||' + FollowedBy('}')) ^                    
-                Suppress('||')
-            ).addParseAction(replaceWith(OR_TOKEN)).setResultsName('_or'))
+            Optional(
+                ('||' + FollowedBy('}')).addParseAction(
+                    replaceWith(OR_TOKEN)).setResultsName('magic_or') ^                    
+                Suppress('||').addParseAction(
+                    replaceWith(OR_TOKEN)).setResultsName('_or')
+            )
         ))) + 
         Suppress('}')
         )
