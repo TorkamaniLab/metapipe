@@ -38,3 +38,23 @@ def test_multiple_outputs():
     print(cmds[0].parts)
     for i, part in enumerate(cmds[0].parts):
         vals[i].should.equal(part)
+
+
+def test_full_sample_pipeline():
+    parser = Parser(full_sample_pipeline)
+
+    cmds = parser.consume()
+        
+    
+    vals = ['java', '-jar', 
+        PathToken('trimmomatic', 'Trimmomatic-0.35/trimmomatic-0.35.jar>'),
+        'PE', [[Input('*R1_001.fastq.gz')]], [[Input('*R2_001.fastq.gz')]], 
+        Output('1', 'metapipe.1.output'), Output('1', 'metapipe.1.output'), 
+        Output('1', 'metapipe.1.output'), Output('1', 'metapipe.1.output'),
+        PathToken('illuminaclip', 'ILLUMINACLIP:/gpfs/home/bhuvan/Programs/Trimmomatic-0.32/adapters/TruSeq3-PE.fa:2:30:10:2:true'), 
+        'LEADING:3', 'TRAILING:3'
+    ]
+
+    print(cmds[0].parts)
+    for i, part in enumerate(cmds[0].parts):
+        vals[i].should.equal(part)

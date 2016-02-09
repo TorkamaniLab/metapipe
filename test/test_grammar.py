@@ -93,4 +93,10 @@ def test_overall():
 def test_multiple_inputs():
 	res = Grammar.command.parseString(cmd_multiple_inputs)
 	res._in.should.have.length_of(3)
+	
+
+def test_multiple_close_inputs():
+	res = Grammar.command.parseString(cmd_multiple_close_inputs)
+	res._in.should.have.length_of(6)
+	
     
