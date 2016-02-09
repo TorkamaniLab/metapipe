@@ -10,6 +10,7 @@ import argparse, pickle, sys
 
 import pyparsing
 
+from metapipe import __version__
 from .parser import Parser
 from .models import Command, LocalJob, PBSJob, JobQueue
 from .runtime import Runtime
@@ -28,7 +29,7 @@ def main():
     """ Given a config file, spit out the script to run the analysis. """
     parser = argparse.ArgumentParser(
         description='A pipeline that generates analysis pipelines.')
-    parser.add_argument('input',
+    parser.add_argument('input', nargs='?',
                    help='A valid metapipe configuration file.')
     parser.add_argument('-o', '--output',
                    help='An output destination. If none is provided, the results will be printed to stdout.', default=sys.stdout)
@@ -42,7 +43,14 @@ def main():
                    help='The destination for calculations (i.e. local, a PBS ' 'queue on a cluster, etc).\n'
                    'Options: local, pbs. (Default: "%(default)s)"', 
                    default='local')
+    parser.add_argument('-v','--version', 
+                    help='Displays the current version of the application.', 
+                    action='store_true')
     args = parser.parse_args()
+    
+    if args.version:
+        print('Version: {}'.format(__version__))
+        sys.exit(0)
     
     try:
         with open(args.input) as f:
