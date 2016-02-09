@@ -36,21 +36,26 @@ class Parser(object):
         except KeyError:
             txt_commands = []
         
-        try:
-            self.commands = [Grammar.command.parseString(c) 
-                for c in txt_commands]
-        except pyparsing.ParseException:
-            raise ValueError('Invalid command.')
-        try:
-            self.files = [Grammar.file.parseString(f) 
-                for f in txt_files]
-        except pyparsing.ParseException:
-            raise ValueError('Invalid file.')
-        try:
-            self.paths = [Grammar.path.parseString(p) 
-                for p in txt_paths]
-        except pyparsing.ParseException:
-            raise ValueError('Invalid path.')
+        for c in txt_commands:
+            try:
+                self.commands.append(Grammar.command.parseString(c))
+            except pyparsing.ParseException as e:
+                raise ValueError('Invalid command. Verify line {} is '
+                    'correct.\n{}'.format(e.lineno, c))
+
+        for f in txt_files:
+            try:
+                self.files.append(Grammar.file.parseString(f))
+            except pyparsing.ParseException as e:
+                raise ValueError('Invalid file. Verify line {} is '
+                    'correct.\n{}'.format(e.lineno, f))
+
+        for p in txt_paths:
+            try:
+                self.paths.append(Grammar.path.parseString(p)) 
+            except pyparsing.ParseException as e:
+                raise ValueError('Invalid path. Verify line {} is '
+                    'correct.\n{}'.format(e.lineno, p))
 
         self.paths = ctf.get_paths(self.paths)
         self.files = ctf.get_files(self.files)

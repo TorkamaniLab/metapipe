@@ -19,6 +19,13 @@ cmd_compound2 = """./somescript {1,2,3,4||test/files/*.counts,}
 cmd_multiple_inputs = """bash somescript {1,2,3} --conf {4,5,6}  > {o}
 """
 
+cmd_multiple_close_inputs = """
+java -jar trimmomatic PE {*R1_001.fastq.gz||} {*R2_001.fastq.gz||} \
+    {o} {o} {o} {o} \
+    ILLUMINACLIP:Trimmomatic-0.35/adapters/TruSeq3-PE.fa:2:30:10:2:true \
+    LEADING:3 TRAILING:3
+"""
+
 file = """1. somedir/somefile.ext"""
 
 path = """python /usr/bin/python"""
@@ -161,4 +168,40 @@ python somescript.py {*.counts||} --conf {*.counts||}  > {o}
 5. somefile.5
 6. somefile.6
 """
+
+full_sample_pipeline = """
+[COMMANDS]
+# Trimmomatic
+java -jar trimmomatic PE {*R1_001.fastq.gz} {*R2_001.fastq.gz} \
+    {o} {o} {o} {o} illuminaclip LEADING:3 TRAILING:3
+
+# Unzip the outputs from trimmomatic
+gzip --stdout -d {*.1.*-2.output||} > {o}
+gzip --stdout -d {*.1.*-4.output||} > {o}
+
+# Cutadapt
+# cutadapt needs unzipped fastq files
+cutadapt --cut 7 -o {o} {*.2.output||}
+cutadapt --cut 7 -o {o} {*.3.output||}
+
+# BowTie
+module load bowtie/2.2.3; \
+bowtie2 --very-sensitive -N 1 -p 8 -x HG_19 -q -1 {*.4.*.output||} -2 \
+{*.5.*.output||} -S {o}
+
+# HTSeq
+module load python; \
+htseq-count {*.7.*.output||} gene_list > {o}
+
+# Summary
+head --lines -5 {*.8.*.output} > {o}
+
+[PATHS]
+trimmomatic Trimmomatic-0.35/trimmomatic-0.35.jar
+cutadapt ~/.local/bin/cutadapt
+illuminaclip ILLUMINACLIP:/gpfs/home/bhuvan/Programs/Trimmomatic-0.32/adapters/TruSeq3-PE.fa:2:30:10:2:true
+HG_19 /gpfs/group/stsi/data/bschrader/hg19/hg19_ucsc
+gene_list /gpfs/home/atorkama/iGenomes/Homo_sapiens/UCSC/hg19/Annotation/Archives/archive-2011-08-30-21-45-18/Genes/genes.gtf
+"""
+
 

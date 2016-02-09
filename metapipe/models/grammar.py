@@ -72,7 +72,7 @@ class Grammar(object):
     def path():
         """ Grammar for paths found in the overall input files. """
         return (
-                Word(alphanums).setResultsName('alias') +
+                Word(approved_printables).setResultsName('alias') +
                 Suppress(White()) +
                 Word(approved_printables).setResultsName('path')
                 )
@@ -81,9 +81,11 @@ class Grammar(object):
     @staticmethod
     def command():
         """ Grammar for commands found in the overall input files. """
-        return OneOrMore(
+        return (
+            OneOrMore(
                 Word(approved_printables+' ').setResultsName('command',
-                    listAllMatches=True) +
-                Optional(Grammar.__command.setResultsName('_in', 
-                    listAllMatches=True))
+                    listAllMatches=True) ^
+                Grammar.__command.setResultsName('_in', 
+                    listAllMatches=True)
                 )
+            )
