@@ -252,6 +252,33 @@ def test_eval_multiple_inputs():
     cmd.eval().should.equal('bash somescript somefile.1 --conf somefile.4 > metapipe.1.1.output')
 
 
+def test_multiple_outputs1():
+    parser = Parser(multiple_outputs)
+    cmds = parser.consume()
+    old_commands = []
+
+    #print(cmds)
+    cmd = cmds[0].eval()[0]
+    print(cmd)
+    cmd.update_dependent_files(old_commands)
+    cmd.eval().should.equal('bash somescript somefile.1 --log'
+        ' metapipe.1.1-1.output -r metapipe.1.1-2.output')
+
+
+def test_multiple_outputs2():
+    parser = Parser(multiple_outputs)
+    cmds = parser.consume()
+    old_commands = []
+
+    #print(cmds)
+    cmd = cmds[1].eval()[0]
+    print(cmd)
+    cmd.update_dependent_files(old_commands)
+    cmd.eval().should.equal('python somescript.py somefile.4 somefile.5 '
+        'somefile.6 --log metapipe.2.1-1.output -r metapipe.2.1-2.output '
+        '--output metapipe.2.1-3.output')
+
+
 # def test_eval_multiple_inputs():
 #     parser = Parser(cmd_multiple_inputs)
 #     cmds = parser.consume()

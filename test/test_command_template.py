@@ -119,3 +119,18 @@ def test_eval_magic_input():
     for i, part in enumerate(cmd.parts):
         vals[i].should.equal(part)
     
+    
+def test_multiple_outputs():
+    parser = Parser(multiple_outputs)
+
+    templates = parser.consume()
+    
+    vals = ['bash', 'somescript', 
+        Input('1', 'somefile.1'), '--log', 
+        Output('1.1-1', 'metapipe.1.1-1.output'), '-r', 
+        Output('1.1-2', 'metapipe.1.1-2.output')]
+
+    cmd = templates[0].eval()[0]
+    print(cmd.parts)
+    for i, part in enumerate(cmd.parts):
+        vals[i].should.equal(part)

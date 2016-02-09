@@ -22,3 +22,19 @@ def test_multiple_inputs():
 
     for i, part in enumerate(cmds[0].parts):
         vals[i].should.equal(part)
+
+
+def test_multiple_outputs():
+    parser = Parser(multiple_outputs)
+
+    cmds = parser.consume()
+    
+    vals = ['bash', 'somescript', 
+        [[Input('1', 'somefile.1')], [Input('2', 'somefile.2')], 
+            [Input('3', 'somefile.3')]], '--log', 
+        Output('1', 'metapipe.1.output'), '-r', 
+        Output('1', 'metapipe.1.output')]
+
+    print(cmds[0].parts)
+    for i, part in enumerate(cmds[0].parts):
+        vals[i].should.equal(part)
