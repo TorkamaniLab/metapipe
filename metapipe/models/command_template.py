@@ -69,7 +69,7 @@ class CommandTemplate(object):
         while len(parts) > 0:
             parts_list, counter = _get_parts_list(parts, 
                 parts_list, counter)
-
+                
         commands = []
         for i, parts in enumerate(parts_list):
             alias = self._get_alias(i+1)

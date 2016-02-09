@@ -117,7 +117,6 @@ bash /usr/bin/bash
 rb /usr/bin/ruby
 """
 
-
 multiple_inputs = """
 [COMMANDS]
 bash somescript {1||2||3} --conf {4||5||6}  > {o}
@@ -131,6 +130,22 @@ python somescript.py {1,2,3} --conf {4,5,6}  > {o}
 5. somefile.5
 6. somefile.6
 """
+
+
+multiple_outputs = """
+[COMMANDS]
+bash somescript {1||2||3} --log {o} -r {o}
+python somescript.py {4,5,6} --log {o} -r {o} --output {o}
+
+[FILES]
+1. somefile.1
+2. somefile.2
+3. somefile.3
+4. somefile.4
+5. somefile.5
+6. somefile.6
+"""
+
 
 magic_inputs = """
 [COMMANDS]

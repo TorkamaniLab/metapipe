@@ -4,7 +4,7 @@ author: Brian Schrader
 since: 2015-12-21
 """
 
-from .tokens import Input, Output, FileToken, PathToken
+from .tokens import Input, Output, FileToken, PathToken, alias_pattern
 
 
 class Command(object):
@@ -13,8 +13,13 @@ class Command(object):
         self.alias = alias
         self.parts = parts
         self.dependencies = dependencies
-        for output in self.output_parts:
-            output.alias = self.alias
+        if len(self.output_parts) > 1:
+            for i, output in enumerate(self.output_parts):
+                output.alias = alias_pattern.format(command=self.alias, 
+                    output_number=i+1)
+        else:
+            for output in self.output_parts:
+                output.alias = self.alias
         
     def __repr__(self):
         return '<Command: {}>'.format(self.alias)
