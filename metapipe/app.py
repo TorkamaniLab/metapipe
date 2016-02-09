@@ -6,10 +6,6 @@ since: 2015-12-22
 
 from __future__ import print_function
 
-
-__version__ = '0.1'
-
-
 import argparse, pickle, sys
 
 import pyparsing
