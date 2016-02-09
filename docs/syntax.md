@@ -152,6 +152,54 @@ but it *will* match given pattern. This means that later commands will be able
 to reference the files by name.
 
 
+### Multiple Inputs and Outputs
+
+Often times a given shell command will either take multiple dynamic files as input, or generate multiple files as output. In either case, metapipe provides a way to manage and track these files.
+
+For multiple inputs, metapipe expects the number of inputs per command to be the same, and will iterate over them in order.
+
+**Example:**
+
+```bash
+# Given the following:
+[COMMANDS]
+bash somescript {1||2||3} --conf {4||5||6}  > {o}
+
+[FILES]
+1. somefile.1
+2. somefile.2
+3. somefile.3
+
+# Metapipe will return this:
+bash somescript somefile.1 --conf somefile.4  > metapipe.1.1.output
+bash somescript somefile.2 --conf somefile.5  > metapipe.1.2.output
+bash somescript somefile.3 --conf somefile.6  > metapipe.1.3.output
+```
+
+Metapipe will name the multiple output files as follows (in order from left to right):
+
+`metapipe.{command_number}.{sub_command_number}-{output_number}`
+
+**Example:**
+
+```bash
+# Given an input like the one below:
+[COMMANDS]
+bash somescript {1||2||3} --log {o} -r {o}
+
+[FILES]
+1. somefile.1
+2. somefile.2
+3. somefile.3
+
+# metapipe will generate the following:
+bash somescript somefile.1 --log metapipe.1.1-1.output -r metapipe.1.1-2.output
+bash somescript somefile.2 --log metapipe.1.2-1.output -r metapipe.1.2-2.output
+bash somescript somefile.3 --log metapipe.1.3-1.output -r metapipe.1.3-2.output
+```
+
+
+
 ## Sample config.mp file
 
 ```bash
