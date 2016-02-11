@@ -20,11 +20,11 @@ def call(args, stdout=PIPE, stderr=PIPE):
 class Job(object):
     """ A template job class that just runs the given command script locally.
     To make your own custom jobs, subclass this Job and override the status methods, the submit method, and cmd property.
-    
-    Submitting a job cannot block execution. The submit call should return 
+
+    Submitting a job cannot block execution. The submit call should return
     immediately so that other jobs can be executed, and tracked.
     """
-    
+
     JOB_FILE_PATTERN = 'metapipe.{}.job'
     MAX_RETRY = 5
 
@@ -44,14 +44,14 @@ class Job(object):
         with open(self.filename, 'w') as f:
             f.write(self.command.eval())
             print(self.command.eval())
-            
+
     # Override these...
 
     @property
     def cmd(self):
-        """ Returns the command needed to submit the calculations. 
-        Normally, this would be just running the command, however if 
-        using a queue system, then this should return the command to 
+        """ Returns the command needed to submit the calculations.
+        Normally, this would be just running the command, however if
+        using a queue system, then this should return the command to
         submit the command to the queue.
         """
         pass
@@ -62,17 +62,17 @@ class Job(object):
         :see: call
         """
         pass
-        
+
     def is_running(self):
         """ Returns whether the job is running or not. """
         pass
 
     def is_queued(self):
-        """ Returns whether the job is queued or not. 
+        """ Returns whether the job is queued or not.
         This function is only used if jobs are submitted to an external queue.
         """
         pass
-        
+
     def is_complete(self):
         """ Returns whether the job is complete or not. """
         pass
@@ -80,5 +80,5 @@ class Job(object):
     def is_error(self):
         """ Checks to see if the job errored out. """
         pass
-        
+
 

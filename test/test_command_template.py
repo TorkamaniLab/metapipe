@@ -134,3 +134,58 @@ def test_multiple_outputs():
     print(cmd.parts)
     for i, part in enumerate(cmd.parts):
         vals[i].should.equal(part)
+
+
+
+def test_another_sample_pipeline():
+    parser = Parser(another_sample)
+
+    templates = parser.consume()
+        
+    
+    vals = ['java', '-jar', 
+        PathToken('trimmomatic', 'Trimmomatic-0.35/trimmomatic-0.35.jar>'),
+        'PE', Input('1'), Input('2'), 
+        Output('1.1-1', 'metapipe.1.output'), Output('1.1-2', 'metapipe.1.output'), 
+        Output('1.1-3', 'metapipe.1.output'), Output('1.1-4', 'metapipe.1.output'),
+        'ILLUMINACLIP:Trimmomatic-0.35/adapters/TruSeq3-PE.fa:2:30:10:2:true', 
+        'LEADING:3', 'TRAILING:3'
+    ]
+
+    cmd = templates[0].eval()[0]
+    print(cmd.parts)
+    for i, part in enumerate(cmd.parts):
+        vals[i].should.equal(part)
+        
+
+def test_another_sample_pipeline_1():
+    parser = Parser(another_sample)
+
+    templates = parser.consume()
+        
+    
+    vals = ['gzip', '--stdout', '-d', 
+        Input('1.1-1'), '>', 
+        Output('2.1', 'metapipe.2.1.output')]
+
+    cmd = templates[1].eval()[0]
+    print(cmd.parts)
+    for i, part in enumerate(cmd.parts):
+        vals[i].should.equal(part)
+        
+
+def test_another_sample_pipeline_2():
+    parser = Parser(another_sample)
+
+    templates = parser.consume()
+        
+    
+    vals = [PathToken('cutadapt', '~/.local/bin/cutadapt'), '--cut', '7', 
+        '-o', Output('3.1', 'metapipe.3.1.output'), Input('2.1')]
+
+    cmd = templates[2].eval()[0]
+    print(cmd.parts)
+    for i, part in enumerate(cmd.parts):
+        vals[i].should.equal(part)
+        
+

@@ -41,7 +41,6 @@ class Runtime(object):
             new_commands = self._get_new_commands()
             for command in new_commands:
                 command.update_dependent_files(self.prev_commands)
-                self.prev_commands.append(command)
             
             new_jobs = []
             for command in new_commands:        
@@ -50,9 +49,13 @@ class Runtime(object):
             [self.queue.push(job) for job in new_jobs]
             
             try:
-                next(queue)
+                done = next(queue)
             except StopIteration:
                 pass
+                
+            for job in done:
+                if job.is_complete():
+                    self.prev_commands.append(job.command)
             
             if self.should_stop:
                 break

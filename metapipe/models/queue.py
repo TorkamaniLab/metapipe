@@ -50,9 +50,15 @@ class Queue(object):
     def clean(self):
         """ Clears old or complete jobs from the queue and puts complete
         jobs in the finished queue.
-        """        
-        self.queue = [job for job in self.queue 
-            if (not self.ready(job)) or job.is_running()]
+        """
+        queue, cruft = [], []
+        for job in self.queue:
+            if job.is_complete() or job.is_error():
+                cruft.append(job)
+            else:
+                queue.append(job)
+        self.queue = queue
+        return cruft
 
     def push(self, job):
         """ Push a job onto the queue. This does not submit the job. """
@@ -81,11 +87,11 @@ class Queue(object):
                     self.on_submit(job)
                 else:
                     pass
-            self.clean()
+            cruft = self.clean()
             if self.locked() and self.on_locked():
                 raise RuntimeError
             self.on_tick()
-            yield
+            yield cruft
         self.on_end()
         
     # Callbacks...
@@ -107,31 +113,32 @@ class Queue(object):
         
     def on_tick(self):
         """ Called when a tick of the queue is complete. """
-        print('------- tick ---------')
+        print('tick')
+        pass
     
     def on_ready(self, job):
         """ Called when a job is ready to be submitted. 
         :param job: The given job that is ready.
         """ 
-        print('Ready: %s' % job.alias)
+        pass
         
     def on_submit(self, job):
         """ Called when a job has been submitted. 
         :param job: The given job that has been submitted.
         """ 
-        print('Submitted: %s' % job.alias)
+        pass
         
     def on_complete(self, job):
         """ Called when a job has completed. 
         :param job: The given job that has completed.
         """ 
-        print('Complete: %s' % job.alias)
+        pass
         
     def on_error(self, job):
         """ Called when a job has errored. 
         :param job: The given job that has errored.
         """ 
-        print('Error: %s' % job.alias)
+        pass
 
 
 class JobQueue(Queue):

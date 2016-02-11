@@ -5,7 +5,7 @@ from . import Job, call
 
 class LocalJobCallThread(threading.Thread):
     """ A class that handles calling subprocesses in seperate threads. """
-    
+
     def __init__(self, callable, *args, **kwargs):
         self.stdout = None
         self.stderr = None
@@ -20,12 +20,12 @@ class LocalJobCallThread(threading.Thread):
 
 class LocalJob(Job):
     """ A subclass of job for local calculations. """
-    
+
     def __init__(self, alias, command, depends_on=[], shell='bash'):
         super(LocalJob, self).__init__(alias, command, depends_on)
         self.shell = shell
         self._task = None
-    
+
     @property
     def cmd(self):
         return [self.shell, self.filename]
@@ -34,19 +34,19 @@ class LocalJob(Job):
         self.make()
         self._task = LocalJobCallThread(call, self.cmd)
         self._task.start()
-        
+
     def is_running(self):
         try:
             return self._task.is_alive()
         except AttributeError:
             return False
-            
+
     def is_queued(self):
-        """ Returns False since local jobs are not submitted to an 
+        """ Returns False since local jobs are not submitted to an
         external queue.
         """
         return False
-            
+
     def is_complete(self):
         try:
             if not self._task.is_alive():
