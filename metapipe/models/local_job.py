@@ -25,13 +25,18 @@ class LocalJob(Job):
         super(LocalJob, self).__init__(alias, command, depends_on)
         self.shell = shell
         self._task = None
+        self._err = False
 
     @property
     def cmd(self):
         return [self.shell, self.filename]
 
     def submit(self):
-        self.make()
+        try:
+            self.make()
+        except ValueError:
+            self._err = True
+            return
         self._task = LocalJobCallThread(call, self.cmd)
         self._task.start()
 
@@ -58,6 +63,7 @@ class LocalJob(Job):
 
     def is_error(self):
         """ Checks to see if the job errored out. """
+        if self._err: return True
         try:
             if self._task.is_alive():
                 if len(self._task.stderr.readlines()) > 0:

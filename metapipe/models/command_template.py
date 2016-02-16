@@ -117,13 +117,13 @@ def _get_parts_list(to_go, so_far=[[]], ticker=None):
         while len(part) > 0:
             so_far, ticker = _get_parts_list(part, so_far, ticker)
     # Magic Inputs
-    elif isinstance(part, Input) and isinstance(part.eval(), list):
+    elif isinstance(part, Input) and part.is_magic:
         inputs = part.eval()
         while len(inputs) > 0:
             so_far, ticker = _get_parts_list(inputs, so_far, ticker)
             ticker.tick()
     # Normal inputs
-    elif isinstance(part, Input) and isinstance(part.eval(), str):
+    elif isinstance(part, Input) and not part.is_magic:
         so_far[ticker.value].append(part)
     # Everything else
     else:

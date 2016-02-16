@@ -108,20 +108,22 @@ class Input(FileToken):
 
     @property
     def is_magic(self):
-        return isinstance(self.eval(), list)
+        try:
+            return isinstance(self.eval(), list)
+        except ValueError:
+            return False
 
     @property
     def files(self):
         """ Returns a list of all the files that match the given
         input token.
         """
-        try:
-            return glob.glob(self.path)
-        except (AttributeError, TypeError) as e:
-            try:
-                return glob.glob(self.alias)
-            except (AttributeError, TypeError) as e:
-                raise ValueError('No files match.')
+        res = glob.glob(self.path)
+        if not res:
+            res = glob.glob(self.alias)
+        if not res:
+            raise ValueError('No files match.')
+        return res
 
     @staticmethod
     def from_string(string, _or=''):

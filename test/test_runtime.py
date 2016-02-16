@@ -220,7 +220,7 @@ def test_run_11():
     print(cmds[-1].parts)
     pipeline = Runtime(cmds, JOB_TYPES, 'mock', sleep_time=0.01)
     iters = pipeline.run()
-    iters.should.equal(6)
+    iters.should.be.greater_than(5)
 
 
 def test_long_running_run_1():
@@ -230,4 +230,4 @@ def test_long_running_run_1():
     print(cmds[-1].parts)
     pipeline = Runtime(cmds, JOB_TYPES, 'local', sleep_time=0.5)
     iters = pipeline.run()
-    iters.should.equal(7)
+    iters.should.be.greater_than(6)
