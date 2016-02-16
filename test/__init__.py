@@ -23,3 +23,9 @@ def teardown():
 
     for file in glob.glob('metapipe.*.output'):
         os.remove(file)
+
+    for file in glob.glob('metapipe.*_stdout'):
+        os.remove(file)
+
+    for file in glob.glob('metapipe.*_stderr'):
+        os.remove(file)
