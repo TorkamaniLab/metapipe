@@ -16,15 +16,15 @@ def test_eval_1():
     vals = [PathToken('python', '/usr/bin/python'), 'somescript.py', '-i',
         Input('1', 'somefile.1'),
         Input('2', 'somefile.2'),
-        Input('3', 'somefile.3'), 
+        Input('3', 'somefile.3'),
         '-o', Output('1.1', 'metapipe.1.1.output'),
         '-fgh', 'somefile.txt']
     cmd = templates[0].eval()[0]
     print(cmd.parts)
     for i, part in enumerate(cmd.parts):
         vals[i].should.equal(part)
-    
-    
+
+
 def test_eval_2():
     parser = Parser(overall)
     templates = parser.consume()
@@ -33,7 +33,7 @@ def test_eval_2():
     vals = [PathToken('python', '/usr/bin/python'), 'somescript.py', '-i',
         Input('4', 'somefile.4'),
         Input('5', 'somefile.5'),
-        Input('6', 'somefile.6'), 
+        Input('6', 'somefile.6'),
         '-o', Output('1.2', 'metapipe.1.2.output'),
         '-fgh', 'somefile.txt']
     cmd = templates[0].eval()[1]
@@ -41,15 +41,15 @@ def test_eval_2():
     for i, part in enumerate(cmd.parts):
         vals[i].should.equal(part)
 
-    
+
 def test_eval_multiple_inputs1():
     parser = Parser(multiple_inputs)
 
     templates = parser.consume()
-    
-    vals = ['bash', 'somescript', 
-        Input('1', 'somefile.1'), '--conf', 
-        Input('4', 'somefile.4'), 
+
+    vals = ['bash', 'somescript',
+        Input('1', 'somefile.1'), '--conf',
+        Input('4', 'somefile.4'),
         '>', Output('1.1', 'metapipe.1.1.output')]
     cmd = templates[0].eval()[0]
     print(cmd.parts)
@@ -61,10 +61,10 @@ def test_eval_multiple_inputs2():
     parser = Parser(multiple_inputs)
 
     templates = parser.consume()
-    
-    vals = ['bash', 'somescript', 
-        Input('2', 'somefile.2'), '--conf', 
-        Input('5', 'somefile.5'), 
+
+    vals = ['bash', 'somescript',
+        Input('2', 'somefile.2'), '--conf',
+        Input('5', 'somefile.5'),
         '>', Output('1.2', 'metapipe.1.2.output')]
     cmd = templates[0].eval()[1]
     print(cmd.parts)
@@ -76,10 +76,10 @@ def test_eval_multiple_inputs3():
     parser = Parser(multiple_inputs)
 
     templates = parser.consume()
-    
-    vals = ['bash', 'somescript', 
-        Input('3', 'somefile.3'), '--conf', 
-        Input('6', 'somefile.6'), 
+
+    vals = ['bash', 'somescript',
+        Input('3', 'somefile.3'), '--conf',
+        Input('6', 'somefile.6'),
         '>', Output('1.3', 'metapipe.1.3.output')]
     cmd = templates[0].eval()[2]
     print(cmd)
@@ -91,46 +91,128 @@ def test_eval_multiple_inputs4():
     parser = Parser(multiple_inputs)
 
     templates = parser.consume()
-    
-    vals = ['python', 'somescript.py', 
-        Input('1', 'somefile.1'), 
-        Input('2', 'somefile.2'), 
-        Input('3', 'somefile.3'), '--conf', 
-        Input('4', 'somefile.4'), 
-        Input('5', 'somefile.5'), 
-        Input('6', 'somefile.6'), 
+
+    vals = ['python', 'somescript.py',
+        Input('1', 'somefile.1'),
+        Input('2', 'somefile.2'),
+        Input('3', 'somefile.3'), '--conf',
+        Input('4', 'somefile.4'),
+        Input('5', 'somefile.5'),
+        Input('6', 'somefile.6'),
         '>', Output('2.1', 'metapipe.2.1.output')]
     cmd = templates[1].eval()[0]
     print(cmd.parts)
     for i, part in enumerate(cmd.parts):
         vals[i].should.equal(part)
-        
-        
+
+
 def test_eval_magic_input():
     parser = Parser(magic_inputs)
 
     templates = parser.consume()
-    
-    vals = ['bash', 'somescript', 
-        Input('*.counts', 'somefile.1'), 
+
+    vals = ['bash', 'somescript',
+        Input('*.counts', 'somefile.1'),
         '>', Output('1.1', 'metapipe.1.1.output')]
     cmd = templates[0].eval()[0]
     print(cmd.parts)
     for i, part in enumerate(cmd.parts):
         vals[i].should.equal(part)
-    
-    
+
+
 def test_multiple_outputs():
     parser = Parser(multiple_outputs)
 
     templates = parser.consume()
-    
-    vals = ['bash', 'somescript', 
-        Input('1', 'somefile.1'), '--log', 
-        Output('1.1-1', 'metapipe.1.1-1.output'), '-r', 
+
+    vals = ['bash', 'somescript',
+        Input('1', 'somefile.1'), '--log',
+        Output('1.1-1', 'metapipe.1.1-1.output'), '-r',
         Output('1.1-2', 'metapipe.1.1-2.output')]
 
     cmd = templates[0].eval()[0]
     print(cmd.parts)
+    for i, part in enumerate(cmd.parts):
+        vals[i].should.equal(part)
+
+
+
+def test_another_sample_pipeline():
+    parser = Parser(another_sample)
+
+    templates = parser.consume()
+
+
+    vals = ['java', '-jar',
+        PathToken('trimmomatic', 'Trimmomatic-0.35/trimmomatic-0.35.jar>'),
+        'PE', Input('1'), Input('2'),
+        Output('1.1-1', 'metapipe.1.output'), Output('1.1-2', 'metapipe.1.output'),
+        Output('1.1-3', 'metapipe.1.output'), Output('1.1-4', 'metapipe.1.output'),
+        'ILLUMINACLIP:Trimmomatic-0.35/adapters/TruSeq3-PE.fa:2:30:10:2:true',
+        'LEADING:3', 'TRAILING:3'
+    ]
+
+    cmd = templates[0].eval()[0]
+    print(cmd.parts)
+    for i, part in enumerate(cmd.parts):
+        vals[i].should.equal(part)
+
+
+def test_another_sample_pipeline_1():
+    parser = Parser(another_sample)
+
+    templates = parser.consume()
+
+
+    vals = ['gzip', '--stdout', '-d',
+        Input('1.1-1'), '>',
+        Output('2.1', 'metapipe.2.1.output')]
+
+    cmd = templates[1].eval()[0]
+    print(cmd.parts)
+    for i, part in enumerate(cmd.parts):
+        vals[i].should.equal(part)
+
+
+def test_another_sample_pipeline_2():
+    parser = Parser(another_sample)
+
+    templates = parser.consume()
+
+
+    vals = [PathToken('cutadapt', '~/.local/bin/cutadapt'), '--cut', '7',
+        '-o', Output('3.1', 'metapipe.3.1.output'), Input('2.1')]
+
+    cmd = templates[2].eval()[0]
+    print(cmd.parts)
+    for i, part in enumerate(cmd.parts):
+        vals[i].should.equal(part)
+
+
+def test_long_running_1():
+    parser = Parser(long_running)
+
+    templates = parser.consume()
+
+
+    vals = ['cat', Input('1', 'somefile.1'), '>',
+        Output('1.1', 'metapipe.1.1.output'), '&&', 'sleep', '1']
+
+    cmd = templates[0].eval()[0]
+    print(cmd.parts)
+    for i, part in enumerate(cmd.parts):
+        vals[i].should.equal(part)
+
+
+def test_long_running_2():
+    parser = Parser(long_running)
+
+    templates = parser.consume()
+
+
+    vals = ['cat', Input('1.1', 'metapipe.1.1.output'), '&&', 'sleep', '1']
+
+    cmd = templates[1].eval()[0]
+    print(cmd.parts, cmd.dependencies)
     for i, part in enumerate(cmd.parts):
         vals[i].should.equal(part)

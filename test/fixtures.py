@@ -26,6 +26,10 @@ java -jar trimmomatic PE {*R1_001.fastq.gz||} {*R2_001.fastq.gz||} \
     LEADING:3 TRAILING:3
 """
 
+cmd_using_multiple_out = """
+gzip --stdout -d {1.1-1||1.1-3} > {o}
+"""
+
 file = """1. somedir/somefile.ext"""
 
 path = """python /usr/bin/python"""
@@ -204,4 +208,49 @@ HG_19 /gpfs/group/stsi/data/bschrader/hg19/hg19_ucsc
 gene_list /gpfs/home/atorkama/iGenomes/Homo_sapiens/UCSC/hg19/Annotation/Archives/archive-2011-08-30-21-45-18/Genes/genes.gtf
 """
 
+another_sample = """
+[COMMANDS]
+# Trimmomatic
+java -jar trimmomatic PE {1} {2} {o} {o} {o} {o} ILLUMINACLIP:Trimmomatic-0.35/adapters/TruSeq3-PE.fa:2:30:10:2:true LEADING:3 TRAILING:3
 
+# Unzip the outputs from trimmomatic
+gzip --stdout -d {1.1-1||1.1-3} > {o}
+
+# Cutadapt
+# cutadapt needs unzipped fastq files
+cutadapt --cut 7 -o {o} {2.1||2.2}
+
+# BowTie
+bowtie2 --very-sensitive -N 1 -p 8 -x HG_19 -q -1 {3.1} -2 {3.2} -S {o}
+
+# HTSeq
+htseq-count {4.1} gene_list > {o}
+
+# Summary
+head --lines -5 {5.1} > {o}
+
+[PATHS]
+trimmomatic Trimmomatic-0.35/trimmomatic-0.35.jar
+cutadapt ~/.local/bin/cutadapt
+HG_19 hg19_ucsc.1.bt2
+gene_list genes.gtf
+
+
+[FILES]
+1. somefile.1
+2. somefile.2
+"""
+
+long_running = """
+[COMMANDS]
+cat {1||2||3||4} > {o} && sleep 1
+cat {1.1||1.2} && sleep 1
+
+[FILES]
+1. somefile.1
+2. somefile.2
+3. somefile.3
+4. somefile.4
+5. somefile.5
+6. somefile.6
+"""

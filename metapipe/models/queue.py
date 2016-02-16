@@ -11,21 +11,21 @@ import logging
 
 
 class Queue(object):
-    """ An abstract class for managing a queue of jobs. To use this class, 
+    """ An abstract class for managing a queue of jobs. To use this class,
     subclass it and fill in the callbacks you need.
     """
-    
+
     JOB_RETRY_ATTEMPTS = 2
 
     def __init__(self):
         self.queue = []
-                    
+
     def __repr__(self):
         return '<Queue: jobs=%s>' % len(self.queue)
-        
+
     def __iter__(self):
         return iter(self.queue)
-        
+
     @property
     def is_empty(self):
         return len(self.queue) == 0
@@ -46,21 +46,27 @@ class Queue(object):
         locked = all(True for j in self.queue
                 if any(True for f in self.failed
                     if f in j.depends_on))
-                    
+
     def clean(self):
         """ Clears old or complete jobs from the queue and puts complete
         jobs in the finished queue.
-        """        
-        self.queue = [job for job in self.queue 
-            if (not self.ready(job)) or job.is_running()]
+        """
+        queue, cruft = [], []
+        for job in self.queue:
+            if job.is_complete() or job.is_error():
+                cruft.append(job)
+            else:
+                queue.append(job)
+        self.queue = queue
+        return cruft
 
     def push(self, job):
         """ Push a job onto the queue. This does not submit the job. """
         self.queue.append(job)
-        
+
     def tick(self):
         """ Submits all the given jobs in the queue and watches their
-        progress as they proceed. This function yields at the end of 
+        progress as they proceed. This function yields at the end of
         each iteration of the queue.
         :raises RuntimeError: If queue is locked.
         """
@@ -81,15 +87,14 @@ class Queue(object):
                     self.on_submit(job)
                 else:
                     pass
-            self.clean()
             if self.locked() and self.on_locked():
                 raise RuntimeError
             self.on_tick()
-            yield
+            yield self.clean()
         self.on_end()
-        
+
     # Callbacks...
-        
+
     def on_start(self):
         """ Called when the queue is starting up. """
         pass
@@ -97,41 +102,41 @@ class Queue(object):
     def on_end(self):
         """ Called when the queue is shutting down. """
         pass
-    
+
     def on_locked(self):
-        """ Called when the queue is locked and no jobs can proceed. 
+        """ Called when the queue is locked and no jobs can proceed.
         If this callback returns True, then the queue will be restarted,
         else it will be terminated.
         """
         return True
-        
+
     def on_tick(self):
         """ Called when a tick of the queue is complete. """
-        print('------- tick ---------')
-    
+        pass
+
     def on_ready(self, job):
-        """ Called when a job is ready to be submitted. 
+        """ Called when a job is ready to be submitted.
         :param job: The given job that is ready.
-        """ 
-        print('Ready: %s' % job.alias)
-        
+        """
+        pass
+
     def on_submit(self, job):
-        """ Called when a job has been submitted. 
+        """ Called when a job has been submitted.
         :param job: The given job that has been submitted.
-        """ 
-        print('Submitted: %s' % job.alias)
-        
+        """
+        pass
+
     def on_complete(self, job):
-        """ Called when a job has completed. 
+        """ Called when a job has completed.
         :param job: The given job that has completed.
-        """ 
-        print('Complete: %s' % job.alias)
-        
+        """
+        pass
+
     def on_error(self, job):
-        """ Called when a job has errored. 
+        """ Called when a job has errored.
         :param job: The given job that has errored.
-        """ 
-        print('Error: %s' % job.alias)
+        """
+        pass
 
 
 class JobQueue(Queue):
@@ -142,12 +147,12 @@ class JobQueue(Queue):
         self.failed = []
         self.complete = []
         self.logger = logging.getLogger(__name__)
-    
+
     def on_locked(self):
         self.logger.log(('The queue is locked. Please check the logs. %s')
                 % self.log_dir)
         return True
-        
+
     def on_complete(self, job):
         self.complete.append(job)
         print('Complete: %s' % job.alias)
@@ -162,5 +167,5 @@ class JobQueue(Queue):
             self.failed.append(job)
             self.logger.log('Error: Job %s has failed. Retried %s times.'
                     % (job.name, str(job.attempts)))
-        
-        
+
+

@@ -99,4 +99,11 @@ def test_multiple_close_inputs():
 	res = Grammar.command.parseString(cmd_multiple_close_inputs)
 	res._in.should.have.length_of(6)
 	
+	
+def test_full_pipeline_1():
+	res = Grammar.command.parseString(cmd_using_multiple_out)
+	res._in.should.have.length_of(2)
+    
+    
+    
     
