@@ -3,6 +3,9 @@ import threading
 from . import Job, call
 
 
+LOCAL_LOG_FORMAT = '{}_{}'
+
+
 class LocalJobCallThread(threading.Thread):
     """ A class that handles calling subprocesses in seperate threads. """
 
@@ -13,9 +16,11 @@ class LocalJobCallThread(threading.Thread):
         self.args = args
         self.kwargs = kwargs
         threading.Thread.__init__(self)
+        self.stdout = None
+        self.stderr = None
 
     def run(self):
-        self.callable(*self.args, **self.kwargs)
+        self.stdout, self.stderr = self.callable(*self.args, **self.kwargs)
 
 
 class LocalJob(Job):
@@ -56,6 +61,7 @@ class LocalJob(Job):
         try:
             if not self._task.is_alive():
                 self._task.join()
+                self._write_log()
                 return True
         except AttributeError:
             pass
@@ -68,7 +74,19 @@ class LocalJob(Job):
             if self._task.is_alive():
                 if len(self._task.stderr.readlines()) > 0:
                     self._task.join()
+                    self._write_log()
                     return True
         except AttributeError:
             pass
         return False
+
+    def _write_log(self):
+        alias = Job.JOB_FILE_PATTERN.format(self.alias)
+        outlog, errlog = (LOCAL_LOG_FORMAT.format(alias, 'stdout'),
+            LOCAL_LOG_FORMAT.format(alias, 'stderr'))
+
+        with open(outlog, 'w+') as f:
+            f.write(str(self._task.stdout))
+        with open(errlog, 'w+') as f:
+            f.write(str(self._task.stderr))
+

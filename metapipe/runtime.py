@@ -38,7 +38,6 @@ class Runtime(object):
         iterations = 0
         queue = self.queue.tick()
         while not self.should_stop:
-            print('iter', iterations)
             new_commands = self._get_new_commands()
             for command in new_commands:
                 command.update_dependent_files([job.command
@@ -93,7 +92,6 @@ class Runtime(object):
         new_commands, not_ready = [], []
         for template in self.templates:
             if self._ready(template):
-                print('ready', template.alias)
                 new_commands.extend(template.eval())
             else:
                 not_ready.append(template)
