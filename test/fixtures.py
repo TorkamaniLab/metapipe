@@ -19,6 +19,9 @@ cmd_compound2 = """./somescript {1,2,3,4||test/files/*.counts,}
 cmd_multiple_inputs = """bash somescript {1,2,3} --conf {4,5,6}  > {o}
 """
 
+cmd_suggest_output = """bash somescript {1,2,3} > {o.gz}
+"""
+
 cmd_multiple_close_inputs = """
 java -jar trimmomatic PE {*R1_001.fastq.gz||} {*R2_001.fastq.gz||} \
     {o} {o} {o} {o} \
@@ -245,6 +248,20 @@ long_running = """
 [COMMANDS]
 cat {1||2||3||4} > {o} && sleep 1
 cat {1.1||1.2} && sleep 1
+
+[FILES]
+1. somefile.1
+2. somefile.2
+3. somefile.3
+4. somefile.4
+5. somefile.5
+6. somefile.6
+"""
+
+full_output_file_name = """
+[COMMANDS]
+gzip {1||2||3||4} > {o.gz}
+cat {1.1||1.2} > {o.gz}
 
 [FILES]
 1. somefile.1

@@ -165,6 +165,8 @@ def _is_output(part):
         return True
     elif part[0][:2].lower() == 'o:':
         return True
+    elif part[0][:2].lower() == 'o.':
+        return True
     else:
         return False
 

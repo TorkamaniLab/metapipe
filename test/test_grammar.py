@@ -2,7 +2,7 @@
 
 import sure
 
-from metapipe.models.grammar import Grammar 
+from metapipe.models.grammar import Grammar
 
 from .fixtures import *
 
@@ -10,7 +10,7 @@ from .fixtures import *
 def test_cmd():
     res = Grammar.command.parseString(cmd)
     val = ['python somescript.py -i ', '-o ', '-fgh  somefile.txt']
-    
+
     for i, c in enumerate(res.command):
         c.should.equal(val[i])
 
@@ -24,13 +24,24 @@ def test_cmd():
     res._in[1][0][0].should.equal('o')
 
 
+def test_cmd_output_name():
+    res = Grammar.command.parseString(cmd_suggest_output)
+    val = ['bash somescript ', '> ']
+
+    for i, c in enumerate(res.command):
+        c.should.equal(val[i])
+
+    print(res._in)
+    res._in[1][0][0].should.equal('o.gz')
+
+
 def test_cmd_magic1():
     res = Grammar.command.parseString(cmd_magic1)
     val = ['python somescript.py ', '> someout']
 
     for i, c in enumerate(res.command):
         c.should.equal(val[i])
-    
+
     res._in[0][0][0].should.equal('*.counts')
 
 
@@ -85,7 +96,7 @@ def test_path():
 
 def test_overall():
 	res = Grammar.overall.parseString(overall)
-	
+
 	res['COMMANDS'][0][0].should.equal('python')
 	res['COMMANDS'][0][1].should.equal(' somescript.py -i {1,2,3||4,5,6} -o {o} -fgh somefile.txt')
 
@@ -93,17 +104,17 @@ def test_overall():
 def test_multiple_inputs():
 	res = Grammar.command.parseString(cmd_multiple_inputs)
 	res._in.should.have.length_of(3)
-	
+
 
 def test_multiple_close_inputs():
 	res = Grammar.command.parseString(cmd_multiple_close_inputs)
 	res._in.should.have.length_of(6)
-	
-	
+
+
 def test_full_pipeline_1():
 	res = Grammar.command.parseString(cmd_using_multiple_out)
 	res._in.should.have.length_of(2)
-    
-    
-    
-    
+
+
+
+

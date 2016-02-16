@@ -216,3 +216,18 @@ def test_long_running_2():
     print(cmd.parts, cmd.dependencies)
     for i, part in enumerate(cmd.parts):
         vals[i].should.equal(part)
+
+
+def test_output_file_name():
+    parser = Parser(full_output_file_name)
+
+    templates = parser.consume()
+
+
+    vals = ['gzip', Input('1', 'somefile.1'), '>',
+        Output('1.1', 'metapipe.1.1.output.gz')]
+
+    cmd = templates[0].eval()[0]
+    print(cmd.parts, cmd.dependencies)
+    for i, part in enumerate(cmd.parts):
+        vals[i].should.equal(part)

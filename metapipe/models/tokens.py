@@ -9,7 +9,7 @@ from collections import namedtuple
 import glob, re
 
 
-file_pattern = 'metapipe.{}.output'
+file_pattern = 'metapipe.{}.output{}'
 alias_pattern = '{command}-{output_number}'
 
 
@@ -142,11 +142,13 @@ class Output(FileToken):
 
     def __init__(self, alias, filename='', cwd='', magic=''):
         super(Output, self).__init__(alias, filename, cwd)
-        self.magic = self._clean_magic(magic)
+        self.ext = ''
+        self.magic = ''
+        self._clean(magic)
 
     def __repr__(self):
-        return '<Output: {}->[{}]{}>'.format(self.alias, self.eval(),
-            (' ' + self.magic) if self.magic else '')
+        return '<Output: {}->[{}]{} {}>'.format(self.alias, self.eval(),
+            (' ' + self.magic) if self.magic else '', self.ext)
 
     def __eq__(self, other):
         """ Overrides the token eq to allow for magic : alias comparison for
@@ -163,20 +165,21 @@ class Output(FileToken):
         if self.magic:
             return self.magic
         if not self.filename:
-            return file_pattern.format(self.alias)
+            return file_pattern.format(self.alias, self.ext)
         return self.path
 
     def as_input(self):
         """ Returns an input token for the given output. """
         return Input(self.alias, self.eval())
 
-    def _clean_magic(self, magic):
+    def _clean(self, magic):
         """ Given a magic string, remove the output tag designator. """
         if magic.lower() == 'o':
-            return ''
+            self.magic = ''
         elif magic[:2].lower() == 'o:':
-            return magic[2:]
-        return magic
+            self.magic = magic[2:]
+        elif magic[:2].lower() == 'o.':
+            self.ext = magic[1:]
 
     @staticmethod
     def from_string(string):
