@@ -196,7 +196,7 @@ def test_long_running_1():
 
 
     vals = ['cat', Input('1', 'somefile.1'), '>',
-        Output('1.1', 'metapipe.1.1.output'), '&&', 'sleep', '2']
+        Output('1.1', 'metapipe.1.1.output'), '&&', 'sleep', '1']
 
     cmd = templates[0].eval()[0]
     print(cmd.parts)
@@ -210,7 +210,7 @@ def test_long_running_2():
     templates = parser.consume()
 
 
-    vals = ['cat', Input('1.1', 'metapipe.1.1.output'), '&&', 'sleep', '2']
+    vals = ['cat', Input('1.1', 'metapipe.1.1.output'), '&&', 'sleep', '1']
 
     cmd = templates[1].eval()[0]
     print(cmd.parts, cmd.dependencies)

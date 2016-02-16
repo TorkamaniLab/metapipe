@@ -356,7 +356,7 @@ def test_long_running_1():
     cmd = templates[0].eval()[0]
     print(cmd.parts)
     cmd.update_dependent_files(old_commands)
-    cmd.eval().should.equal('cat somefile.1 > metapipe.1.1.output && sleep 2')
+    cmd.eval().should.equal('cat somefile.1 > metapipe.1.1.output && sleep 1')
 
 
 def test_long_running_2():
@@ -373,4 +373,4 @@ def test_long_running_2():
     print(cmd.parts, cmd.dependencies)
     cmd.update_dependent_files(old_commands)
     cmd.eval().should.equal('cat metapipe.1.1.output && '
-        'sleep 2')
+        'sleep 1')

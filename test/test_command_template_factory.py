@@ -119,7 +119,7 @@ def test_long_running_1():
     vals = ['cat', [[Input('1', 'somefile.1')],
         [Input('2', 'somefile.2')], [Input('3', 'somefile.3')],
         [Input('4', 'somefile.4')]], '>',
-        Output('1', 'metapipe.1.output'), '&&', 'sleep', '2']
+        Output('1', 'metapipe.1.output'), '&&', 'sleep', '1']
 
     print(cmds[0].parts)
     for i, part in enumerate(cmds[0].parts):
@@ -132,7 +132,7 @@ def test_long_running_2():
     cmds = parser.consume()
 
 
-    vals = ['cat', [[Input('1.1')], [Input('1.2')]], '&&', 'sleep', '2']
+    vals = ['cat', [[Input('1.1')], [Input('1.2')]], '&&', 'sleep', '1']
 
     print(cmds[1].parts)
     for i, part in enumerate(cmds[1].parts):
