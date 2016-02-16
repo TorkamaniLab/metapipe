@@ -243,8 +243,8 @@ gene_list genes.gtf
 
 long_running = """
 [COMMANDS]
-cat {1||2||3||4} && sleep 2
-cat {5||6} && sleep 2
+cat {1||2||3||4} > {o} && sleep 1
+cat {1.1||1.2} && sleep 1
 
 [FILES]
 1. somefile.1

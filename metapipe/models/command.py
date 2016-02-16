@@ -15,25 +15,25 @@ class Command(object):
         self.dependencies = dependencies
         if len(self.output_parts) > 1:
             for i, output in enumerate(self.output_parts):
-                output.alias = alias_pattern.format(command=self.alias, 
+                output.alias = alias_pattern.format(command=self.alias,
                     output_number=i+1)
         else:
             for output in self.output_parts:
                 output.alias = self.alias
-        
+
     def __repr__(self):
         return '<Command: {}>'.format(self.alias)
-        
+
     def update_dependent_files(self, prev_commands=[]):
-        """ Update the command's dependencies based on the evaluated input and 
-        output of previous commands. 
+        """ Update the command's dependencies based on the evaluated input and
+        output of previous commands.
         """
         for command in prev_commands:
             for my_input in self.input_parts:
                 for their_output in command.output_parts:
                     if their_output == my_input:
                         my_input.filename = their_output.eval()
-                                
+
     def eval(self):
         """ Evaluate the given job and return a complete shell script to be run
         by the job manager.
@@ -52,7 +52,7 @@ class Command(object):
         """ Returns a list of the input tokens in the list of parts. """
         return [part for part in self.file_parts
             if isinstance(part, Input)]
-        
+
     @property
     def output_parts(self):
         """ Returns a list of the output tokens in the list of parts. """
@@ -72,7 +72,7 @@ class Command(object):
                 if isinstance(part, FileToken):
                     file_parts.append(part)
         return file_parts
-        
+
     @property
     def path_parts(self):
         """ Returns a list of the path tokens in the list of parts. """

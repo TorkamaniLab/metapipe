@@ -121,7 +121,7 @@ class Input(FileToken):
             try:
                 return glob.glob(self.alias)
             except (AttributeError, TypeError) as e:
-                return []
+                raise ValueError('No files match.')
 
     @staticmethod
     def from_string(string, _or=''):

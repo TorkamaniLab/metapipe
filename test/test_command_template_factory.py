@@ -110,3 +110,40 @@ def test_another_sample_pipeline_2():
         vals[i].should.equal(part)
 
 
+def test_long_running_1():
+    parser = Parser(long_running)
+
+    cmds = parser.consume()
+
+
+    vals = ['cat', [[Input('1', 'somefile.1')],
+        [Input('2', 'somefile.2')], [Input('3', 'somefile.3')],
+        [Input('4', 'somefile.4')]], '>',
+        Output('1', 'metapipe.1.output'), '&&', 'sleep', '2']
+
+    print(cmds[0].parts)
+    for i, part in enumerate(cmds[0].parts):
+        vals[i].should.equal(part)
+
+
+def test_long_running_2():
+    parser = Parser(long_running)
+
+    cmds = parser.consume()
+
+
+    vals = ['cat', [[Input('1.1')], [Input('1.2')]], '&&', 'sleep', '2']
+
+    print(cmds[1].parts)
+    for i, part in enumerate(cmds[1].parts):
+        vals[i].should.equal(part)
+
+
+def test_long_running_2_deps():
+    parser = Parser(long_running)
+
+    cmds = parser.consume()
+
+    print(cmds[1].dependencies)
+    cmds[1].dependencies.should.have.length_of(1)
+

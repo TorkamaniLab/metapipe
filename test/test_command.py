@@ -344,3 +344,33 @@ def test_another_sample_pipeline_2():
     cmd.update_dependent_files(old_commands)
     cmd.eval().should.equal('~/.local/bin/cutadapt --cut 7 -o '
         'metapipe.3.1.output metapipe.2.1.output')
+
+
+def test_long_running_1():
+    parser = Parser(long_running)
+
+    old_commands = []
+
+    templates = parser.consume()
+
+    cmd = templates[0].eval()[0]
+    print(cmd.parts)
+    cmd.update_dependent_files(old_commands)
+    cmd.eval().should.equal('cat somefile.1 > metapipe.1.1.output && sleep 2')
+
+
+def test_long_running_2():
+    parser = Parser(long_running)
+
+    templates = parser.consume()
+
+    old_commands = []
+
+    for cmd in templates[0:1]:
+        old_commands.extend(cmd.eval())
+    cmd = templates[1].eval()[0]
+
+    print(cmd.parts, cmd.dependencies)
+    cmd.update_dependent_files(old_commands)
+    cmd.eval().should.equal('cat metapipe.1.1.output && '
+        'sleep 2')
