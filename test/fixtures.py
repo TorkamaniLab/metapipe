@@ -260,8 +260,10 @@ cat {1.1||1.2} && sleep 1
 
 full_output_file_name = """
 [COMMANDS]
-gzip {1||2||3||4} > {o.gz}
-cat {1.1||1.2} > {o.gz}
+gzip --stdout {1} > {o.gz}
+cat {1.1} > {o.gz}
+cat {2.1} > {o.gz}
+cat {2.1} > {o.gz}
 
 [FILES]
 1. somefile.1

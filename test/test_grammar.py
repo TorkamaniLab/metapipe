@@ -14,7 +14,6 @@ def test_cmd():
     for i, c in enumerate(res.command):
         c.should.equal(val[i])
 
-    print(res._in)
     res._in[0][0][0].should.equal('1')
     res._in[0][0][2].should.equal('2')
     res._in[0][0][4].should.equal('3')
@@ -31,7 +30,6 @@ def test_cmd_output_name():
     for i, c in enumerate(res.command):
         c.should.equal(val[i])
 
-    print(res._in)
     res._in[1][0][0].should.equal('o.gz')
 
 
@@ -60,7 +58,6 @@ def test_cmd_compund1():
 
     for i, c in enumerate(res.command):
         c.should.equal(val[i])
-    print(res)
     res._in[0][0][0].should.equal('1')
     res._in[0][0][2].should.equal('2')
     res._in[0][0][4].should.equal('3')
@@ -74,7 +71,6 @@ def test_cmd_compund2():
 
     for i, c in enumerate(res.command):
         c.should.equal(val[i])
-    print(res)
     res._in[0][0][0].should.equal('1')
     res._in[0][0][2].should.equal('2')
     res._in[0][0][4].should.equal('3')

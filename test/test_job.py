@@ -14,10 +14,10 @@ from .fixtures import *
 
 
 def test_new_job():
-    alias, command, depends_on = 'test', Command([], [], []), []
+    alias, command, depends_on = 'test', Command([], []), []
     job = Job(alias, command, depends_on)
     job.alias.should.equal(alias)
     job.command.should.equal(command)
     job.depends_on.should.equal(depends_on)
-    
+
 

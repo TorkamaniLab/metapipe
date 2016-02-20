@@ -20,7 +20,6 @@ def test_eval_1():
         '-o', Output('1.1', 'metapipe.1.1.output'),
         '-fgh', 'somefile.txt']
     cmd = templates[0].eval()[0]
-    print(cmd.parts)
     for i, part in enumerate(cmd.parts):
         vals[i].should.equal(part)
 
@@ -28,7 +27,6 @@ def test_eval_1():
 def test_eval_2():
     parser = Parser(overall)
     templates = parser.consume()
-    print(templates[0].parts)
 
     vals = [PathToken('python', '/usr/bin/python'), 'somescript.py', '-i',
         Input('4', 'somefile.4'),
@@ -37,7 +35,6 @@ def test_eval_2():
         '-o', Output('1.2', 'metapipe.1.2.output'),
         '-fgh', 'somefile.txt']
     cmd = templates[0].eval()[1]
-    print(cmd.parts)
     for i, part in enumerate(cmd.parts):
         vals[i].should.equal(part)
 
@@ -52,7 +49,6 @@ def test_eval_multiple_inputs1():
         Input('4', 'somefile.4'),
         '>', Output('1.1', 'metapipe.1.1.output')]
     cmd = templates[0].eval()[0]
-    print(cmd.parts)
     for i, part in enumerate(cmd.parts):
         vals[i].should.equal(part)
 
@@ -67,7 +63,6 @@ def test_eval_multiple_inputs2():
         Input('5', 'somefile.5'),
         '>', Output('1.2', 'metapipe.1.2.output')]
     cmd = templates[0].eval()[1]
-    print(cmd.parts)
     for i, part in enumerate(cmd.parts):
         vals[i].should.equal(part)
 
@@ -101,7 +96,6 @@ def test_eval_multiple_inputs4():
         Input('6', 'somefile.6'),
         '>', Output('2.1', 'metapipe.2.1.output')]
     cmd = templates[1].eval()[0]
-    print(cmd.parts)
     for i, part in enumerate(cmd.parts):
         vals[i].should.equal(part)
 
@@ -115,7 +109,6 @@ def test_eval_magic_input():
         Input('*.counts', 'somefile.1'),
         '>', Output('1.1', 'metapipe.1.1.output')]
     cmd = templates[0].eval()[0]
-    print(cmd.parts)
     for i, part in enumerate(cmd.parts):
         vals[i].should.equal(part)
 
@@ -131,7 +124,6 @@ def test_multiple_outputs():
         Output('1.1-2', 'metapipe.1.1-2.output')]
 
     cmd = templates[0].eval()[0]
-    print(cmd.parts)
     for i, part in enumerate(cmd.parts):
         vals[i].should.equal(part)
 
@@ -153,7 +145,6 @@ def test_another_sample_pipeline():
     ]
 
     cmd = templates[0].eval()[0]
-    print(cmd.parts)
     for i, part in enumerate(cmd.parts):
         vals[i].should.equal(part)
 
@@ -169,7 +160,6 @@ def test_another_sample_pipeline_1():
         Output('2.1', 'metapipe.2.1.output')]
 
     cmd = templates[1].eval()[0]
-    print(cmd.parts)
     for i, part in enumerate(cmd.parts):
         vals[i].should.equal(part)
 
@@ -184,7 +174,6 @@ def test_another_sample_pipeline_2():
         '-o', Output('3.1', 'metapipe.3.1.output'), Input('2.1')]
 
     cmd = templates[2].eval()[0]
-    print(cmd.parts)
     for i, part in enumerate(cmd.parts):
         vals[i].should.equal(part)
 
@@ -199,7 +188,6 @@ def test_long_running_1():
         Output('1.1', 'metapipe.1.1.output'), '&&', 'sleep', '1']
 
     cmd = templates[0].eval()[0]
-    print(cmd.parts)
     for i, part in enumerate(cmd.parts):
         vals[i].should.equal(part)
 
@@ -213,7 +201,6 @@ def test_long_running_2():
     vals = ['cat', Input('1.1', 'metapipe.1.1.output'), '&&', 'sleep', '1']
 
     cmd = templates[1].eval()[0]
-    print(cmd.parts, cmd.dependencies)
     for i, part in enumerate(cmd.parts):
         vals[i].should.equal(part)
 
@@ -224,10 +211,9 @@ def test_output_file_name():
     templates = parser.consume()
 
 
-    vals = ['gzip', Input('1', 'somefile.1'), '>',
+    vals = ['gzip', '--stdout', Input('1', 'somefile.1'), '>',
         Output('1.1', 'metapipe.1.1.output.gz')]
 
     cmd = templates[0].eval()[0]
-    print(cmd.parts, cmd.dependencies)
     for i, part in enumerate(cmd.parts):
         vals[i].should.equal(part)

@@ -35,7 +35,6 @@ def test_multiple_outputs():
         Output('1', 'metapipe.1.output'), '-r',
         Output('1', 'metapipe.1.output')]
 
-    print(cmds[0].parts)
     for i, part in enumerate(cmds[0].parts):
         vals[i].should.equal(part)
 
@@ -55,7 +54,6 @@ def test_full_sample_pipeline():
         'LEADING:3', 'TRAILING:3'
     ]
 
-    print(cmds[0].parts)
     for i, part in enumerate(cmds[0].parts):
         vals[i].should.equal(part)
 
@@ -75,7 +73,6 @@ def test_another_sample_pipeline():
         'LEADING:3', 'TRAILING:3'
     ]
 
-    print(cmds[0].parts)
     for i, part in enumerate(cmds[0].parts):
         vals[i].should.equal(part)
 
@@ -90,7 +87,6 @@ def test_another_sample_pipeline_1():
         [[Input('1.1-1')], [Input('1.1-3')]], '>',
         Output('2', 'metapipe.2.output')]
 
-    print(cmds[1].parts)
     for i, part in enumerate(cmds[1].parts):
         vals[i].should.equal(part)
 
@@ -105,7 +101,6 @@ def test_another_sample_pipeline_2():
         Output('3', 'metapipe.3.output'),
             [[Input('2.1')], [Input('2.2')]]]
 
-    print(cmds[2].parts)
     for i, part in enumerate(cmds[2].parts):
         vals[i].should.equal(part)
 
@@ -121,7 +116,6 @@ def test_long_running_1():
         [Input('4', 'somefile.4')]], '>',
         Output('1', 'metapipe.1.output'), '&&', 'sleep', '1']
 
-    print(cmds[0].parts)
     for i, part in enumerate(cmds[0].parts):
         vals[i].should.equal(part)
 
@@ -134,7 +128,6 @@ def test_long_running_2():
 
     vals = ['cat', [[Input('1.1')], [Input('1.2')]], '&&', 'sleep', '1']
 
-    print(cmds[1].parts)
     for i, part in enumerate(cmds[1].parts):
         vals[i].should.equal(part)
 
@@ -144,6 +137,5 @@ def test_long_running_2_deps():
 
     cmds = parser.consume()
 
-    print(cmds[1].dependencies)
     cmds[1].dependencies.should.have.length_of(1)
 

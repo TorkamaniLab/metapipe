@@ -1,0 +1,1 @@
+sh long_run_task_err.sh metapipe.1.1.output.testing_file metapipe.1.2.output.testing_file
