@@ -107,6 +107,17 @@ class Input(FileToken):
         return ' '.join(self.files)
 
     @property
+    def command_alias(self):
+        """ Returns the command alias for a given input. In most cases this
+        is just the input's alias but if the input is one of many, then
+        `command_alias` returns just the beginning of the alias cooresponding to
+        the command's alias.
+        """
+        if '.' in self.alias:
+            return self.alias.split('-')[0]
+        return None
+
+    @property
     def is_magic(self):
         try:
             return isinstance(self.eval(), list)
@@ -122,7 +133,7 @@ class Input(FileToken):
         if not res:
             res = glob.glob(self.alias)
         if not res:
-            raise ValueError('No files match.')
+            raise ValueError('No files match. %s' % self)
         return res
 
     @staticmethod
@@ -185,6 +196,3 @@ class Output(FileToken):
     def from_string(string):
         """ Parse a given string and turn it into an output token. """
         return Output('', magic=string)
-
-
-

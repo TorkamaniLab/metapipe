@@ -64,7 +64,5 @@ class Parser(object):
         self.files.reverse()
         self.commands.reverse()
 
-        print(self.files)
-
         return ctf.get_command_templates(self.commands, self.files[:],
             self.paths[:])

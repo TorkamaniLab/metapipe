@@ -15,50 +15,53 @@ class Queue(object):
     subclass it and fill in the callbacks you need.
     """
 
-    JOB_RETRY_ATTEMPTS = 2
-
     def __init__(self):
         self.queue = []
+        self.running = []
+        self.failed = []
+        self.complete = []
 
     def __repr__(self):
-        return '<Queue: jobs=%s>' % len(self.queue)
-
-    def __iter__(self):
-        return iter(self.queue)
+        return '<Queue: jobs=%s>' % str(len(self.active_jobs))
 
     @property
     def is_empty(self):
-        return len(self.queue) == 0
+        return len(self.active_jobs) == 0
+
+    @property
+    def active_jobs(self):
+        """ Returns a list of all jobs submitted to the queue,
+        or in progress.
+        """
+        return self.queue + self.running
+
+    @property
+    def all_jobs(self):
+        """ Returns a list of all jobs submitted to the queue, complete,
+        in-progess or failed.
+        """
+        return self.complete + self.failed + self.queue + self.running
 
     def ready(self, job):
         """ Determines if the job is ready to be sumitted to the
         queue. It checks if the job depends on any currently
         running or queued operations.
         """
-        all_complete = all(j.complete for j in self.queue
+        no_deps = len(job.depends_on) == 0
+        all_complete = all(j.is_complete() for j in self.active_jobs
                 if j.alias in job.depends_on)
         none_failed = not any(True for j in self.failed
-                if j.name in job.depends_on)
-        return all_complete and none_failed
+                if j.alias in job.depends_on)
+        return no_deps or (all_complete and none_failed)
 
     def locked(self):
         """ Determines if the queue is locked. """
-        locked = all(True for j in self.queue
-                if any(True for f in self.failed
-                    if f in j.depends_on))
-
-    def clean(self):
-        """ Clears old or complete jobs from the queue and puts complete
-        jobs in the finished queue.
-        """
-        queue, cruft = [], []
-        for job in self.queue:
-            if job.is_complete() or job.is_error():
-                cruft.append(job)
-            else:
-                queue.append(job)
-        self.queue = queue
-        return cruft
+        if len(self.failed) == 0:
+            return False
+        for fail in self.failed:
+            for job in self.active_jobs:
+                if fail.alias in job.depends_on:
+                    return True
 
     def push(self, job):
         """ Push a job onto the queue. This does not submit the job. """
@@ -71,26 +74,52 @@ class Queue(object):
         :raises RuntimeError: If queue is locked.
         """
         self.on_start()
-        while True:
-            if len(self.queue) == 0:
-                break
+        while not self.is_empty:
+            cruft = []
             for job in self.queue:
+                if not self.ready(job):
+                    continue
+                self.on_ready(job)
+                try:
+                    job.submit()
+                except ValueError:
+                    if job.should_retry:
+                        self.on_error(job)
+                        job.attempts += 1
+                    else:
+                        self.on_fail(job)
+                        cruft.append(job)
+                        self.failed.append(job)
+                else:
+                    self.running.append(job)
+                    self.on_submit(job)
+                    cruft.append(job)
+
+            self.queue = [job for job in self.queue if job not in cruft]
+
+            cruft = []
+            for job in self.running:
                 if job.is_running() or job.is_queued():
                     pass
                 elif job.is_complete():
                     self.on_complete(job)
+                    cruft.append(job)
+                    self.complete.append(job)
+                elif job.is_fail():
+                    self.on_fail(job)
+                    cruft.append(job)
+                    self.failed.append(job)
                 elif job.is_error():
                     self.on_error(job)
-                elif self.ready(job):
-                    self.on_ready(job)
-                    job.submit()
-                    self.on_submit(job)
+                    cruft.append(job)
                 else:
                     pass
+            self.running = [job for job in self.running if job not in cruft]
+
             if self.locked() and self.on_locked():
                 raise RuntimeError
             self.on_tick()
-            yield self.clean()
+            yield
         self.on_end()
 
     # Callbacks...
@@ -133,7 +162,15 @@ class Queue(object):
         pass
 
     def on_error(self, job):
-        """ Called when a job has errored.
+        """ Called when a job has errored. By default, the job
+        is resubmitted until some max threshold is reached.
+        :param job: The given job that has errored.
+        """
+        pass
+
+    def on_fail(self, job):
+        """ Called when a job has failed after multiple resubmissions. The
+        given job will be removed from the queue.
         :param job: The given job that has errored.
         """
         pass
@@ -144,28 +181,24 @@ class JobQueue(Queue):
 
     def __init__(self):
         super(JobQueue, self).__init__()
-        self.failed = []
-        self.complete = []
         self.logger = logging.getLogger(__name__)
 
     def on_locked(self):
-        self.logger.log(('The queue is locked. Please check the logs. %s')
-                % self.log_dir)
+        print('The queue is locked. Please check the logs.')
         return True
 
     def on_complete(self, job):
-        self.complete.append(job)
         print('Complete: %s' % job.alias)
 
+    def on_ready(self, job):
+        print('Ready: %s' % job.alias)
+
     def on_error(self, job):
-        print('Error: %s' % job.alias)
-        if job.attempts < job.MAX_RETRY:
-            self.logger.log('Error: Job %s has failed, retrying (%s/%s)'
-                    % (job.name, str(job.attempts), str(job.retry)))
-            self.push(job)
-        else:
-            self.failed.append(job)
-            self.logger.log('Error: Job %s has failed. Retried %s times.'
-                    % (job.name, str(job.attempts)))
+        print('Error: Job %s has failed, retrying (%s/%s)'
+            % (job.alias, str(job.attempts), str(job.MAX_RETRY)))
+
+    def on_fail(self, job):
+        print('Error: Job %s has failed. Retried %s times.'
+                % (job.alias, str(job.attempts)))
 
 

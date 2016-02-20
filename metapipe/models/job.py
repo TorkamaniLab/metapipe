@@ -46,6 +46,10 @@ class Job(object):
             f.write(eval)
             print(eval)
 
+    @property
+    def should_retry(self):
+        return self.attempts < self.MAX_RETRY
+
     # Override these...
 
     @property
@@ -80,6 +84,12 @@ class Job(object):
 
     def is_error(self):
         """ Checks to see if the job errored out. """
+        pass
+
+    def is_failed(self):
+        """ Checks to see if the job has failed. This is usually if the job
+        should not be resubmitted.
+        """
         pass
 
 
