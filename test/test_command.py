@@ -12,7 +12,6 @@ def test_eval_1():
     parser = Parser(overall)
 
     cmds = parser.consume()
-    print(cmds[0].parts)
     cmds[0].eval()[0].eval().should.equal('/usr/bin/python somescript.py -i '
         'somefile.1 somefile.2 somefile.3 -o metapipe.1.1.output '
         '-fgh somefile.txt')
@@ -49,7 +48,6 @@ def test_eval_4():
 
     cmd = cmds[1].eval()[1]
     cmd.update_dependent_files(old_commands)
-    print([i.filename for i in cmd.input_parts])
     cmd.eval().should.equal('/usr/bin/bash somescript.sh -i metapipe.1.2.output'
         ' -o metapipe.2.2.output -fgh somefile.txt')
 
@@ -76,7 +74,6 @@ def test_eval_6():
 
     cmd = cmds[2].eval()[1]
     cmd.update_dependent_files(old_commands)
-    print([i.filename for i in cmd.input_parts])
     cmd.eval().should.equal('/usr/bin/ruby somescript.rb -i metapipe.2.2.output'
         ' >> somefile')
 
@@ -103,7 +100,6 @@ def test_eval_8():
 
     cmd = cmds[3].eval()[0]
     cmd.update_dependent_files(old_commands)
-    print([i.filename for i in cmd.input_parts])
     cmd.eval().should.equal('cut -f *.counts > something.file')
 
 
@@ -116,7 +112,6 @@ def test_eval_9():
 
     cmd = cmds[4].eval()[0]
     cmd.update_dependent_files(old_commands)
-    print([i.filename for i in cmd.input_parts])
     cmd.eval().should.equal('paste *.counts > some.file # some.file')
 
 
@@ -129,7 +124,6 @@ def test_eval_10():
 
     cmd = cmds[5].eval()[0]
     cmd.update_dependent_files(old_commands)
-    print([i.filename for i in cmd.input_parts])
     cmd.eval().should.equal('./somescript somefile.1 somefile.2 '
         'somefile.3 somefile.4')
 
@@ -143,7 +137,6 @@ def test_eval_11():
 
     cmd = cmds[5].eval()[1]
     cmd.update_dependent_files(old_commands)
-    print([i.filename for i in cmd.input_parts])
     cmd.eval().should.equal('./somescript somefile.1.counts somefile.2.counts '
         'somefile.3.counts somefile.4.counts')
 
@@ -157,7 +150,6 @@ def test_eval_12():
 
     cmd = cmds[6].eval()[0]
     cmd.update_dependent_files(old_commands)
-    print([i.filename for i in cmd.input_parts])
     cmd.eval().should.equal('/usr/bin/ruby somescript.rb -i somefile.1.counts')
 
 
@@ -170,7 +162,6 @@ def test_eval_13():
 
     cmd = cmds[6].eval()[1]
     cmd.update_dependent_files(old_commands)
-    print([i.filename for i in cmd.input_parts])
     cmd.eval().should.equal('/usr/bin/ruby somescript.rb -i somefile.2.counts')
 
 
@@ -183,7 +174,6 @@ def test_eval_14():
 
     cmd = cmds[6].eval()[2]
     cmd.update_dependent_files(old_commands)
-    print([i.filename for i in cmd.input_parts])
     cmd.eval().should.equal('/usr/bin/ruby somescript.rb -i somefile.3.counts')
 
 
@@ -196,7 +186,6 @@ def test_eval_14():
 
     cmd = cmds[6].eval()[3]
     cmd.update_dependent_files(old_commands)
-    print([i.filename for i in cmd.input_parts])
     cmd.eval().should.equal('/usr/bin/ruby somescript.rb -i somefile.4.counts')
 
 
@@ -209,7 +198,6 @@ def test_eval_15():
 
     cmd = cmds[7].eval()[0]
     cmd.update_dependent_files(old_commands)
-    print([i.eval() for i in cmd.output_parts])
     cmd.eval().should.equal('/usr/bin/python somescript.py -i somefile.1.counts'
         ' somefile.2.counts somefile.3.counts somefile.4.counts # *.bam')
 
@@ -223,7 +211,6 @@ def test_eval_16():
 
     cmd = cmds[8].eval()[0]
     cmd.update_dependent_files(old_commands)
-    print([i.eval() for i in cmd.input_parts])
     cmd.eval().should.equal('cat somefile.1.bam somefile.2.bam somefile.bam')
 
 
@@ -236,8 +223,7 @@ def test_eval_16_deps():
 
     cmd = cmds[8].eval()[0]
     cmd.update_dependent_files(old_commands)
-    #print([i.eval() for i in cmd.input_parts])
-    cmd.dependencies.should.have.length_of(1)
+    cmd.depends_on.should.have.length_of(1)
 
 
 def test_eval_multiple_inputs():
@@ -245,7 +231,6 @@ def test_eval_multiple_inputs():
     cmds = parser.consume()
     old_commands = []
 
-    #print(cmds)
     cmd = cmds[0].eval()[0]
     print(cmd)
     cmd.update_dependent_files(old_commands)
@@ -258,9 +243,7 @@ def test_multiple_outputs1():
     cmds = parser.consume()
     old_commands = []
 
-    #print(cmds)
     cmd = cmds[0].eval()[0]
-    print(cmd)
     cmd.update_dependent_files(old_commands)
     cmd.eval().should.equal('bash somescript somefile.1 --log'
         ' metapipe.1.1-1.output -r metapipe.1.1-2.output')
@@ -271,9 +254,7 @@ def test_multiple_outputs2():
     cmds = parser.consume()
     old_commands = []
 
-    #print(cmds)
     cmd = cmds[1].eval()[0]
-    print(cmd)
     cmd.update_dependent_files(old_commands)
     cmd.eval().should.equal('python somescript.py somefile.4 somefile.5 '
         'somefile.6 --log metapipe.2.1-1.output -r metapipe.2.1-2.output '
@@ -288,7 +269,6 @@ def test_another_sample_pipeline():
     old_commands = []
 
     cmd = cmds[0].eval()[0]
-    print(cmd.parts)
     cmd.update_dependent_files(old_commands)
     cmd.eval().should.equal('java -jar Trimmomatic-0.35/trimmomatic-0.35.jar '
         'PE somefile.1 somefile.2 metapipe.1.1-1.output metapipe.1.1-2.output '
@@ -307,7 +287,6 @@ def test_another_sample_pipeline_1():
         old_commands.extend(cmd.eval())
 
     cmd = cmds[1].eval()[0]
-    print(cmd.parts)
     cmd.update_dependent_files(old_commands)
     cmd.eval().should.equal('gzip --stdout -d metapipe.1.1-1.output > '
         'metapipe.2.1.output')
@@ -323,11 +302,9 @@ def test_another_sample_pipeline_1_deps():
         old_commands.extend(cmd.eval())
 
     cmd = cmds[1].eval()[0]
-    print(cmd.dependencies)
     cmd.update_dependent_files(old_commands)
-    print(cmd.dependencies)
-    cmd.dependencies.should.have.length_of(1)
-    cmd.dependencies[0].should.equal(Input('1.1-1'))
+    cmd.depends_on.should.have.length_of(1)
+    cmd.depends_on[0].should.equal('1.1')
 
 
 def test_another_sample_pipeline_2():
@@ -340,7 +317,6 @@ def test_another_sample_pipeline_2():
         old_commands.extend(cmd.eval())
 
     cmd = cmds[2].eval()[0]
-    print(cmd.parts)
     cmd.update_dependent_files(old_commands)
     cmd.eval().should.equal('~/.local/bin/cutadapt --cut 7 -o '
         'metapipe.3.1.output metapipe.2.1.output')
@@ -354,7 +330,6 @@ def test_long_running_1():
     templates = parser.consume()
 
     cmd = templates[0].eval()[0]
-    print(cmd.parts)
     cmd.update_dependent_files(old_commands)
     cmd.eval().should.equal('cat somefile.1 > metapipe.1.1.output && sleep 1')
 
@@ -370,7 +345,34 @@ def test_long_running_2():
         old_commands.extend(cmd.eval())
     cmd = templates[1].eval()[0]
 
-    print(cmd.parts, cmd.dependencies)
     cmd.update_dependent_files(old_commands)
     cmd.eval().should.equal('cat metapipe.1.1.output && '
         'sleep 1')
+
+
+def test_full_output_file_name():
+    parser = Parser(full_output_file_name)
+
+    templates = parser.consume()
+
+    old_commands = []
+
+    cmd = templates[0].eval()[0]
+
+    cmd.update_dependent_files(old_commands)
+    cmd.eval().should.equal('gzip --stdout somefile.1 > metapipe.1.1.output.gz')
+
+
+def test_full_output_file_name_2():
+    parser = Parser(full_output_file_name)
+
+    templates = parser.consume()
+
+    old_commands = []
+
+    for cmd in templates[0:1]:
+        old_commands.extend(cmd.eval())
+    cmd = templates[1].eval()[0]
+
+    cmd.update_dependent_files(old_commands)
+    cmd.eval().should.equal('cat metapipe.1.1.output.gz > metapipe.2.1.output.gz')

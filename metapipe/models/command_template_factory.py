@@ -104,10 +104,10 @@ def _get_prelim_dependencies(command_template, all_templates):
             continue
         for template in all_templates:
             for output in template.output_parts:
-                if input.fuzzy_match(output) and template not in deps:
+                if input.fuzzy_match(output):
                     deps.append(template)
                     break
-    return deps
+    return list(set(deps))
 
 
 def _get_file_by_alias(part, files):
@@ -164,6 +164,8 @@ def _is_output(part):
     if part[0].lower() == 'o':
         return True
     elif part[0][:2].lower() == 'o:':
+        return True
+    elif part[0][:2].lower() == 'o.':
         return True
     else:
         return False

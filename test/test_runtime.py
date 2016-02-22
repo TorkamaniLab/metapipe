@@ -26,9 +26,8 @@ def test_get_new_commands_1():
     cmds = parser.consume()[:1]
 
     pipeline = Runtime(cmds, JOB_TYPES, 'mock')
-    new = pipeline._get_new_commands()
-    print(new)
-    new.should.have.length_of(2)
+    new = pipeline.queue.queue
+    new.should.have.length_of(1)
 
 
 def test_get_new_commands_2():
@@ -36,8 +35,7 @@ def test_get_new_commands_2():
     cmds = parser.consume()[:2]
 
     pipeline = Runtime(cmds, JOB_TYPES, 'mock')
-    new = pipeline._get_new_commands()
-    print(new)
+    new = pipeline.queue.queue
     new.should.have.length_of(2)
 
 
@@ -46,9 +44,8 @@ def test_get_new_commands_3():
     cmds = parser.consume()[:3]
 
     pipeline = Runtime(cmds, JOB_TYPES, 'mock')
-    new = pipeline._get_new_commands()
-    print(new)
-    new.should.have.length_of(2)
+    new = pipeline.queue.queue
+    new.should.have.length_of(3)
 
 
 def test_get_new_commands_4():
@@ -56,9 +53,8 @@ def test_get_new_commands_4():
     cmds = parser.consume()[:4]
 
     pipeline = Runtime(cmds, JOB_TYPES, 'mock')
-    new = pipeline._get_new_commands()
-    print(new)
-    new.should.have.length_of(3)
+    new = pipeline.queue.queue
+    new.should.have.length_of(4)
 
 
 def test_get_new_commands_5():
@@ -66,9 +62,8 @@ def test_get_new_commands_5():
     cmds = parser.consume()[:5]
 
     pipeline = Runtime(cmds, JOB_TYPES, 'mock')
-    new = pipeline._get_new_commands()
-    print(new)
-    new.should.have.length_of(4)
+    new = pipeline.queue.queue
+    new.should.have.length_of(5)
 
 
 def test_get_new_commands_6():
@@ -76,8 +71,7 @@ def test_get_new_commands_6():
     cmds = parser.consume()[:6]
 
     pipeline = Runtime(cmds, JOB_TYPES, 'mock')
-    new = pipeline._get_new_commands()
-    print(new)
+    new = pipeline.queue.queue
     new.should.have.length_of(6)
 
 
@@ -86,9 +80,8 @@ def test_get_new_commands_7():
     cmds = parser.consume()[:7]
 
     pipeline = Runtime(cmds, JOB_TYPES, 'mock')
-    new = pipeline._get_new_commands()
-    print(new)
-    new.should.have.length_of(10)
+    new = pipeline.queue.queue
+    new.should.have.length_of(7)
 
 
 def test_get_new_commands_8():
@@ -96,9 +89,8 @@ def test_get_new_commands_8():
     cmds = parser.consume()[:8]
 
     pipeline = Runtime(cmds, JOB_TYPES, 'mock')
-    new = pipeline._get_new_commands()
-    print(new)
-    new.should.have.length_of(11)
+    new = pipeline.queue.queue
+    new.should.have.length_of(8)
 
 
 def test_get_new_commands_9():
@@ -106,9 +98,8 @@ def test_get_new_commands_9():
     cmds = parser.consume()[:9]
 
     pipeline = Runtime(cmds, JOB_TYPES, 'mock')
-    new = pipeline._get_new_commands()
-    print(new)
-    new.should.have.length_of(11)
+    new = pipeline.queue.queue
+    new.should.have.length_of(9)
 
 
 # Run Tests
@@ -120,114 +111,118 @@ def test_run_1():
 
     pipeline = Runtime(cmds, JOB_TYPES, 'mock', sleep_time=0.01)
     iters = pipeline.run()
-    iters.should.equal(2)
+    iters.should.equal(8)
 
 
 def test_run_2():
     parser = Parser(overall)
     cmds = parser.consume()[:2]
 
-    print(cmds)
     pipeline = Runtime(cmds, JOB_TYPES, 'mock', sleep_time=0.01)
     iters = pipeline.run()
-    iters.should.equal(4)
+    iters.should.equal(12)
 
 
 def test_run_3():
     parser = Parser(overall)
     cmds = parser.consume()[:3]
 
-    print(cmds)
     pipeline = Runtime(cmds, JOB_TYPES, 'mock', sleep_time=0.01)
     iters = pipeline.run()
-    iters.should.equal(5)
+    iters.should.equal(16)
 
 
 def test_run_4():
     parser = Parser(overall)
     cmds = parser.consume()[:4]
 
-    print(cmds)
     pipeline = Runtime(cmds, JOB_TYPES, 'mock', sleep_time=0.01)
     iters = pipeline.run()
-    iters.should.equal(5)
+    iters.should.equal(16)
 
 
 def test_run_5():
     parser = Parser(overall)
     cmds = parser.consume()[:5]
 
-    print(cmds)
     pipeline = Runtime(cmds, JOB_TYPES, 'mock', sleep_time=0.01)
     iters = pipeline.run()
-    iters.should.equal(5)
+    iters.should.equal(16)
 
 
 def test_run_6():
     parser = Parser(overall)
     cmds = parser.consume()[:6]
 
-    print(cmds)
     pipeline = Runtime(cmds, JOB_TYPES, 'mock', sleep_time=0.01)
     iters = pipeline.run()
-    iters.should.equal(5)
+    iters.should.equal(16)
 
 
 def test_run_7():
     parser = Parser(overall)
     cmds = parser.consume()[:7]
 
-    print(cmds)
     pipeline = Runtime(cmds, JOB_TYPES, 'mock', sleep_time=0.01)
     iters = pipeline.run()
-    iters.should.equal(5)
+    iters.should.equal(16)
 
 
 def test_run_8():
     parser = Parser(overall)
     cmds = parser.consume()[:8]
 
-    print(cmds)
     pipeline = Runtime(cmds, JOB_TYPES, 'mock', sleep_time=0.01)
     iters = pipeline.run()
-    iters.should.equal(5)
+    iters.should.equal(16)
 
 
 def test_run_9():
     parser = Parser(overall)
     cmds = parser.consume()[:9]
 
-    print(cmds)
     pipeline = Runtime(cmds, JOB_TYPES, 'mock', sleep_time=0.01)
     iters = pipeline.run()
-    iters.should.equal(5)
+    iters.should.equal(16)
 
 
 def test_run_10():
     parser = Parser(overall)
     cmds = parser.consume()[:10]
 
-    print(cmds)
     pipeline = Runtime(cmds, JOB_TYPES, 'mock', sleep_time=0.01)
     iters = pipeline.run()
-    iters.should.equal(5)
+    iters.should.equal(16)
 
 
 def test_run_11():
     parser = Parser(overall)
     cmds = parser.consume()[:11]
 
-    print(cmds[-1].parts)
     pipeline = Runtime(cmds, JOB_TYPES, 'mock', sleep_time=0.01)
     iters = pipeline.run()
-    iters.should.be.greater_than(5)
+    iters.should.be.greater_than(15)
 
 
 def test_long_running_run_1():
     parser = Parser(long_running)
     cmds = parser.consume()
 
-    print(cmds[-1].parts)
     pipeline = Runtime(cmds, JOB_TYPES, 'local', sleep_time=0.5)
     iters = pipeline.run()
-    iters.should.be.greater_than(6)
+    iters.should.be.greater_than(5)
+
+
+def test_full_output_file_name():
+    parser = Parser(full_output_file_name)
+    cmds = parser.consume()
+
+    pipeline = Runtime(cmds, JOB_TYPES, 'local', sleep_time=0.01)
+    iters = pipeline.run()
+    iters.should.be.greater_than(2)
+
+
+
+
+
+

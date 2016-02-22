@@ -35,7 +35,7 @@ class Parser(object):
             txt_commands = [''.join(c) for c in lowered['commands'].asList()]
         except KeyError:
             txt_commands = []
-        
+
         for c in txt_commands:
             try:
                 self.commands.append(Grammar.command.parseString(c))
@@ -52,17 +52,17 @@ class Parser(object):
 
         for p in txt_paths:
             try:
-                self.paths.append(Grammar.path.parseString(p)) 
+                self.paths.append(Grammar.path.parseString(p))
             except pyparsing.ParseException as e:
                 raise ValueError('Invalid path. Verify line {} is '
                     'correct.\n{}'.format(e.lineno, p))
 
         self.paths = ctf.get_paths(self.paths)
         self.files = ctf.get_files(self.files)
-        
+
         self.paths.reverse()
         self.files.reverse()
         self.commands.reverse()
-        
-        return ctf.get_command_templates(self.commands, self.files[:], 
+
+        return ctf.get_command_templates(self.commands, self.files[:],
             self.paths[:])

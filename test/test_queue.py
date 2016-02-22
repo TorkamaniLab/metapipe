@@ -16,15 +16,9 @@ from .fixtures import *
 def test_repr():
     q = Queue()
     str(q).should.equal('<Queue: jobs=0>')
-    
-
-def test_iter():
-    q = Queue()
-    isinstance(iter(q), collections.Iterable).should.equal(True)
-        
 
 def test_on_end():
     """ Ticks the queue when it's empty. """
     q = Queue()
     tick = q.tick()
-    
+

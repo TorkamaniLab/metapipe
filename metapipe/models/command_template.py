@@ -27,11 +27,18 @@ class CommandTemplate(object):
     def __init__(self, alias, parts=[], dependencies=[]):
         self.alias = alias
         self.parts = parts
-        self.dependencies = dependencies
+        self._dependencies = dependencies
 
     def __repr__(self):
         return '<CommandTemplate: {}, {} part(s), {} dep(s)>'.format(self.alias,
-            len(self.parts), len(self.dependencies))
+            len(self.parts), len(self._dependencies))
+
+    @property
+    def depends_on(self):
+        """ Returns a list of command template aliases that the given command
+        template depends on.
+        """
+        return [dep.alias for dep in self._dependencies]
 
     @property
     def input_parts(self):
@@ -73,29 +80,13 @@ class CommandTemplate(object):
         commands = []
         for i, parts in enumerate(parts_list):
             alias = self._get_alias(i+1)
-            deps = self._get_dependencies(parts)
             parts = copy.deepcopy(parts)
-            commands.append(Command(alias=alias, parts=parts,
-                dependencies=deps))
+            commands.append(Command(alias=alias, parts=parts))
         return commands
 
     def _get_alias(self, index):
         """ Given an index, return the string alias for that command. """
         return '{}.{}'.format(self.alias, index)
-
-    def _get_dependencies(self, parts):
-        """ Given a list of parts, return all of the dependencies for those
-        parts. The dependencies are a subset of the global template
-        dependencies.
-        """
-        deps = []
-        for part in parts:
-            if isinstance(part, Input):
-                for dep in self.dependencies:
-                    for dep_file_part in dep.output_parts:
-                        if part.fuzzy_match(dep_file_part):
-                            deps.append(part)
-        return list(set(deps))
 
 
 def _get_parts_list(to_go, so_far=[[]], ticker=None):
