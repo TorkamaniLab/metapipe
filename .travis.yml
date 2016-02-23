@@ -1,10 +1,20 @@
 language: python
 python:
-  - "2.7"
-  - "3.4"
-  - "3.5"
+- '2.7'
+- '3.4'
+- '3.5'
 before_script:
-  - pip install -r requirements.txt
-script: nosetests --with-cov --cov-report html --cov-config .coveragerc  --cov metapipe --cov test
+- pip install -r requirements.txt
+script: nosetests --with-cov --cov-report html --cov-config .coveragerc  --cov metapipe
+  --cov test
 after_success:
-  - coveralls
+- coveralls
+deploy:
+  provider: pypi
+  user: sonicrocketman
+  password:
+    secure: BCKO/DFfaLosk52WbmTcKg5KJek/DDvffcJnMDDNP2kfyQBdCEBZXcBEh/63UNqk/ot8lLC00TRDbKe8OW/wVPPO0YARswIFclThsJLmJ1/FrBtPM0klWtYvYgCL3s91fsPuKcrzdGRdAitFNHJ3j8KxumOLwX3imzPLg55nAwJfNThlOFcd8QWo1+yik7o5d1k6TwPzZ593pt5H6CrT/vkOSfSS2L/vxU+kx9wc8jZFlgWQtqeHGSqcbM14qTnr0LIU//eN0Sr50DhaUa+MdnoJOSDt41SUIQj5Md6gTZC31qF9x2CtGFXVmk1ICxnWzXCJKOmTwaWbUj+4pg9KVGigYCEygyr31B7MB9uoz2IxjoiBlBrSEoAWLMAEfQ85lelviWjlU9LJ5Crfbu1h5txHJf6qoijPcOlsWEd/4m2/BVC8hk5EHvNLE41/sxEI9T3HEUG46dGz3dJILJ5RT3G5Q35/VJ4pXKPL+fVAUO7zSbfrqsJuc5IWIrKPpKGlJ3p+WClUN0C7AQPGQta6YyaeSGwAVYl/wnY15Eekto0gekC/r4AtB783g+T9ZmLQKNLbtQj2+cDkJdV9wt/9YAOluNdNnaVvSlIxq2hOdGCM67FpUH5W3YDuXx2neysyz+1ibqpPNcnhfEZNziS6Zj2JuO6UV6j+FRKsMC1H//Q=
+  on:
+    tags: true
+    distributions: sdist bdist_wheel
+    branch: master
