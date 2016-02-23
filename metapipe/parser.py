@@ -37,12 +37,12 @@ class Parser(object):
         return ctf.get_command_templates(self.commands, self.files[:],
             self.paths[:])
 
-    def _get(self, type, parser_result, grammar):
+    def _get(self, key, parser_result, grammar):
         """ Given a type and a dict of parser results, parse the overall results
         using the more detailed parse grammar.
         """
         try:
-            txt_lines = [''.join(f) for f in parser_result[type].asList()]
+            txt_lines = [''.join(f) for f in parser_result[key].asList()]
         except KeyError:
             txt_lines = []
 
@@ -52,5 +52,5 @@ class Parser(object):
                 results.append(grammar.parseString(c))
             except pyparsing.ParseException as e:
                 raise ValueError('Invalid {}. Verify line {} is '
-                    'correct.\n{}'.format(type, e.lineno, c))
+                    'correct.\n{}'.format(key, e.lineno, c))
         return results
