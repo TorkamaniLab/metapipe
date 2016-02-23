@@ -189,7 +189,7 @@ class JobQueue(Queue):
         """
         total = len(self.all_jobs)
         remaining = total - len(self.active_jobs) if total > 0 else 0
-        percent = int(100 * (remaining / total)) if total > 0 else 0
+        percent = int(100 * (float(remaining) / total)) if total > 0 else 0
         return percent
 
     def on_locked(self):
