@@ -22,7 +22,7 @@ class Ticker(object):
             self.value -= self.maxlen
 
 
-class CommandTemplate(object):
+class CommandTemplate(Command):
 
     def __init__(self, alias, parts=[], dependencies=[]):
         self.alias = alias
@@ -41,27 +41,9 @@ class CommandTemplate(object):
         return [dep.alias for dep in self._dependencies]
 
     @property
-    def input_parts(self):
-        """ Returns a list of the input tokens in the list of parts. """
-        return [part for part in self.file_parts
-            if isinstance(part, Input)]
-
-    @property
-    def output_parts(self):
-        """ Returns a list of the output tokens in the list of parts. """
-        return [part for part in self.file_parts
-            if isinstance(part, Output)]
-
-    @property
     def file_parts(self):
         """ Returns a list of the file tokens in the list of parts. """
         return _search_for_files(self.parts)
-
-    @property
-    def path_parts(self):
-        """ Returns a list of the path tokens in the list of parts. """
-        return [part for part in self.parts
-            if isinstance(part, PathToken)]
 
     def eval(self):
         """ Returns a list of Command objects that can be evaluated as their
