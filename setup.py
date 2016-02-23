@@ -11,5 +11,7 @@ setup(
     entry_points = {
         "console_scripts": ['metapipe = metapipe.app:main']
         },
-    install_requires = ['pyparsing']
+    install_requires = ['pyparsing'],
+    author='Brian Schrader',
+    author_email='brian@brianschrader.com',
 )
