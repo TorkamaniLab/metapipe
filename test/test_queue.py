@@ -22,3 +22,26 @@ def test_on_end():
     q = Queue()
     tick = q.tick()
 
+def test_progress_1():
+    q = JobQueue()
+    q.push(MockJob('', None))
+    q.progress.should.equal(0)
+
+def test_progress_2():
+    q = JobQueue()
+    q.push(MockJob('', None))
+    tick = q.tick()
+    for _ in range(10):
+        next(tick)
+
+    q.push(MockJob('', None))
+    for _ in range(6):
+        next(tick)
+
+    q.push(MockJob('', None))
+    q.push(MockJob('', None))
+    for _ in range(4):
+        next(tick)
+
+
+    q.progress.should.equal(50)

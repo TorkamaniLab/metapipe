@@ -181,7 +181,16 @@ class JobQueue(Queue):
 
     def __init__(self):
         super(JobQueue, self).__init__()
-        self.logger = logging.getLogger(__name__)
+
+    @property
+    def progress(self):
+        """ Returns the percentage, current and total number of
+        jobs in the queue.
+        """
+        total = len(self.all_jobs)
+        remaining = total - len(self.active_jobs) if total > 0 else 0
+        percent = int(100 * (remaining / total)) if total > 0 else 0
+        return percent
 
     def on_locked(self):
         print('The queue is locked. Please check the logs.')
@@ -189,6 +198,7 @@ class JobQueue(Queue):
 
     def on_complete(self, job):
         print('Complete: %s' % job.alias)
+        print('[PROGRESS]: %s%% complete.' % self.progress)
 
     def on_ready(self, job):
         print('Ready: %s' % job.alias)
@@ -200,5 +210,8 @@ class JobQueue(Queue):
     def on_fail(self, job):
         print('Error: Job %s has failed. Retried %s times.'
                 % (job.alias, str(job.attempts)))
+
+
+
 
 
