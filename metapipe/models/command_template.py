@@ -6,7 +6,7 @@ since: 2016-01-13
 
 import copy, collections
 
-from .tokens import Input, Output, FileToken, PathToken
+from .tokens import Input, Output, FileToken, PathToken, CommentToken
 from .command import Command
 
 
@@ -62,8 +62,8 @@ class CommandTemplate(Command):
         commands = []
         for i, parts in enumerate(parts_list):
             alias = self._get_alias(i+1)
-            parts = copy.deepcopy(parts)
-            commands.append(Command(alias=alias, parts=parts))
+            new_parts = copy.deepcopy(parts)
+            commands.append(Command(alias=alias, parts=new_parts))
         return commands
 
     def _get_alias(self, index):

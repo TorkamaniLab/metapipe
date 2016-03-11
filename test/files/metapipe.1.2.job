@@ -1,1 +1,2 @@
+# This is a test of the comments
 sh long_run_task.sh somefile.2 > metapipe.1.2.output.testing_file

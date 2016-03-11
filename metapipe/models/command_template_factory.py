@@ -6,7 +6,7 @@ since: 2016-01-12
 """
 
 
-from .tokens import Input, Output, PathToken
+from .tokens import Input, Output, PathToken, CommentToken
 from .command import Command
 from .command_template import CommandTemplate
 from .grammar import OR_TOKEN, AND_TOKEN
@@ -64,10 +64,11 @@ def _get_command_templates(command_tokens, files=[], paths=[], count=1):
     if not command_tokens:
         return []
 
-    command_token = command_tokens.pop()
-
+    comment_tokens, command_token = command_tokens.pop()
     parts = []
-    for part in command_token:
+
+    parts += _get_comments(comment_tokens)
+    for part in command_token[0]:
         # Check for file
         try:
             parts.append(_get_file_by_alias(part, files))
@@ -157,6 +158,12 @@ def _get_path_by_name(part, paths):
         if path.alias == part:
             return path
     raise ValueError
+
+def _get_comments(parts):
+    """ Given a list of parts representing a list of comments, return the list
+    of comment tokens
+    """
+    return [CommentToken(part) for part in parts]
 
 
 def _is_output(part):

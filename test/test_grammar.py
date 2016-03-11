@@ -8,7 +8,7 @@ from .fixtures import *
 
 
 def test_cmd():
-    res = Grammar.command.parseString(cmd)
+    res = Grammar.command.parseString(basic_cmd['text'])
     val = ['python somescript.py -i ', '-o ', '-fgh  somefile.txt']
 
     for i, c in enumerate(res.command):
@@ -97,6 +97,14 @@ def test_overall():
 	res['COMMANDS'][0][1].should.equal(' somescript.py -i {1,2,3||4,5,6} -o {o} -fgh somefile.txt')
 
 
+def test_full_sample_pipeline():
+	res = Grammar.overall.parseString(full_sample_pipeline)
+
+	res['COMMANDS'][0][0].should.equal('#')
+	res['COMMANDS'][0][1].should.equal(' Trimmomatic')
+	res['COMMANDS'][1][0].should.equal('java')
+
+
 def test_multiple_inputs():
 	res = Grammar.command.parseString(cmd_multiple_inputs)
 	res._in.should.have.length_of(3)
@@ -110,7 +118,3 @@ def test_multiple_close_inputs():
 def test_full_pipeline_1():
 	res = Grammar.command.parseString(cmd_using_multiple_out)
 	res._in.should.have.length_of(2)
-
-
-
-

@@ -1,11 +1,11 @@
 from . import Job, call
 
 
-class PBSJob(Job):
-    """ A job subclass for running tasks on a PBS queue. """
+class SGEJob(Job):
+    """ A job subclass for running tasks on a SGE queue. """
 
     def __init__(self, alias, command, depends_on=[], queue='work'):
-        super(PBSJob, self).__init__(alias, command, depends_on)
+        super(SGEJob, self).__init__(alias, command, depends_on)
         self.queue = queue
         self.id = None
         self.waiting = True     # The job has yet to be submitted.
@@ -16,11 +16,11 @@ class PBSJob(Job):
         self.attempts += 1
         out = call(job.cmd)
         self.waiting = False
-        self.id = out[:out.index('.')]
+        self.id = out.split()[2]
 
     @property
     def cmd(self):
-        return ['qsub', self.filename]
+        return ['qsub', '-cwd', '-V', self.filename]
 
     def is_running(self):
         """ Checks to see if the job is running. """
@@ -63,13 +63,13 @@ class PBSJob(Job):
         if res == '': return False
         res = res.split('\n')[2].split()[4]
 
-        if status_type == 'complete' and res == 'C':
+        if status_type == 'complete' and res == 'c':
             return True
-        elif status_type == 'error' and (res == 'E' or res == 'C'):
+        elif status_type == 'error' and (res == 'e' or res == 'c'):
             return True
-        elif status_type == 'running' and res == 'R':
+        elif status_type == 'running' and res == 'r':
             return True
-        elif status_type == 'queued' and res == 'Q':
+        elif status_type == 'queued' and res == 'qw':
             return True
         elif status_type == 'gone' and 'unknown job id' in str(res).lower():
             return True

@@ -190,6 +190,15 @@ def test_consume_commands_9():
     res[8].dependencies.should.have.length_of(1)
 
 
+def test_consume_full_sample_pipeline():
+    parser = Parser(full_sample_pipeline)
+    res = parser.consume()
+
+    res[0].alias.should.equal('1')
+    res[0].parts[0].should.equal(CommentToken(['#', ' Trimmomatic']))
+    res[0].parts[1].should.equal('java')
+
+
 def test_consume_multiple_inputs():
     parser = Parser(multiple_inputs)
     res = parser.consume()

@@ -12,31 +12,16 @@ def test_multiple_inputs():
     parser = Parser(multiple_inputs)
 
     cmds = parser.consume()
-
-    vals = ['bash', 'somescript',
-        [[Input('1', 'somefile.1')], [Input('2', 'somefile.2')],
-            [Input('3', 'somefile.3')]], '--conf',
-        [[Input('4', 'somefile.4')], [Input('5', 'somefile.5')],
-            [Input('6', 'somefile.6')]],
-        '>', Output('1', 'metapipe.1.output')]
-
     for i, part in enumerate(cmds[0].parts):
-        vals[i].should.equal(part)
+        multiple_input_vals[i].should.equal(part)
 
 
 def test_multiple_outputs():
     parser = Parser(multiple_outputs)
 
     cmds = parser.consume()
-
-    vals = ['bash', 'somescript',
-        [[Input('1', 'somefile.1')], [Input('2', 'somefile.2')],
-            [Input('3', 'somefile.3')]], '--log',
-        Output('1', 'metapipe.1.output'), '-r',
-        Output('1', 'metapipe.1.output')]
-
     for i, part in enumerate(cmds[0].parts):
-        vals[i].should.equal(part)
+        multiple_output_vals[i].should.equal(part)
 
 
 def test_full_sample_pipeline():
@@ -45,7 +30,7 @@ def test_full_sample_pipeline():
     cmds = parser.consume()
 
 
-    vals = ['java', '-jar',
+    vals = [CommentToken(['#', ' Trimmomatic']), 'java', '-jar',
         PathToken('trimmomatic', 'Trimmomatic-0.35/trimmomatic-0.35.jar>'),
         'PE', [[Input('*R1_001.fastq.gz')]], [[Input('*R2_001.fastq.gz')]],
         Output('1', 'metapipe.1.output'), Output('1', 'metapipe.1.output'),
@@ -64,7 +49,7 @@ def test_another_sample_pipeline():
     cmds = parser.consume()
 
 
-    vals = ['java', '-jar',
+    vals = [CommentToken(['#', ' Trimmomatic']), 'java', '-jar',
         PathToken('trimmomatic', 'Trimmomatic-0.35/trimmomatic-0.35.jar>'),
         'PE', [[Input('1')]], [[Input('2')]],
         Output('1', 'metapipe.1.output'), Output('1', 'metapipe.1.output'),
@@ -83,7 +68,8 @@ def test_another_sample_pipeline_1():
     cmds = parser.consume()
 
 
-    vals = ['gzip', '--stdout', '-d',
+    vals = [CommentToken(['#', ' Unzip the outputs from trimmomatic']),
+        'gzip', '--stdout', '-d',
         [[Input('1.1-1')], [Input('1.1-3')]], '>',
         Output('2', 'metapipe.2.output')]
 
@@ -97,7 +83,9 @@ def test_another_sample_pipeline_2():
     cmds = parser.consume()
 
 
-    vals = [PathToken('cutadapt', '~/.local/bin/cutadapt'), '--cut', '7', '-o',
+    vals = [CommentToken(['#', ' Cutadapt']),
+        CommentToken(['#', ' cutadapt needs unzipped fastq files']),
+        PathToken('cutadapt', '~/.local/bin/cutadapt'), '--cut', '7', '-o',
         Output('3', 'metapipe.3.output'),
             [[Input('2.1')], [Input('2.2')]]]
 
@@ -136,6 +124,5 @@ def test_long_running_2_deps():
     parser = Parser(long_running)
 
     cmds = parser.consume()
-
     cmds[1].dependencies.should.have.length_of(1)
 
