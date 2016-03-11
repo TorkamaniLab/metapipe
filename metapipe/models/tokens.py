@@ -34,6 +34,21 @@ class PathToken(object):
         return self.path
 
 
+class CommentToken(object):
+
+    def __init__(self, parts):
+        self.parts = parts
+
+    def __repr__(self):
+        return '<Comment: {}>'.format(''.join(self.parts))
+
+    def __eq__(self, other):
+        return ''.join(self.parts) == ''.join(other.parts)
+
+    def eval(self):
+        return '{}\n'.format(''.join(self.parts))
+
+
 class FileToken(object):
     """ An abc for input/output data classes. Provides various common
     methods.

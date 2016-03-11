@@ -7,6 +7,7 @@ approved_printables = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTU
 
 lbrack = Literal('[').suppress()
 rbrack = Literal(']').suppress()
+pound = Literal('#')
 
 OR_TOKEN = '<<OR>>'
 AND_TOKEN = '<<AND>>'
@@ -21,8 +22,9 @@ class Grammar(object):
 
     _section = lbrack + Word(alphas) + rbrack
     _line = ~lbrack + Word(printables) + restOfLine
+    _non_comment_line = ~pound + Group(Word(printables) + restOfLine)
 
-    __command = (
+    __command_input_output = (
         Suppress('{') +
         OneOrMore(
         Group(OneOrMore(
@@ -36,11 +38,11 @@ class Grammar(object):
             ).addParseAction(replaceWith(AND_TOKEN)).setResultsName('_and')) +
             Optional(
                 ('||' + FollowedBy('}')).addParseAction(
-                    replaceWith(OR_TOKEN)).setResultsName('magic_or') ^                    
+                    replaceWith(OR_TOKEN)).setResultsName('magic_or') ^
                 Suppress('||').addParseAction(
                     replaceWith(OR_TOKEN)).setResultsName('_or')
             )
-        ))) + 
+        ))) +
         Suppress('}')
         )
 
@@ -55,7 +57,7 @@ class Grammar(object):
     @classproperty
     @staticmethod
     def comment():
-        return '#' + Optional(restOfLine)
+        return ('#' + Optional(restOfLine))
 
     @classproperty
     @staticmethod
@@ -79,13 +81,21 @@ class Grammar(object):
 
     @classproperty
     @staticmethod
+    def command_lines():
+        """ Grammar for commands found in the overall input files. """
+        return ZeroOrMore(Group(
+            Group(ZeroOrMore(Group(Grammar.comment))) + Grammar._non_comment_line
+        ))
+
+    @classproperty
+    @staticmethod
     def command():
         """ Grammar for commands found in the overall input files. """
         return (
             OneOrMore(
                 Word(approved_printables+' ').setResultsName('command',
                     listAllMatches=True) ^
-                Grammar.__command.setResultsName('_in', 
+                Grammar.__command_input_output.setResultsName('_in',
                     listAllMatches=True)
                 )
             )

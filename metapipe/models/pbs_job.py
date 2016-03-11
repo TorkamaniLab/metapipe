@@ -3,7 +3,7 @@ from . import Job, call
 
 class PBSJob(Job):
     """ A job subclass for running tasks on a PBS queue. """
-    
+
     def __init__(self, alias, command, depends_on=[], queue='work'):
         super(PBSJob, self).__init__(alias, command, depends_on)
         self.queue = queue
@@ -17,7 +17,7 @@ class PBSJob(Job):
         out = call(job.cmd)
         self.waiting = False
         self.id = out[:out.index('.')]
-            
+
     @property
     def cmd(self):
         return ['qsub', self.filename]
@@ -50,10 +50,10 @@ class PBSJob(Job):
         """ Checks to see if the job errored out. """
         qstat = self._grep_qstat('error')
         err = self._grep_status('error')
-        if qstat and err: 
+        if qstat and err:
             return True
         return False
-        
+
     def _grep_qstat(self, status_type='complete'):
         """ Greps qstat -e <job_id> for information from the queue.
         :paramsstatus_type: complete, queued, running, error, gone

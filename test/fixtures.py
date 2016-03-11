@@ -1,8 +1,37 @@
+from metapipe.models import *
+
 # Snippets
 
-cmd = """python somescript.py -i {1,2,3||4,5,6} -o {o} -fgh \
+basic_cmd = {
+    'text': """python somescript.py -i {1,2,3||4,5,6} -o {o} -fgh \
  somefile.txt
-"""
+""",
+    'template_parts': [
+        'python', 'somescript.py', '-i',
+        [[Input('1'), Input('2'), Input('3')],
+        [Input('4'), Input('5'), Input('6')]],
+        '-o', Output('1.1'), '-fgh'
+    ],
+    'command_parts': [
+        ['python', 'somescript.py', '-i',
+            [Input('1'), Input('2'), Input('3')],
+            '-o', Output('1.1'), '-fgh'],
+        ['python', 'somescript', '-i',
+            [Input('4'), Input('5'), Input('6')],
+            '-o', Output('1.1'), '-fgh']
+    ]
+}
+
+magic_cmd = {
+    'text': """python somescript.py {*.counts||} > someout
+""",
+    'template_parts': [
+        ['python', 'somescript.py', '-i',
+            [Input('*.counts', and_or='||'), 'someout'],
+        ]
+    ]
+
+}
 
 cmd_magic1 = """python somescript.py {*.counts||} > someout
 """
@@ -20,6 +49,11 @@ cmd_multiple_inputs = """bash somescript {1,2,3} --conf {4,5,6}  > {o}
 """
 
 cmd_suggest_output = """bash somescript {1,2,3} > {o.gz}
+"""
+
+cmd_comment = """# Some comment
+#Some other comment
+bash somescript {1,2,3} > {o.gz}
 """
 
 cmd_multiple_close_inputs = """
@@ -71,6 +105,29 @@ python /usr/bin/python
 bash /usr/bin/bash
 rb /usr/bin/ruby
 """
+
+
+overall_cmd_templates = [
+    CommandTemplate('1', [
+        PathToken('python', '/usr/bin/python'),
+        'somescript.py',
+        '-i',
+        [[
+            Input('1', filename='somefile.1'),
+            Input('2', filename='somefile.2'),
+            Input('3', filename='somefile.3'),
+        ],
+        [
+            Input('4', filename='somefile.4'),
+            Input('5', filename='somefile.5'),
+            Input('6', filename='somefile.6'),
+        ]],
+        '-o',
+        Output('1'),
+        '-fgh',
+        'somefile.txt',
+        ]),
+]
 
 
 no_paths = """
@@ -145,6 +202,14 @@ python somescript.py {1,2,3} --conf {4,5,6}  > {o}
 6. somefile.6
 """
 
+multiple_input_vals = ['bash', 'somescript',
+    [[Input('1', 'somefile.1')], [Input('2', 'somefile.2')],
+        [Input('3', 'somefile.3')]], '--conf',
+    [[Input('4', 'somefile.4')], [Input('5', 'somefile.5')],
+        [Input('6', 'somefile.6')]],
+    '>', Output('1', 'metapipe.1.output')]
+
+
 
 multiple_outputs = """
 [COMMANDS]
@@ -159,6 +224,13 @@ python somescript.py {4,5,6} --log {o} -r {o} --output {o}
 5. somefile.5
 6. somefile.6
 """
+
+multiple_output_vals = ['bash', 'somescript',
+    [[Input('1', 'somefile.1')], [Input('2', 'somefile.2')],
+        [Input('3', 'somefile.3')]], '--log',
+    Output('1', 'metapipe.1.output'), '-r',
+    Output('1', 'metapipe.1.output')]
+
 
 
 magic_inputs = """

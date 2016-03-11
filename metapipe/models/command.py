@@ -83,7 +83,9 @@ class Command(object):
                 result = part.eval()
             except AttributeError:
                 result = part
+            if result[-1] != '\n':
+                result += ' '
             eval.append(result)
-        return ' '.join(eval)
+        return ''.join(eval).strip()
 
 

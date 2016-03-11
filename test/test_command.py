@@ -270,7 +270,8 @@ def test_another_sample_pipeline():
 
     cmd = cmds[0].eval()[0]
     cmd.update_dependent_files(old_commands)
-    cmd.eval().should.equal('java -jar Trimmomatic-0.35/trimmomatic-0.35.jar '
+    cmd.eval().should.equal('# Trimmomatic\n'
+        'java -jar Trimmomatic-0.35/trimmomatic-0.35.jar '
         'PE somefile.1 somefile.2 metapipe.1.1-1.output metapipe.1.1-2.output '
         'metapipe.1.1-3.output metapipe.1.1-4.output '
         'ILLUMINACLIP:Trimmomatic-0.35/adapters/TruSeq3-PE.fa:2:30:10:2:true '
@@ -288,7 +289,8 @@ def test_another_sample_pipeline_1():
 
     cmd = cmds[1].eval()[0]
     cmd.update_dependent_files(old_commands)
-    cmd.eval().should.equal('gzip --stdout -d metapipe.1.1-1.output > '
+    cmd.eval().should.equal('# Unzip the outputs from trimmomatic\n'
+        'gzip --stdout -d metapipe.1.1-1.output > '
         'metapipe.2.1.output')
 
 
@@ -318,7 +320,8 @@ def test_another_sample_pipeline_2():
 
     cmd = cmds[2].eval()[0]
     cmd.update_dependent_files(old_commands)
-    cmd.eval().should.equal('~/.local/bin/cutadapt --cut 7 -o '
+    cmd.eval().should.equal('# Cutadapt\n# cutadapt needs unzipped fastq '
+        'files\n~/.local/bin/cutadapt --cut 7 -o '
         'metapipe.3.1.output metapipe.2.1.output')
 
 

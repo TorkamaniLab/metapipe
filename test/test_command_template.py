@@ -12,6 +12,7 @@ def test_eval_1():
     parser = Parser(overall)
 
     templates = parser.consume()
+    print(templates)
 
     vals = [PathToken('python', '/usr/bin/python'), 'somescript.py', '-i',
         Input('1', 'somefile.1'),
@@ -135,7 +136,7 @@ def test_another_sample_pipeline():
     templates = parser.consume()
 
 
-    vals = ['java', '-jar',
+    vals = [CommentToken(['#', ' Trimmomatic']),'java', '-jar',
         PathToken('trimmomatic', 'Trimmomatic-0.35/trimmomatic-0.35.jar>'),
         'PE', Input('1'), Input('2'),
         Output('1.1-1', 'metapipe.1.output'), Output('1.1-2', 'metapipe.1.output'),
@@ -155,7 +156,8 @@ def test_another_sample_pipeline_1():
     templates = parser.consume()
 
 
-    vals = ['gzip', '--stdout', '-d',
+    vals = [CommentToken(['#', ' Unzip the outputs from trimmomatic']),
+        'gzip', '--stdout', '-d',
         Input('1.1-1'), '>',
         Output('2.1', 'metapipe.2.1.output')]
 
@@ -170,7 +172,9 @@ def test_another_sample_pipeline_2():
     templates = parser.consume()
 
 
-    vals = [PathToken('cutadapt', '~/.local/bin/cutadapt'), '--cut', '7',
+    vals = [CommentToken(['#', ' Cutadapt']),
+        CommentToken(['#', ' cutadapt needs unzipped fastq files']),
+        PathToken('cutadapt', '~/.local/bin/cutadapt'), '--cut', '7',
         '-o', Output('3.1', 'metapipe.3.1.output'), Input('2.1')]
 
     cmd = templates[2].eval()[0]
