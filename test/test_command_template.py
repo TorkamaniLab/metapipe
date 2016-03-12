@@ -12,9 +12,9 @@ def test_eval_1():
     parser = Parser(overall)
 
     templates = parser.consume()
-    print(templates)
 
-    vals = [PathToken('python', '/usr/bin/python'), 'somescript.py', '-i',
+    vals = [CommentToken(['#PBS_O_WORKDIR=~/someuser']),
+        PathToken('python', '/usr/bin/python'), 'somescript.py', '-i',
         Input('1', 'somefile.1'),
         Input('2', 'somefile.2'),
         Input('3', 'somefile.3'),
@@ -29,7 +29,8 @@ def test_eval_2():
     parser = Parser(overall)
     templates = parser.consume()
 
-    vals = [PathToken('python', '/usr/bin/python'), 'somescript.py', '-i',
+    vals = [CommentToken(['#PBS_O_WORKDIR=~/someuser']),
+        PathToken('python', '/usr/bin/python'), 'somescript.py', '-i',
         Input('4', 'somefile.4'),
         Input('5', 'somefile.5'),
         Input('6', 'somefile.6'),
@@ -78,7 +79,6 @@ def test_eval_multiple_inputs3():
         Input('6', 'somefile.6'),
         '>', Output('1.3', 'metapipe.1.3.output')]
     cmd = templates[0].eval()[2]
-    print(cmd)
     for i, part in enumerate(cmd.parts):
         vals[i].should.equal(part)
 

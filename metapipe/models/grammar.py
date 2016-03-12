@@ -20,7 +20,7 @@ class classproperty(property):
 class Grammar(object):
     """ A container class for the various grammars in the input files. """
 
-    _section = lbrack + Word(alphas) + rbrack
+    _section = lbrack + Word(alphas+'_') + rbrack
     _line = ~lbrack + Word(printables) + restOfLine
     _non_comment_line = ~pound + Group(Word(printables) + restOfLine)
 

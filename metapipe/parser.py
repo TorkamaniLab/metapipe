@@ -23,11 +23,16 @@ class Parser(object):
 
         self.files = self._get('files', lowered)
         self.paths = self._get('paths', lowered)
+        self.job_options = self._get('job_options', lowered)
         self.commands = ['\n'.join(self._get('commands', lowered))]
 
         self.files = self._parse(self.files, Grammar.file)
         self.paths = self._parse(self.paths, Grammar.path)
-        command_lines = self._parse(self.commands, Grammar.command_lines)[0]
+        self.job_options = self._parse(self.job_options, Grammar.comment)
+        try:
+            command_lines = self._parse(self.commands, Grammar.command_lines)[0]
+        except IndexError:
+            raise ValueError('Did you write any commands?')
 
         self.commands = []
         for command_line in command_lines:
@@ -35,15 +40,18 @@ class Parser(object):
             self.commands.append([comments.asList(),
                 self._parse([''.join(command)], Grammar.command)])
 
+        self.job_options = [opt.asList() for opt in self.job_options]
+
         self.paths = ctf.get_paths(self.paths)
         self.files = ctf.get_files(self.files)
 
         self.paths.reverse()
         self.files.reverse()
+        self.job_options.reverse()
         self.commands.reverse()
 
         return ctf.get_command_templates(self.commands, self.files[:],
-            self.paths[:])
+            self.paths[:], self.job_options)
 
     def _get(self, key, parser_result):
         """ Given a type and a dict of parser results, return
@@ -61,9 +69,10 @@ class Parser(object):
         """
         results = []
         for c in lines:
-            try:
-                results.append(grammar.parseString(c))
-            except pyparsing.ParseException as e:
-                raise ValueError('Invalid syntax. Verify line {} is '
-                    'correct.\n{}\n\n{}'.format(e.lineno, c, e))
+            if c != '':
+                try:
+                    results.append(grammar.parseString(c))
+                except pyparsing.ParseException as e:
+                    raise ValueError('Invalid syntax. Verify line {} is '
+                        'correct.\n{}\n\n{}'.format(e.lineno, c, e))
         return results

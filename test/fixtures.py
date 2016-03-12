@@ -104,6 +104,9 @@ cat {*.my_output,}
 python /usr/bin/python
 bash /usr/bin/bash
 rb /usr/bin/ruby
+
+[JOB_OPTIONS]
+#PBS_O_WORKDIR=~/someuser
 """
 
 

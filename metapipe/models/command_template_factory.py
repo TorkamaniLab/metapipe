@@ -12,14 +12,17 @@ from .command_template import CommandTemplate
 from .grammar import OR_TOKEN, AND_TOKEN
 
 
-def get_command_templates(command_tokens, file_tokens=[], path_tokens=[]):
+def get_command_templates(command_tokens, file_tokens=[], path_tokens=[],
+    job_options=[]):
     """ Given a list of tokens from the grammar, return a
     list of commands.
     """
     files = get_files(file_tokens)
     paths = get_paths(path_tokens)
+    job_options = get_options(job_options)
 
-    templates = _get_command_templates(command_tokens, files, paths)
+    templates = _get_command_templates(command_tokens, files, paths,
+        job_options)
 
     for command_template in templates:
         command_template.dependencies = _get_prelim_dependencies(
@@ -56,10 +59,16 @@ def get_paths(path_tokens):
     return [path] + get_paths(path_tokens)
 
 
+def get_options(options):
+    """ Given a list of options, tokenize them. """
+    return _get_comments(options)
+
+
 # Internal Implementation
 
 
-def _get_command_templates(command_tokens, files=[], paths=[], count=1):
+def _get_command_templates(command_tokens, files=[], paths=[], job_options=[],
+    count=1):
     """ Reversivly create command templates. """
     if not command_tokens:
         return []
@@ -67,7 +76,7 @@ def _get_command_templates(command_tokens, files=[], paths=[], count=1):
     comment_tokens, command_token = command_tokens.pop()
     parts = []
 
-    parts += _get_comments(comment_tokens)
+    parts += job_options + _get_comments(comment_tokens)
     for part in command_token[0]:
         # Check for file
         try:
@@ -90,7 +99,7 @@ def _get_command_templates(command_tokens, files=[], paths=[], count=1):
     [setattr(p, 'alias', command_template.alias)
         for p in command_template.output_parts]
     return [command_template] + _get_command_templates(command_tokens,
-        files, paths, count+1)
+        files, paths, job_options, count+1)
 
 
 def _get_prelim_dependencies(command_template, all_templates):
