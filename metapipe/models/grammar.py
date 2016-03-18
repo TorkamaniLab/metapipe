@@ -50,7 +50,7 @@ class Grammar(object):
     @staticmethod
     def overall():
         """ The overall grammer for pulling apart the main input files. """
-        return Optional(Grammar.comment) + Dict(ZeroOrMore(Group(
+        return ZeroOrMore(Grammar.comment) + Dict(ZeroOrMore(Group(
             Grammar._section + ZeroOrMore(Group(Grammar._line)))
             ))
 
@@ -64,10 +64,10 @@ class Grammar(object):
     def file():
         """ Grammar for files found in the overall input files.	"""
         return (
-                Optional(Word(alphanums).setResultsName('alias') +
-                    Suppress(Literal('.'))) + Suppress(White()) +
-                Word(approved_printables).setResultsName('filename')
-                )
+            Optional(Word(alphanums).setResultsName('alias') +
+                Suppress(Literal('.'))) + Suppress(White()) +
+            Word(approved_printables).setResultsName('filename')
+            )
 
     @classproperty
     @staticmethod
