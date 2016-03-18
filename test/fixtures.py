@@ -76,6 +76,11 @@ path = """python /usr/bin/python"""
 
 
 overall = """
+# Some top comment
+# Another top comment
+# A third top comment
+# Woo!
+
 [COMMANDS]
 python somescript.py -i {1,2,3||4,5,6} -o {o} -fgh somefile.txt
 bash somescript.sh -i {1.1||1.2} -o {o} -fgh somefile.txt
