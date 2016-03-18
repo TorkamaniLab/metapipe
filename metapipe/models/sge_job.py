@@ -10,11 +10,11 @@ class SGEJob(Job):
         self.id = None
         self.waiting = True     # The job has yet to be submitted.
 
-    def submit(self, job):
+    def submit(self):
         if self.attempts == 0:
-            job.make()
+            self.make()
         self.attempts += 1
-        out = call(job.cmd)
+        out, err = call(self.cmd)
         self.waiting = False
         self.id = out.split()[2]
 
@@ -59,7 +59,7 @@ class SGEJob(Job):
         :paramsstatus_type: complete, queued, running, error, gone
         """
         args = ("qstat -e %s" % self.id).split()
-        res = call(args)
+        res, _ = call(args)
         if res == '': return False
         res = res.split('\n')[2].split()[4]
 
@@ -82,7 +82,7 @@ class SGEJob(Job):
         status_type: complete, error
         """
         args = ("qstat -f %s" % self.id).split()
-        res = call(args)
+        res, _ = call(args)
         exit_status = [line for line in res.split('\n')
                 if 'exit_status' in line]
         try:

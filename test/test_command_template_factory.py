@@ -29,7 +29,6 @@ def test_full_sample_pipeline():
 
     cmds = parser.consume()
 
-
     vals = [CommentToken(['#', ' Trimmomatic']), 'java', '-jar',
         PathToken('trimmomatic', 'Trimmomatic-0.35/trimmomatic-0.35.jar>'),
         'PE', [[Input('*R1_001.fastq.gz')]], [[Input('*R2_001.fastq.gz')]],

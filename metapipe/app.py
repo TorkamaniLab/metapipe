@@ -6,7 +6,7 @@ since: 2015-12-22
 
 from __future__ import print_function
 
-import argparse, pickle, sys
+import argparse, pickle, os, sys
 
 import pyparsing
 
@@ -16,7 +16,7 @@ from .runtime import Runtime
 from .template import make_script
 
 
-__version__ = '1.0.1'
+__version__ = '1.0.1-16'
 
 
 PIPELINE_ALIAS = "metapipe.queue.job"
@@ -71,7 +71,7 @@ def main():
 
     with open(args.temp, 'wb') as f:
         pickle.dump(pipeline, f, 2)
-    script = make_script(temp=args.temp, shell=args.shell)
+    script = make_script(temp=os.path.abspath(args.temp), shell=args.shell)
 
     if args.run:
         output = args.output if args.output != sys.stdout else PIPELINE_ALIAS

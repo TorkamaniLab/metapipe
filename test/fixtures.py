@@ -352,15 +352,28 @@ cat {2.1} > {o.gz}
 
 # Job Fixtures
 
+pbs_job_qstat_queued = ("""Job id           Name             User             Time Use S Queue
+---------------- ---------------- ---------------- -------- - -----
+4807             scatter          user01           12:56:34 Q batch
+""", None)
 
-sge_job_qstat_queued = """job-ID prior name user state submit/start at queue slots ja-task-ID
+pbs_job_qstat_running = ("""Job id           Name             User             Time Use S Queue
+---------------- ---------------- ---------------- -------- - -----
+4807             scatter          user01           12:56:34 R batch
+""", None)
+
+pbs_job_qsub = ("""9974279.garibaldi01-adm.cluster.net""", None)
+
+
+
+sge_job_qstat_queued = ("""job-ID prior name user state submit/start at queue slots ja-task-ID
 -------------------------------------------------------------------
 1 0.00000 hostname sgeadmin qw 09/09/2009 14:58:00 1
-"""
+""", None)
 
-sge_job_qstat_running = """job-ID prior name user state submit/start at queue slots ja-task-ID
+sge_job_qstat_running = ("""job-ID prior name user state submit/start at queue slots ja-task-ID
 -------------------------------------------------------------------
 6 0.55500 jobscript. sgeadmin r 09/09/2009 16:18:57 all.q@node001.c 1
-"""
+""", None)
 
-sge_job_qsub = """Your job 1 ("hostname") has been submitted"""
+sge_job_qsub = ("""Your job 1 ("hostname") has been submitted""", None)
