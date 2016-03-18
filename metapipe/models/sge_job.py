@@ -87,7 +87,7 @@ class SGEJob(Job):
                 if 'exit_status' in line]
         try:
             _, __, code = exit_status[0].split()
-        except KeyError:
+        except IndexError:
             code = None
 
         if status_type == 'complete' and code == '0':

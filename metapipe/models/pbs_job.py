@@ -46,6 +46,9 @@ class PBSJob(Job):
             return True
         return False
 
+    def is_fail(self):
+        return not self.should_retry
+
     def is_error(self):
         """ Checks to see if the job errored out. """
         qstat = self._grep_qstat('error')
@@ -87,7 +90,7 @@ class PBSJob(Job):
                 if 'exit_status' in line]
         try:
             _, __, code = exit_status[0].split()
-        except KeyError:
+        except IndexError:
             code = None
 
         if status_type == 'complete' and code == '0':

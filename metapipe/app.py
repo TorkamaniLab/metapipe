@@ -16,7 +16,7 @@ from .runtime import Runtime
 from .template import make_script
 
 
-__version__ = '1.0.1'
+__version__ = '1.0.1-17'
 
 
 PIPELINE_ALIAS = "metapipe.queue.job"

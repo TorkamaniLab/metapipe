@@ -1,1 +1,2 @@
-b'THERE WAS AN ERROR\n'
+THERE WAS AN ERROR
+long_run_task_err.sh: 7: exit: Illegal number: -1
