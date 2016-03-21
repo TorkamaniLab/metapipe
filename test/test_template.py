@@ -12,11 +12,11 @@ def test_make_script():
     script.should.equal("""#! /usr/bin/sh
 set -e;
 
-python -c "
+python - <<END
 import pickle
 
 with open('metapipe.script', 'rb') as f:
     runtime = pickle.load(f)
     runtime.run()
-"
+END
 """)
