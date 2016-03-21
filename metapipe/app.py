@@ -75,7 +75,7 @@ def main():
 
     if args.run:
         output = args.output if args.output != sys.stdout else PIPELINE_ALIAS
-        submit_job = make_submit_job(args.shell, output)
+        submit_job = make_submit_job(args.shell, output, args.job_type)
         submit_job.submit()
 
     try:
@@ -88,11 +88,11 @@ def main():
     f.close()
 
 
-def make_submit_job(shell, output):
+def make_submit_job(shell, output, job_type):
     """ Preps the metapipe main job to be submitted. """
     run_cmd = [shell, output]
     submit_command = Command(alias=PIPELINE_ALIAS, cmds=run_cmd)
-    submit_job = get_job(submit_command, args.job_type)
+    submit_job = get_job(submit_command, job_type)
     submit_job.make()
     return submit_job
 
