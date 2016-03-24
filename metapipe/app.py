@@ -6,7 +6,7 @@ since: 2015-12-22
 
 from __future__ import print_function
 
-import argparse, pickle, sys
+import argparse, pickle, os, sys
 
 import pyparsing
 
@@ -16,7 +16,7 @@ from .runtime import Runtime
 from .template import make_script
 
 
-__version__ = '1.0.1'
+__version__ = '1.0.1-17'
 
 
 PIPELINE_ALIAS = "metapipe.queue.job"
@@ -71,18 +71,12 @@ def main():
 
     with open(args.temp, 'wb') as f:
         pickle.dump(pipeline, f, 2)
-    script = make_script(temp=args.temp, shell=args.shell)
+    script = make_script(temp=os.path.abspath(args.temp), shell=args.shell)
 
     if args.run:
-        if args.output != sys.stdout:
-            run_cmd = [args.shell, args.output]
-            submit_command = Command(alias=PIPELINE_ALIAS, cmds=run_cmd)
-            submit_job = get_job(submit_command, args.job_type)
-            submit_job.make()
-            submit_job.submit()
-        else:
-            raise ValueError('Invalid output destination. When running '
-            'immediately, you must specify an output location.')
+        output = args.output if args.output != sys.stdout else PIPELINE_ALIAS
+        submit_job = make_submit_job(args.shell, output, args.job_type)
+        submit_job.submit()
 
     try:
         f = open(args.output, 'w')
@@ -92,6 +86,15 @@ def main():
 
     args.output.write(script)
     f.close()
+
+
+def make_submit_job(shell, output, job_type):
+    """ Preps the metapipe main job to be submitted. """
+    run_cmd = [shell, output]
+    submit_command = Command(alias=PIPELINE_ALIAS, cmds=run_cmd)
+    submit_job = get_job(submit_command, job_type)
+    submit_job.make()
+    return submit_job
 
 
 if __name__ == '__main__':

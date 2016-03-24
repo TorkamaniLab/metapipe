@@ -30,7 +30,7 @@ def get_command_templates(command_tokens, file_tokens=[], path_tokens=[],
     return templates
 
 
-def get_files(file_tokens):
+def get_files(file_tokens, cwd=None):
     """ Given a list of parser file tokens, return a list of input objects
     for them.
     """
@@ -43,7 +43,11 @@ def get_files(file_tokens):
     except AttributeError:
         filename = ''
 
-    input = Input(token.alias, filename)
+    if cwd:
+        input = Input(token.alias, filename, cwd=cwd)
+    else:
+        input = Input(token.alias, filename)
+
     return [input] + get_files(file_tokens)
 
 

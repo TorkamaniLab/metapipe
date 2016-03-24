@@ -27,5 +27,5 @@ def test_submit():
     sge_job.call = Mock(return_value=sge_job_qsub)
     j.make = Mock()
 
-    j.submit(j)
+    j.submit()
     j.id.should.equal('1')

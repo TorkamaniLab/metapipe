@@ -14,7 +14,7 @@ class Parser(object):
         self.paths = []
         self.files = []
 
-    def consume(self):
+    def consume(self, cwd=None):
         """ Converts the lexer tokens into valid statements. This process
         also checks command syntax.
         """
