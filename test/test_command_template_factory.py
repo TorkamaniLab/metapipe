@@ -125,3 +125,12 @@ def test_long_running_2_deps():
     cmds = parser.consume()
     cmds[1].dependencies.should.have.length_of(1)
 
+
+def test_one_step_pipeline():
+    parser = Parser(one_step_pipeline)
+    cmds = parser.consume()
+
+    vals = ['cut', 'somefile', '>', 'anotherfile']
+    for i, part in enumerate(cmds[0].parts):
+        vals[i].should.equal(part)
+
