@@ -120,7 +120,7 @@ def test_run_2():
 
     pipeline = Runtime(cmds, JOB_TYPES, 'mock', sleep_time=0.01)
     iters = pipeline.run()
-    iters.should.equal(12)
+    iters.should.equal(15)
 
 
 def test_run_3():
@@ -129,7 +129,7 @@ def test_run_3():
 
     pipeline = Runtime(cmds, JOB_TYPES, 'mock', sleep_time=0.01)
     iters = pipeline.run()
-    iters.should.equal(16)
+    iters.should.equal(23)
 
 
 def test_run_4():
@@ -138,7 +138,7 @@ def test_run_4():
 
     pipeline = Runtime(cmds, JOB_TYPES, 'mock', sleep_time=0.01)
     iters = pipeline.run()
-    iters.should.equal(16)
+    iters.should.equal(23)
 
 
 def test_run_5():
@@ -147,7 +147,7 @@ def test_run_5():
 
     pipeline = Runtime(cmds, JOB_TYPES, 'mock', sleep_time=0.01)
     iters = pipeline.run()
-    iters.should.equal(16)
+    iters.should.equal(23)
 
 
 def test_run_6():
@@ -156,7 +156,7 @@ def test_run_6():
 
     pipeline = Runtime(cmds, JOB_TYPES, 'mock', sleep_time=0.01)
     iters = pipeline.run()
-    iters.should.equal(16)
+    iters.should.equal(23)
 
 
 def test_run_7():
@@ -165,7 +165,7 @@ def test_run_7():
 
     pipeline = Runtime(cmds, JOB_TYPES, 'mock', sleep_time=0.01)
     iters = pipeline.run()
-    iters.should.equal(16)
+    iters.should.equal(23)
 
 
 def test_run_8():
@@ -174,7 +174,7 @@ def test_run_8():
 
     pipeline = Runtime(cmds, JOB_TYPES, 'mock', sleep_time=0.01)
     iters = pipeline.run()
-    iters.should.equal(16)
+    iters.should.equal(23)
 
 
 def test_run_9():
@@ -183,7 +183,7 @@ def test_run_9():
 
     pipeline = Runtime(cmds, JOB_TYPES, 'mock', sleep_time=0.01)
     iters = pipeline.run()
-    iters.should.equal(16)
+    iters.should.equal(23)
 
 
 def test_run_10():
@@ -192,7 +192,7 @@ def test_run_10():
 
     pipeline = Runtime(cmds, JOB_TYPES, 'mock', sleep_time=0.01)
     iters = pipeline.run()
-    iters.should.equal(16)
+    iters.should.equal(23)
 
 
 def test_run_11():

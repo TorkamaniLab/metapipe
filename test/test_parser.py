@@ -69,7 +69,7 @@ def test_consume_commands_1():
     res[0].parts[6].should.equal(Output('1'))
     res[0].parts[7].should.equal('-fgh')
     res[0].parts[8].should.equal('somefile.txt')
-    res[0].dependencies.should.have.length_of(0)
+    res[0]._dependencies.should.have.length_of(0)
 
 
 def test_consume_commands_2():
@@ -86,8 +86,8 @@ def test_consume_commands_2():
     res[1].parts[6].should.equal(Output('1'))
     res[1].parts[7].should.equal('-fgh')
     res[1].parts[8].should.equal('somefile.txt')
-    res[1].dependencies.should.have.length_of(1)
-    res[1].dependencies[0].alias.should.equal('1')
+    res[1]._dependencies.should.have.length_of(1)
+    res[1]._dependencies[0].alias.should.equal('1')
 
 
 def test_consume_commands_3():
@@ -104,9 +104,9 @@ def test_consume_commands_3():
     res[2].parts[4][2][1].should.equal(Input('1.2'))
     res[2].parts[5].should.equal('>>')
     res[2].parts[6].should.equal('somefile')
-    res[2].dependencies.should.have.length_of(2)
+    res[2]._dependencies.should.have.length_of(2)
 
-    aliases = [dep.alias for dep in res[2].dependencies]
+    aliases = [dep.alias for dep in res[2]._dependencies]
     aliases.should.contain('2')
     aliases.should.contain('1')
 
@@ -121,7 +121,7 @@ def test_consume_commands_4():
     res[3].parts[3].should.equal('*.counts')
     res[3].parts[4][0].should.equal('>')
     res[3].parts[5].should.equal('something.file')
-    res[3].dependencies.should.have.length_of(0)
+    res[3]._dependencies.should.have.length_of(0)
 
 
 def test_consume_commands_5():
@@ -133,7 +133,7 @@ def test_consume_commands_5():
     res[4].parts[2].should.equal('*.counts')
     res[4].parts[3].should.equal('>')
     res[4].parts[6].should.equal(Output('', magic='some.file'))
-    res[4].dependencies.should.have.length_of(0)
+    res[4]._dependencies.should.have.length_of(0)
 
 
 def test_consume_commands_6():
@@ -146,7 +146,7 @@ def test_consume_commands_6():
     res[5].parts[2][0][1].should.equal(Input('2', 'somefile.2'))
     res[5].parts[2][0][2].should.equal(Input('3', 'somefile.3'))
     res[5].parts[2][1][0].should.equal(Input('4', '*.counts'))
-    res[5].dependencies.should.have.length_of(0)
+    res[5]._dependencies.should.have.length_of(0)
 
 
 def test_consume_commands_7():
@@ -160,7 +160,7 @@ def test_consume_commands_7():
     res[6].parts[4][0][0].should.equal(Input('*.counts',
                                         '*.counts'))
     res[6].parts.should.have.length_of(5)
-    res[6].dependencies.should.have.length_of(0)
+    res[6]._dependencies.should.have.length_of(0)
 
 
 def test_consume_commands_8():
@@ -174,7 +174,7 @@ def test_consume_commands_8():
     res[7].parts[4][0][0].should.equal(Input('*.counts',
                                 filename='*.counts'))
     res[7].parts[6].should.equal(Output('', magic='*.bam'))
-    res[7].dependencies.should.have.length_of(0)
+    res[7]._dependencies.should.have.length_of(0)
 
 
 def test_consume_commands_9():
@@ -185,7 +185,7 @@ def test_consume_commands_9():
     res[8].parts[1].should.equal('cat')
     res[8].parts[2][0][0].should.equal(Input('*.bam',
                                 filename='*.bam'))
-    res[8].dependencies.should.have.length_of(1)
+    res[8]._dependencies.should.have.length_of(1)
 
 
 def test_consume_full_sample_pipeline():
@@ -215,5 +215,5 @@ def test_consume_multiple_inputs():
                                 filename='somefile.5'))
     res[0].parts[4][2][0].should.equal(Input('6',
                                 filename='somefile.6'))
-    res[0].dependencies.should.have.length_of(0)
+    res[0]._dependencies.should.have.length_of(0)
 

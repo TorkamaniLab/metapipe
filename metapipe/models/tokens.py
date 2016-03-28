@@ -140,11 +140,24 @@ class Input(FileToken):
             return False
 
     @property
+    def is_glob(self):
+        return '*' in self.filename
+
+    @property
+    def magic_path(self):
+        match = file_pattern.format(self.alias, '*')
+        return '{}{}'.format(self.cwd, match)
+
+    @property
     def files(self):
         """ Returns a list of all the files that match the given
         input token.
         """
-        res = glob.glob(self.path)
+        res = None
+        if self.is_glob:
+            res = glob.glob(self.magic_path)
+        if not res:
+            res = glob.glob(self.path)
         if not res:
             res = glob.glob(self.alias)
         if not res:
