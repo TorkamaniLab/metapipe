@@ -175,7 +175,7 @@ def test_another_sample_pipeline_2():
     vals = [CommentToken(['#', ' Cutadapt']),
         CommentToken(['#', ' cutadapt needs unzipped fastq files']),
         PathToken('cutadapt', '~/.local/bin/cutadapt'), '--cut', '7',
-        '-o', Output('3.1', 'metapipe.3.1.output'), Input('2.1')]
+        '-o', Output('3.1', 'metapipe.3.1.output'), Input('2.*')]
 
     cmd = templates[2].eval()[0]
     for i, part in enumerate(cmd.parts):
