@@ -301,7 +301,7 @@ gzip --stdout -d {1.1-1||1.1-3} > {o}
 
 # Cutadapt
 # cutadapt needs unzipped fastq files
-cutadapt --cut 7 -o {o} {2.1||2.2}
+cutadapt --cut 7 -o {o} {2.*||}
 
 # BowTie
 bowtie2 --very-sensitive -N 1 -p 8 -x HG_19 -q -1 {3.1} -2 {3.2} -S {o}

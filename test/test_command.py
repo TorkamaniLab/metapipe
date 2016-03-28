@@ -342,6 +342,22 @@ def test_another_sample_pipeline_2():
         'mp.3.1.output mp.2.1.output')
 
 
+def test_another_sample_pipeline_2():
+    parser = Parser(another_sample)
+
+    cmds = parser.consume()
+
+    old_commands = []
+    for cmd in cmds[0:2]:
+        old_commands.extend(cmd.eval())
+
+    cmd = cmds[2].eval()[1]
+    cmd.update_dependent_files(old_commands)
+    cmd.eval().should.equal('# Cutadapt\n# cutadapt needs unzipped fastq '
+        'files\n~/.local/bin/cutadapt --cut 7 -o '
+        'mp.3.2.output mp.2.2.output')
+
+
 def test_long_running_1():
     parser = Parser(long_running)
 

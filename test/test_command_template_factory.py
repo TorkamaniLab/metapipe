@@ -86,7 +86,7 @@ def test_another_sample_pipeline_2():
         CommentToken(['#', ' cutadapt needs unzipped fastq files']),
         PathToken('cutadapt', '~/.local/bin/cutadapt'), '--cut', '7', '-o',
         Output('3', 'metapipe.3.output'),
-            [[Input('2.1')], [Input('2.2')]]]
+            [[Input('2.*')]]]
 
     for i, part in enumerate(cmds[2].parts):
         vals[i].should.equal(part)
@@ -123,7 +123,16 @@ def test_long_running_2_deps():
     parser = Parser(long_running)
 
     cmds = parser.consume()
-    cmds[1].dependencies.should.have.length_of(1)
+    cmds[1]._dependencies.should.have.length_of(1)
+
+
+def test_one_step_pipeline():
+    parser = Parser(one_step_pipeline)
+    cmds = parser.consume()
+
+    vals = ['cut', 'somefile', '>', 'anotherfile']
+    for i, part in enumerate(cmds[0].parts):
+        vals[i].should.equal(part)
 
 
 def test_one_step_pipeline():
