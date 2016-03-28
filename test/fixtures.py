@@ -354,6 +354,11 @@ cat {2.1} > {o.gz}
 6. somefile.6
 """
 
+one_step_pipeline = """
+[COMMANDS]
+cut somefile > anotherfile
+"""
+
 
 # Job Fixtures
 
