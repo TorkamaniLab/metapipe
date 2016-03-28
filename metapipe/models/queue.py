@@ -200,9 +200,6 @@ class JobQueue(Queue):
         print('Complete: %s' % job.alias)
         print('[PROGRESS]: %s%% complete.' % self.progress)
 
-    def on_ready(self, job):
-        print('Ready: %s' % job.alias)
-
     def on_error(self, job):
         print('Error: Job %s has failed, retrying (%s/%s)'
             % (job.alias, str(job.attempts), str(job.MAX_RETRY)))
