@@ -9,7 +9,7 @@ from collections import namedtuple
 import glob, re
 
 
-file_pattern = 'metapipe.{}.output{}'
+file_pattern = 'mp.{}.output{}'
 alias_pattern = '{command}-{output_number}'
 
 
