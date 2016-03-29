@@ -359,6 +359,20 @@ one_step_pipeline = """
 cut somefile > anotherfile
 """
 
+concurrent = """
+[COMMANDS]
+# Each one has 10
+cat {1||2||3||4||1||2||3||4||1||2} > {o}
+cat {1||2||3||4||1||2||3||4||1||2} > {o}
+cat {1||2||3||4||1||2||3||4||1||2} > {o}
+
+[FILES]
+1. somefile.1
+2. somefile.2
+3. somefile.3
+4. somefile.4
+"""
+
 
 # Job Fixtures
 

@@ -27,7 +27,6 @@ def get_command_templates(command_tokens, file_tokens=[], path_tokens=[],
     for command_template in templates:
         command_template._dependencies = _get_prelim_dependencies(
             command_template, templates)
-        print(command_template, command_template.depends_on)
     return templates
 
 

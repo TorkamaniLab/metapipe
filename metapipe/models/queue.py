@@ -15,6 +15,8 @@ class Queue(object):
     subclass it and fill in the callbacks you need.
     """
 
+    MAX_CONCURRENT_JOBS = 10000
+
     def __init__(self):
         self.queue = []
         self.running = []
@@ -52,7 +54,8 @@ class Queue(object):
                 if j.alias in job.depends_on)
         none_failed = not any(True for j in self.failed
                 if j.alias in job.depends_on)
-        return no_deps or (all_complete and none_failed)
+        queue_is_open = len(self.running) < self.MAX_CONCURRENT_JOBS
+        return queue_is_open and (no_deps or (all_complete and none_failed))
 
     def locked(self):
         """ Determines if the queue is locked. """
