@@ -93,9 +93,9 @@ python somescript -o {o} {1||2||3}
 Output
 ------
 
-python somescript -o metapipe.1.1.output some_file1.txt
-python somescript -o metapipe.1.2.output some_file2.txt
-python somescript -o metapipe.1.3.output some_file3.txt
+python somescript -o mp.1.1.output some_file1.txt
+python somescript -o mp.1.2.output some_file2.txt
+python somescript -o mp.1.3.output some_file3.txt
 ```
 
 Metapipe will generate the filename with the command's alias inside. An upcoming feature will provide more useful output names.
@@ -134,7 +134,7 @@ We can tell metapipe what the output should look like by using an output pattern
 ```
 [COMMANDS]
 ./do_counts {1||2} {o:*.counts}
-./analyze.sh {*.counts}
+./analyze.sh {2.*}
 
 [FILES]
 1. foo.txt
@@ -171,14 +171,14 @@ bash somescript {1||2||3} --conf {4||5||6}  > {o}
 3. somefile.3
 
 # Metapipe will return this:
-bash somescript somefile.1 --conf somefile.4  > metapipe.1.1.output
-bash somescript somefile.2 --conf somefile.5  > metapipe.1.2.output
-bash somescript somefile.3 --conf somefile.6  > metapipe.1.3.output
+bash somescript somefile.1 --conf somefile.4  > mp.1.1.output
+bash somescript somefile.2 --conf somefile.5  > mp.1.2.output
+bash somescript somefile.3 --conf somefile.6  > mp.1.3.output
 ```
 
 Metapipe will name the multiple output files as follows (in order from left to right):
 
-`metapipe.{command_number}.{sub_command_number}-{output_number}`
+`mp.{command_number}.{sub_command_number}-{output_number}`
 
 **Example:**
 
@@ -193,9 +193,9 @@ bash somescript {1||2||3} --log {o} -r {o}
 3. somefile.3
 
 # metapipe will generate the following:
-bash somescript somefile.1 --log metapipe.1.1-1.output -r metapipe.1.1-2.output
-bash somescript somefile.2 --log metapipe.1.2-1.output -r metapipe.1.2-2.output
-bash somescript somefile.3 --log metapipe.1.3-1.output -r metapipe.1.3-2.output
+bash somescript somefile.1 --log mp.1.1-1.output -r mp.1.1-2.output
+bash somescript somefile.2 --log mp.1.2-1.output -r mp.1.2-2.output
+bash somescript somefile.3 --log mp.1.3-1.output -r mp.1.3-2.output
 ```
 
 
@@ -211,25 +211,25 @@ trimmomatic -o {o} {*.fastq.gz||}
 
 # Metapipe will manage your dependencies for you!
 # Take all the outputs of step 1 and feed them to cutadapt.
-cutadapt -o {o} {metapipe.1.*.output||}
+cutadapt -o {o} {1.*||}
 
 # Next you need to align them.
-htseq <alignment options> -o {o} {metapipe.2.*.output||}
+htseq <alignment options> -o {o} {2.*||}
 
 # Of course, now you'll have some custom code to put all the data together. 
 # That's fine too!
 
 # Oh no! You hardcode the output name? No problem! Just tell metapipe 
 # what the filename is.
-python my_custom_code.py {metapipe.3.*.output,} #{o:hardcoded_output.csv}
+python my_custom_code.py {3.*} #{o:hardcoded_output.csv}
 
 # Now you want to compare your results to some controls? Ok!
 # Metapipe wil compare your hardcoded_output to all 3 controls at the same time!
-python my_compare_script.py --compare-to {1||2||3} {hardcoded_output.csv} 
+python my_compare_script.py --compare-to {1||2||3} {4.1} 
 
 # Finally, you want to make some pretty graphs? No problem!
 # But wait! You want R 2.0 for this code? Just create an alias for R!
-Rscript my_cool_graphing_code.r {metapipe.5.*.output} > {o}
+Rscript my_cool_graphing_code.r {5.*} > {o}
 
 [FILES]
 1. controls.1.csv

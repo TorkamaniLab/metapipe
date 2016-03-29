@@ -52,25 +52,24 @@ trimmomatic -o {o} {*.fastq.gz||}
 
 # Metapipe will manage your dependencies for you!
 # Take all the outputs of step 1 and feed them to cutadapt.
-cutadapt -o {o} {metapipe.1.*.output||}
+cutadapt -o {o} {1.*||}
 
-# Next you need to align them.
-htseq <alignment options> -o {o} {metapipe.2.*.output||}
+htseq <alignment options> -o {o} {2.*||}
 
 # Of course, now you'll have some custom code to put all the data together. 
 # That's fine too!
 
 # Oh no! You hardcode the output name? No problem! Just tell metapipe 
 # what the filename is.
-python my_custom_code.py {metapipe.3.*.output,} #{o:hardcoded_output.csv}
+python my_custom_code.py {3.*} #{o:hardcoded_output.csv}
 
 # Now you want to compare your results to some controls? Ok!
 # Metapipe wil compare your hardcoded_output to all 3 controls at the same time!
-python my_compare_script.py --compare-to {1||2||3} {hardcoded_output.csv} 
+python my_compare_script.py --compare-to {1||2||3} {4.1} 
 
 # Finally, you want to make some pretty graphs? No problem!
 # But wait! You want R 2.0 for this code? Just create an alias for R!
-Rscript my_cool_graphing_code.r {metapipe.5.*.output} > {o}
+Rscript my_cool_graphing_code.r {5.*} > {o}
 
 [FILES]
 1. controls.1.csv
