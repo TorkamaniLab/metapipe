@@ -202,3 +202,12 @@ def test_run_11():
     pipeline = Runtime(cmds, JOB_TYPES, 'mock', sleep_time=0.01)
     iters = pipeline.run()
     iters.should.be.greater_than(15)
+
+
+def test_max_concurrent_jobs():
+    parser = Parser(concurrent)
+    cmds = parser.consume()
+
+    pipeline = Runtime(cmds, { 'local': MockJob }, 'local', sleep_time=0.01)
+    iters = pipeline.run()
+    iters.should.be.greater_than(30)

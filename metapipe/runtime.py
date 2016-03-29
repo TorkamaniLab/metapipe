@@ -16,6 +16,9 @@ class Runtime(object):
         self.queue = JobQueue()
         self.sleep_time = sleep_time
 
+        if job_type == 'local':
+            self.queue.MAX_CONCURRENT_JOBS = 10
+
         job_templates = []
         for command_template in command_templates:
             self.add(command_template, job_types[job_type])
