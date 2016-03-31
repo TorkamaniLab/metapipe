@@ -21,13 +21,14 @@ class Parser(object):
         first_pass = Grammar.overall.parseString(self.string)
         lowered = { key.lower(): val for key, val in first_pass.iteritems() }
 
+        self.commands = ['\n'.join(self._get('commands', lowered))]
+        self.job_options = self._get('job_options', lowered)
+
         self.files = self._get('files', lowered)
         self.paths = self._get('paths', lowered)
-        self.job_options = self._get('job_options', lowered)
-        self.commands = ['\n'.join(self._get('commands', lowered))]
 
-        self.files = self._parse(self.files, Grammar.file)
-        self.paths = self._parse(self.paths, Grammar.path)
+        self.files = self._parse(self.files, Grammar.file, True)
+        self.paths = self._parse(self.paths, Grammar.path, True)
         self.job_options = self._parse(self.job_options, Grammar.comment)
         try:
             command_lines = self._parse(self.commands, Grammar.command_lines)[0]
@@ -63,13 +64,13 @@ class Parser(object):
             txt_lines = []
         return txt_lines
 
-    def _parse(self, lines, grammar):
+    def _parse(self, lines, grammar, ignore_comments=False):
         """ Given a type and a list, parse it using the more detailed
         parse grammar.
         """
         results = []
         for c in lines:
-            if c != '':
+            if c != '' and not (ignore_comments and c[0] == '#'):
                 try:
                     results.append(grammar.parseString(c))
                 except pyparsing.ParseException as e:

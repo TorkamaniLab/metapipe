@@ -74,10 +74,10 @@ class Grammar(object):
     def path():
         """ Grammar for paths found in the overall input files. """
         return (
-                Word(approved_printables).setResultsName('alias') +
-                Suppress(White()) +
-                Word(approved_printables).setResultsName('path')
-                )
+            Word(approved_printables).setResultsName('alias') +
+            Suppress(White()) +
+            Word(approved_printables).setResultsName('path')
+            )
 
     @classproperty
     @staticmethod
