@@ -101,12 +101,14 @@ cat {*.my_output,}
 1. somefile.1
 2. somefile.2
 3. somefile.3
+ #THIS IS A COMMENT
 4. somefile.4
 5. somefile.5
 6. somefile.6
 
 [PATHS]
 python /usr/bin/python
+# THIS IS also A COMMENT
 bash /usr/bin/bash
 rb /usr/bin/ruby
 
