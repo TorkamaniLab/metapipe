@@ -39,12 +39,14 @@ class Job(object):
     def __repr__(self):
         return '<Job: {}>'.format(self.cmd)
 
+    def __cmp__(self, other):
+        return cmp(self.alias, other.alias)
+
     def make(self):
         """ Evaluate the command, and write it to a file. """
         eval = self.command.eval()
         with open(self.filename, 'w') as f:
             f.write(eval)
-            print(eval)
 
     @property
     def should_retry(self):

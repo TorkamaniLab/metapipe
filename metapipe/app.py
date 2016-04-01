@@ -11,7 +11,8 @@ import argparse, pickle, os, sys
 import pyparsing
 
 from .parser import Parser
-from .models import Command, LocalJob, PBSJob, JobQueue
+from .models import Command, LocalJob, PBSJob, \
+    HtmlReportingJobQueue, TextReportingJobQueue
 from .runtime import Runtime
 from .template import make_script
 
@@ -26,6 +27,11 @@ JOB_TYPES = {
     'pbs': PBSJob
 }
 
+QUEUE_TYPES = {
+    'text': TextReportingJobQueue,
+    'html': HtmlReportingJobQueue
+}
+
 
 def main():
     """ Given a config file, spit out the script to run the analysis. """
@@ -34,17 +40,30 @@ def main():
     parser.add_argument('input', nargs='?',
                    help='A valid metapipe configuration file.')
     parser.add_argument('-o', '--output',
-                   help='An output destination. If none is provided, the results will be printed to stdout.', default=sys.stdout)
+                   help='An output destination. If none is provided, the '
+                   'results will be printed to stdout.',
+                   default=sys.stdout)
     parser.add_argument('-t', '--temp',
-                   help='A desired metapipe binary file. This is used to store temp data between generation and execution. (Default: "%(default)s")', default='.metapipe')
+                   help='A desired metapipe binary file. This is used to store '
+                   'temp data between generation and execution. '
+                   '(Default: "%(default)s")', default='.metapipe')
     parser.add_argument('-s', '--shell',
-                   help='The path to the shell to be used when executing the pipeline. (Default: "%(default)s)"', default='/bin/bash')
+                   help='The path to the shell to be used when executing the '
+                   'pipeline. (Default: "%(default)s)"',
+                   default='/bin/bash')
     parser.add_argument('-r', '--run',
-                   help='Run the pipeline as soon as it\'s ready.', action='store_true')
+                   help='Run the pipeline as soon as it\'s ready.',
+                   action='store_true')
     parser.add_argument('-j', '--job-type',
-                   help='The destination for calculations (i.e. local, a PBS ' 'queue on a cluster, etc).\n'
-                   'Options: local, pbs. (Default: "%(default)s)"',
+                   help='The destination for calculations (i.e. local, a PBS '
+                   'queue on a cluster, etc).\nOptions: {}. '
+                   '(Default: "%(default)s)"'.format(JOB_TYPES.keys()),
                    default='local')
+    parser.add_argument('--report-type',
+                   help='The output report type. By default metapipe will '
+                   'print updates to the console. \nOptions: {}. '
+                   '(Default: "%(default)s)"'.format(QUEUE_TYPES.keys()),
+                   default='text')
     parser.add_argument('-v','--version',
                     help='Displays the current version of the application.',
                     action='store_true')
@@ -67,7 +86,8 @@ def main():
     except ValueError as e:
         raise SyntaxError('Invalid config file. \n%s' % e)
 
-    pipeline = Runtime(command_templates, JOB_TYPES, args.job_type)
+    queue_type = QUEUE_TYPES[args.report_type]
+    pipeline = Runtime(command_templates, queue_type, JOB_TYPES, args.job_type)
 
     with open(args.temp, 'wb') as f:
         pickle.dump(pipeline, f, 2)
