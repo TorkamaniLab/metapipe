@@ -7,5 +7,6 @@ from .local_job import LocalJob
 from .grammar import Grammar
 from .pbs_job import PBSJob
 from .sge_job import SGEJob
-from .queue import JobQueue, Queue
+from .queue import HtmlReportingJobQueue, TextReportingJobQueue, \
+    ReportingJobQueue, BaseQueue
 from .tokens import FileToken, Input, Output, PathToken, CommentToken

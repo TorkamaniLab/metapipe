@@ -6,11 +6,10 @@ running jobs, and can even resubmit jobs that have failed.
 author: Brian Schrader
 since: 2015-08-27
 """
+from .reporting import BaseReportingMixin, HtmlReportingMixin, TextReportingMixin
+from .job_template import JobTemplate
 
-import logging
-
-
-class Queue(object):
+class BaseQueue(object):
     """ An abstract class for managing a queue of jobs. To use this class,
     subclass it and fill in the callbacks you need.
     """
@@ -42,7 +41,17 @@ class Queue(object):
         """ Returns a list of all jobs submitted to the queue, complete,
         in-progess or failed.
         """
-        return self.complete + self.failed + self.queue + self.running
+        return list(set(self.complete + self.failed + self.queue + self.running))
+
+    @property
+    def progress(self):
+        """ Returns the percentage, current and total number of
+        jobs in the queue.
+        """
+        total = len(self.all_jobs)
+        remaining = total - len(self.active_jobs) if total > 0 else 0
+        percent = int(100 * (float(remaining) / total)) if total > 0 else 0
+        return percent
 
     def ready(self, job):
         """ Determines if the job is ready to be sumitted to the
@@ -179,39 +188,46 @@ class Queue(object):
         pass
 
 
-class JobQueue(Queue):
-    """ A concrete subclass of the Queue. """
-
-    def __init__(self):
-        super(JobQueue, self).__init__()
+class ReportingJobQueue(BaseReportingMixin, BaseQueue):
+    """ An abstract subclass of the Queue which reports on progress. """
 
     @property
-    def progress(self):
-        """ Returns the percentage, current and total number of
-        jobs in the queue.
-        """
-        total = len(self.all_jobs)
-        remaining = total - len(self.active_jobs) if total > 0 else 0
-        percent = int(100 * (float(remaining) / total)) if total > 0 else 0
-        return percent
+    def real_jobs(self):
+        """ Returns all jobs that represent work. """
+        return [j for j in self.all_jobs if  not isinstance(j, JobTemplate)]
 
     def on_locked(self):
-        print('The queue is locked. Please check the logs.')
+        self.render('The queue is locked. Please check the logs.',
+            self.progress)
         return True
 
+    def on_submit(self, job):
+        if not isinstance(job, JobTemplate):
+            self.render('Submitted: %s' % job.alias, self.progress)
+
     def on_complete(self, job):
-        print('Complete: %s' % job.alias)
-        print('[PROGRESS]: %s%% complete.' % self.progress)
+        if not isinstance(job, JobTemplate):
+            self.render('Complete: %s' % job.alias, self.progress)
 
     def on_error(self, job):
-        print('Error: Job %s has failed, retrying (%s/%s)'
-            % (job.alias, str(job.attempts), str(job.MAX_RETRY)))
+        if not isinstance(job, JobTemplate):
+            self.render('Error: Job %s has failed, retrying (%s/%s)'
+                % (job.alias, str(job.attempts), str(job.MAX_RETRY)), self.progress)
 
     def on_fail(self, job):
-        print('Error: Job %s has failed. Retried %s times.'
-                % (job.alias, str(job.attempts)))
+        if not isinstance(job, JobTemplate):
+            self.render('Error: Job %s has failed. Retried %s times.'
+                % (job.alias, str(job.attempts)), self.progress)
+
+    def on_end(self):
+        self.render('All jobs are complete.', self.progress)
 
 
+class HtmlReportingJobQueue(HtmlReportingMixin, ReportingJobQueue):
+    """ A queue that generates HTML reports. """
+    pass
 
 
-
+class TextReportingJobQueue(TextReportingMixin, ReportingJobQueue):
+    """ A queue that generates textual reports. """
+    pass

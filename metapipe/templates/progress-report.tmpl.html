@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Pipeline Progress Report | Metapipe</title>
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+<!--
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css" integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r" crossorigin="anonymous">
+ -->
+    <style>
+    .log {
+      max-height:500px;
+      overflow:scroll;
+    }
+    .code {
+      font-family:consolas;
+    }
+    </style>
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="container">
+      <h1>Pipeline Progress Report</h1>
+
+      <div class="progress">
+        <div class="progress-bar" role="progressbar" aria-valuenow="{{progress}}"
+          aria-valuemin="0" aria-valuemax="100" style="width: {{progress}}%;">
+          {{progress}}%
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-sm-6">
+          <h2>Jobs</h2>
+          <div class="panel-group" id="accordion" role="tablist"
+            aria-multiselectable="true">
+          {% for job in jobs %}
+            <div class="panel panel-default">
+              <div class="panel-heading" role="tab" id="job-heading-{{job.alias}}">
+                <h4 class="panel-title">
+                  <a class="collapsed" role="button" data-toggle="collapse"
+                  href="#job-info-{{job.alias}}" aria-expanded="false"
+                  aria-controls="#job-info-{{job.alias}}" parent="#accordion">
+                    Job {{job.alias}}
+                  </a>
+                </h4>
+              </div>
+              <div class="panel-collapse collapse" id="job-info-{{job.alias}}"
+              aria-labelledby="job-heading-{{job.alias}}" role="tabpanel">
+                <div class="panel-body">
+                  <span class="code">
+                    {{job.command.eval()}}
+                  </span>
+                </div>
+              </div>
+          </div>
+          {% endfor %}
+          </div>
+
+        </div>
+        <div class="col-sm-6">
+          <h2>Log</h2>
+          <div class="log" class="list-group">
+          {% for msg in messages %}
+            <a class="list-group-item">
+              <p class="list-group-item-heading">{{msg.text}}</p>
+              <i class="list-group-item-text">{{msg.time}}</i>
+            </a>
+          {% endfor %}
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+    <script>
+      $('.collapse').collapse();
+    </script>
+  </body>
+</html>

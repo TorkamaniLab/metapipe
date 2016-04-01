@@ -14,21 +14,21 @@ from .fixtures import *
 
 
 def test_repr():
-    q = Queue()
+    q = BaseQueue()
     str(q).should.equal('<Queue: jobs=0>')
 
 def test_on_end():
     """ Ticks the queue when it's empty. """
-    q = Queue()
+    q = BaseQueue()
     tick = q.tick()
 
 def test_progress_1():
-    q = JobQueue()
+    q = ReportingJobQueue()
     q.push(MockJob('', None))
     q.progress.should.equal(0)
 
 def test_progress_2():
-    q = JobQueue()
+    q = ReportingJobQueue()
     q.push(MockJob('', None))
     tick = q.tick()
     for _ in range(10):

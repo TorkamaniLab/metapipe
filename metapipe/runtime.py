@@ -6,14 +6,15 @@ since: 2015-01-13
 
 from time import sleep
 
-from metapipe.models import JobQueue, JobTemplate
+from metapipe.models import JobTemplate
 
 
 class Runtime(object):
 
-    def __init__(self, command_templates, job_types, job_type='local', sleep_time=1):
+    def __init__(self, command_templates, queue_type, job_types,
+            job_type='local', sleep_time=1):
         self.complete_jobs = []
-        self.queue = JobQueue()
+        self.queue = queue_type()
         self.sleep_time = sleep_time
 
         if job_type == 'local':
@@ -22,15 +23,6 @@ class Runtime(object):
         job_templates = []
         for command_template in command_templates:
             self.add(command_template, job_types[job_type])
-
-    @property
-    def should_stop(self):
-        if self.queue.locked():
-            return True
-        elif self.queue.is_empty:
-            return True
-        else:
-            return False
 
     def add(self, command_template, job_class):
         """ Given a command template, add it as a job to the queue. """
@@ -44,11 +36,11 @@ class Runtime(object):
         """ Begins the runtime execution. """
         iterations = 0
         queue = self.queue.tick()
-        while not self.should_stop:
+        while True:
             try:
                 next(queue)
             except StopIteration:
-                pass
+                break
 
             iterations += 1
             sleep(self.sleep_time)
