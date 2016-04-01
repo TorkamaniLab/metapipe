@@ -34,7 +34,7 @@ class BaseQueue(object):
         """ Returns a list of all jobs submitted to the queue,
         or in progress.
         """
-        return self.queue + self.running
+        return list(set(self.queue + self.running))
 
     @property
     def all_jobs(self):

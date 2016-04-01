@@ -29,19 +29,17 @@ def test_progress_1():
 
 def test_progress_2():
     q = ReportingJobQueue()
-    q.push(MockJob('', None))
+    q.push(MockJob('1.1', None))
     tick = q.tick()
     for _ in range(10):
         next(tick)
 
-    q.push(MockJob('', None))
+    q.push(MockJob('2.2', None))
     for _ in range(6):
         next(tick)
 
-    q.push(MockJob('', None))
-    q.push(MockJob('', None))
+    q.push(MockJob('3.3', None))
+    q.push(MockJob('4.4', None))
     for _ in range(4):
         next(tick)
-
-
     q.progress.should.equal(50)
