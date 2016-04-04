@@ -13,6 +13,8 @@ Metapipe is a simple command line tool for building and running complex analysis
 
 Metapipe's goal is to improve **readability**, and **maintainability** when building complex pipelines.
 
+<img src="docs/pipeline.gif" width="350px" align="right" />
+
 In addition to helping you generate and maintain complex pipelines, **metapipe also helps you debug them**! How? Well metapipe watches your jobs execute and keeps tabs on them. This means, unlike conventional batch queue systems like PBS/Torque alone, metapipe can give you accurate error information, and even resubmit failing jobs! Metapipe enhances the power of any PBS/Torque queue!
 
 - What if I [don't use PBS/Torque](#other-queue-systems), or [a queue system at all?](#no-queue-no-problem)
@@ -38,10 +40,9 @@ In the bad old days (before metapipe), if you wanted to make an analysis pipelin
 
 If you need help with Metapipe, or you'd like to chat about new features, get in touch by filing an issue, or at `#metapipe` on freenode!
 
+<img src="docs/pipeline.gif" width="600px" align="right" />
 
 ### Here's a sample!
-
-<img src="docs/pipeline.gif" width="600px" style="float:right;" />
 
 Let's say you have a few command-line tools that you want to string together into a pipeline. You used to have to know Python, Perl, Bash, or some other scripting language; now you can use Metapipe!
 
