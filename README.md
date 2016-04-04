@@ -13,7 +13,7 @@ Metapipe is a simple command line tool for building and running complex analysis
 
 Metapipe's goal is to improve **readability**, and **maintainability** when building complex pipelines.
 
-In addition to helping you generate and maintain complex pipelines, **metapipe also helps you debug them**! How? Well metapipe watches your jobs execute and keeps tabs on them. This means, unlike conventional batch queue systems like PBS/Torque alone, metapipe can give you accurate error information, and even resubmit failing jobs! Metapipe enhances the power of any PBS/Torque queue! 
+In addition to helping you generate and maintain complex pipelines, **metapipe also helps you debug them**! How? Well metapipe watches your jobs execute and keeps tabs on them. This means, unlike conventional batch queue systems like PBS/Torque alone, metapipe can give you accurate error information, and even resubmit failing jobs! Metapipe enhances the power of any PBS/Torque queue!
 
 - What if I [don't use PBS/Torque](#other-queue-systems), or [a queue system at all?](#no-queue-no-problem)
 
@@ -23,9 +23,9 @@ In addition to helping you generate and maintain complex pipelines, **metapipe a
 It's super simple!
 
 `pip install metapipe`
- 
+
 To make it easy, metapipe runs on Python 2.7, 3.4, and 3.5!
- 
+
 
 ## What does it do?
 
@@ -34,12 +34,14 @@ In the bad old days (before metapipe), if you wanted to make an analysis pipelin
 
 ## Documentation & Help
 
-[Check out the full documentation at ReadTheDocs &#8594;](http://metapipe.readthedocs.org/en/latest/index.html) 
+[Check out the full documentation at ReadTheDocs &#8594;](http://metapipe.readthedocs.org/en/latest/index.html)
 
 If you need help with Metapipe, or you'd like to chat about new features, get in touch by filing an issue, or at `#metapipe` on freenode!
 
 
 ### Here's a sample!
+
+<img src="docs/pipeline.gif" width="600px" style="float:right;" />
 
 Let's say you have a few command-line tools that you want to string together into a pipeline. You used to have to know Python, Perl, Bash, or some other scripting language; now you can use Metapipe!
 
@@ -56,16 +58,16 @@ cutadapt -o {o} {1.*||}
 
 htseq <alignment options> -o {o} {2.*||}
 
-# Of course, now you'll have some custom code to put all the data together. 
+# Of course, now you'll have some custom code to put all the data together.
 # That's fine too!
 
-# Oh no! You hardcode the output name? No problem! Just tell metapipe 
+# Oh no! You hardcode the output name? No problem! Just tell metapipe
 # what the filename is.
 python my_custom_code.py {3.*} #{o:hardcoded_output.csv}
 
 # Now you want to compare your results to some controls? Ok!
 # Metapipe wil compare your hardcoded_output to all 3 controls at the same time!
-python my_compare_script.py --compare-to {1||2||3} {4.1} 
+python my_compare_script.py --compare-to {1||2||3} {4.1}
 
 # Finally, you want to make some pretty graphs? No problem!
 # But wait! You want R 2.0 for this code? Just create an alias for R!
@@ -79,7 +81,7 @@ Rscript my_cool_graphing_code.r {5.*} > {o}
 [PATHS]
 Rscript ~/path/to/my/custom/R/version
 ```
-   
+
 Excluding the comments, this entire analysis pipeline is 13 lines long, and extremely readable! What's even better? If you want to change any steps, its super easy! That's the power of Metapipe!
 
 

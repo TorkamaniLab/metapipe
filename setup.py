@@ -14,4 +14,5 @@ setup(
     install_requires = ['pyparsing', 'Jinja2', 'mock'],
     author='Brian Schrader',
     author_email='brian@brianschrader.com',
+    include_package_data = True,
 )
