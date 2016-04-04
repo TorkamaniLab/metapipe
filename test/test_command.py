@@ -1,5 +1,9 @@
 """ Tests for the command class. """
-from unittest.mock import Mock, PropertyMock, patch
+try:
+    from unittest.mock import Mock, PropertyMock, patch
+except ImportError:
+    from mock import Mock, PropertyMock, patch
+
 import sure
 
 from .fixtures import *
