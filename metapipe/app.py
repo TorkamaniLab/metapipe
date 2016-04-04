@@ -34,7 +34,7 @@ QUEUE_TYPES = {
 
 
 def main():
-    """ Given a config file, spit out the script to run the analysis. """
+    """ Parses the command-line args, and calls run. """
     parser = argparse.ArgumentParser(
         description='A pipeline that generates analysis pipelines.')
     parser.add_argument('input', nargs='?',
@@ -80,31 +80,38 @@ def main():
         print('No valid config file found.')
         return -1
 
+    run(config, args.output, args.job_type, args.report_type, args.shell,
+        args.temp, args.run)
+
+
+def run(config, output=sys.stdout, job_type='local', report_type='text', shell='/bin/bash',
+        temp='.metapipe', run_now=False):
+    """ Create the metapipe based on the provided input. """
     parser = Parser(config)
     try:
         command_templates = parser.consume()
     except ValueError as e:
         raise SyntaxError('Invalid config file. \n%s' % e)
 
-    queue_type = QUEUE_TYPES[args.report_type]
-    pipeline = Runtime(command_templates, queue_type, JOB_TYPES, args.job_type)
+    queue_type = QUEUE_TYPES[report_type]
+    pipeline = Runtime(command_templates, queue_type, JOB_TYPES, job_type)
 
     with open(args.temp, 'wb') as f:
         pickle.dump(pipeline, f, 2)
-    script = make_script(temp=os.path.abspath(args.temp), shell=args.shell)
+    script = make_script(temp=os.path.abspath(temp), shell=shell)
 
     if args.run:
-        output = args.output if args.output != sys.stdout else PIPELINE_ALIAS
-        submit_job = make_submit_job(args.shell, output, args.job_type)
+        output = output if output != sys.stdout else PIPELINE_ALIAS
+        submit_job = make_submit_job(shell, output, job_type)
         submit_job.submit()
 
     try:
-        f = open(args.output, 'w')
-        args.output = f
+        f = open(output, 'w')
+        output = f
     except TypeError:
         pass
 
-    args.output.write(script)
+    output.write(script)
     f.close()
 
 
