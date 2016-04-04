@@ -11,7 +11,7 @@ setup(
     entry_points = {
         "console_scripts": ['metapipe = metapipe.app:main']
         },
-    install_requires = ['pyparsing', 'Jinja2'],
+    install_requires = ['pyparsing', 'Jinja2', 'mock'],
     author='Brian Schrader',
     author_email='brian@brianschrader.com',
 )
