@@ -154,10 +154,10 @@ class Input(FileToken):
         input token.
         """
         res = None
-        if self.is_glob:
-            res = glob.glob(self.magic_path)
         if not res:
             res = glob.glob(self.path)
+        if not res and self.is_glob:
+            res = glob.glob(self.magic_path)
         if not res:
             res = glob.glob(self.alias)
         if not res:
