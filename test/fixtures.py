@@ -376,6 +376,29 @@ cat {1||2||3||4||1||2||3||4||1||2} > {o}
 """
 
 
+magical_glob = """
+[COMMANDS]
+split -o breakdown {1} #{o:breakdown/*}
+cat {1.*} > {o}
+diff {2.*} {1}
+
+[FILES]
+1. somefile.1
+2. somefile.2
+"""
+
+magical_glob2 = """
+[COMMANDS]
+split -o breakdown {1} #{o:breakdown/*}
+cat {1.*||} > {o}
+diff {2.*} {1}
+
+[FILES]
+1. somefile.1
+2. somefile.2
+"""
+
+
 # Job Fixtures
 
 pbs_job_qstat_queued = ("""Job id           Name             User             Time Use S Queue
