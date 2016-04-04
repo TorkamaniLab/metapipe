@@ -1,5 +1,5 @@
 """ Tests for the command class. """
-from unittest.mock import Mock, PropertyMock, patch
+
 import sure
 
 from .fixtures import *
@@ -412,35 +412,3 @@ def test_full_output_file_name_2():
 
     cmd.update_dependent_files(old_commands)
     cmd.eval().should.equal('cat mp.1.1.output.gz > mp.2.1.output.gz')
-
-
-def test_magical_glob():
-    parser = Parser(magical_glob)
-    templates = parser.consume()
-    old_commands = []
-
-    for cmd in templates[0:1]:
-        old_commands.extend(cmd.eval())
-
-    with patch('metapipe.models.Input.files', new_callable=PropertyMock) as mock_files:
-        mock_files.return_value = ['mp.1.1.output', 'mp.1.2.output']
-        cmd = templates[1].eval()[0]
-
-        cmd.update_dependent_files(old_commands)
-        cmd.eval().should.equal('cat mp.1.1.output mp.1.2.output > mp.2.1.output')
-
-
-def test_magical_glob2():
-    parser = Parser(magical_glob2)
-    templates = parser.consume()
-    old_commands = []
-
-    for cmd in templates[0:1]:
-        old_commands.extend(cmd.eval())
-
-    with patch('metapipe.models.Input.files', new_callable=PropertyMock) as mock_files:
-        mock_files.return_value = ['mp.1.1.output', 'mp.1.2.output']
-        cmd = templates[1].eval()[0]
-
-    cmd.update_dependent_files(old_commands)
-    cmd.eval().should.equal('cat mp.1.1.output > mp.2.1.output')

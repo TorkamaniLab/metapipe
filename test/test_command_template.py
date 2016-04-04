@@ -221,25 +221,3 @@ def test_output_file_name():
     cmd = templates[0].eval()[0]
     for i, part in enumerate(cmd.parts):
         vals[i].should.equal(part)
-
-def test_magical_glob():
-    parser = Parser(magical_glob)
-    templates = parser.consume()
-
-    vals = ['cat', Input('1.*', ''), '>',
-        Output('2.1', 'mp.2.1.output')]
-
-    cmd = templates[1].eval()[0]
-    for i, part in enumerate(cmd.parts):
-        vals[i].should.equal(part)
-
-def test_magical_glob():
-    parser = Parser(magical_glob2)
-    templates = parser.consume()
-
-    vals = ['cat', Input('1.*', ''), '>',
-        Output('2.1', 'mp.2.1.output')]
-
-    cmd = templates[1].eval()[0]
-    for i, part in enumerate(cmd.parts):
-        vals[i].should.equal(part)
