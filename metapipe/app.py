@@ -11,25 +11,26 @@ import argparse, pickle, os, sys
 import pyparsing
 
 from .parser import Parser
-from .models import Command, LocalJob, PBSJob, \
+from .models import Command, LocalJob, PBSJob, SGEJob, \
     HtmlReportingJobQueue, TextReportingJobQueue
 from .runtime import Runtime
 from metapipe.templates import env
 
 
-__version__ = '1.2'
+__version__ = '1.2-1'
 
 
 PIPELINE_ALIAS = "metapipe.queue.job"
 
 JOB_TYPES = {
     'local': LocalJob,
-    'pbs': PBSJob
+    'pbs': PBSJob,
+    'sge': SGEJob,
 }
 
 QUEUE_TYPES = {
     'text': TextReportingJobQueue,
-    'html': HtmlReportingJobQueue
+    'html': HtmlReportingJobQueue,
 }
 
 
@@ -99,12 +100,12 @@ def run(config, output=sys.stdout, job_type='local', report_type='text', shell='
     queue_type = QUEUE_TYPES[report_type]
     pipeline = Runtime(command_templates, queue_type, JOB_TYPES, job_type)
 
-    template = env.get_template('output_script.tmpl.py')
+    template = env.get_template('output_script.tmpl.sh')
     with open(temp, 'wb') as f:
         pickle.dump(pipeline, f, 2)
-        template.render(shell=shell, temp=os.path.abspath(temp))
+        script = template.render(shell=shell, temp=os.path.abspath(temp))
 
-    if args.run:
+    if run_now:
         output = output if output != sys.stdout else PIPELINE_ALIAS
         submit_job = make_submit_job(shell, output, job_type)
         submit_job.submit()
