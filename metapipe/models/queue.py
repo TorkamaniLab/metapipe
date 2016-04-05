@@ -16,7 +16,8 @@ class BaseQueue(object):
 
     MAX_CONCURRENT_JOBS = 10000
 
-    def __init__(self):
+    def __init__(self, name=''):
+        self.name = name
         self.queue = []
         self.running = []
         self.failed = []
