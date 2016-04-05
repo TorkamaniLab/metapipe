@@ -1,7 +1,8 @@
 """ A series of mixins for reporting. """
 from datetime import datetime as dt
-from jinja2 import Environment, PackageLoader
-env = Environment(loader=PackageLoader('metapipe', 'templates'))
+
+from metapipe.templates import env
+template = env.get_template('progress-report.tmpl.html')
 
 
 class BaseReportingMixin(object):
@@ -19,13 +20,13 @@ class HtmlReportingMixin(BaseReportingMixin):
 
     messages = []
     output = 'metapipe.report.html'
-    template = env.get_template('progress-report.tmpl.html')
 
     def render(self, message, progress):
         msg = Message(dt.strftime(dt.now(), self.message_format), message)
         self.messages.insert(0, msg)
         with open(self.output, 'w') as f:
             f.write(self.template.render(
+                name=self.name,
                 messages=self.messages, progress=progress, jobs=sorted(self.real_jobs)))
 
 

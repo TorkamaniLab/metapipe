@@ -14,7 +14,7 @@ from .parser import Parser
 from .models import Command, LocalJob, PBSJob, \
     HtmlReportingJobQueue, TextReportingJobQueue
 from .runtime import Runtime
-from .template import make_script
+from metapipe.templates import env
 
 
 __version__ = '1.2'
@@ -54,6 +54,9 @@ def main():
     parser.add_argument('-r', '--run',
                    help='Run the pipeline as soon as it\'s ready.',
                    action='store_true')
+    parser.add_argument('-n', '--name',
+                   help='A name for the pipeline.',
+                   default='')
     parser.add_argument('-j', '--job-type',
                    help='The destination for calculations (i.e. local, a PBS '
                    'queue on a cluster, etc).\nOptions: {}. '
@@ -96,9 +99,10 @@ def run(config, output=sys.stdout, job_type='local', report_type='text', shell='
     queue_type = QUEUE_TYPES[report_type]
     pipeline = Runtime(command_templates, queue_type, JOB_TYPES, job_type)
 
-    with open(args.temp, 'wb') as f:
+    template = env.get_template('output_script.tmpl.py')
+    with open(temp, 'wb') as f:
         pickle.dump(pipeline, f, 2)
-    script = make_script(temp=os.path.abspath(temp), shell=shell)
+        template.render(shell=shell, temp=os.path.abspath(temp))
 
     if args.run:
         output = output if output != sys.stdout else PIPELINE_ALIAS
