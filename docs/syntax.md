@@ -1,34 +1,137 @@
 # Metapipe Syntax
 
-The syntax for .mp files is as follows.
+The syntax for Pipeline Config files is as follows.
 
 
-## Structure
+## Section Definitions
 
-Each command in the pipeline should be on their own line and have the following
-structure:
+In each Metapipe file, there are a number of different sections you can specify. Each has their own purpose and function. Each section is denoted with a header in brackets at the top of the section.
+
+All sections support comments, and in most sections, they are not parsed as input.
+
+
+### Commands
+
+The commands section is the only required Metapipe config section. Specified by the `[COMMANDS]` header, this is where the various steps of the pipeline are specified. Commands are very similar to normal shell commands, and most shell commands are valid. The only difference is in the input/output of each command. For these sections, use Metapipe's command syntax to indicate the location and desired input and output.
+
+**Example:**
+
+```bash
+[COMMANDS]
+# Here we cat a hardcoded input file into sed
+# and redirect the output to a metapipe output token.
+cat somefile.txt | sed 's/replace me/with me' > {o}
+```
+
+Metapipe automatically creates a filename for the given output token and assigns that file an alias. The alias structure is `command_number.command_iteration-output_number`, where the output number is optional.
+
+
+### Paths
+
+The paths section allows users to simplify their commands by creating aliases or short names to binaries. Paths are structured as a single word alias followed by a space and the rest of the line is considered the path. The paths section is denoted by the `[PATHS]` header.
+
+```bash
+[COMMANDS]
+# Here we've aliased Python. When the script is generated,
+# the hardcoded path will be substituted in.
+python2 my_script.py
+
+# Here we're using the builtin python and using paths
+# to simplify the arguments.
+python my_script.py somefile
+
+[PATHS]
+python2 /usr/local/bin/python2.7.4
+somefile /a/long/file/path
+```
+
+Paths can also be used to create pseudo-variables for long configuration options. When doing this, it's recommended to use a bash-variable-like syntax because it reminds the reader that the variable is not a literal in the command.
+
+**Reminder**: Paths are substituted in after the inputs have been processed. This means that `{}` characters are treated as literals and not as input markers.
+
+```bash
+[COMMANDS]
+# Here, the braces represent an output token,
+# but the $OPTIONS variable will be evaluated
+# as a literal {}
+python my_script.py -o {o} $OPTIONS
+
+[PATHS]
+$OPTIONS -rfg --do-something --no-save --get --no-get -I {}
+```
+
+
+### Files
+
+For a given pipeline, there is usually a set of input or auxiliary files. These files go through the analysis and other steps require the output of one command as the input for another. This is where most of the power of Metapipe's syntax comes into play. The files section is denoted as `[FILES]`.
+
+Files are specified using a number followed by a period, and then the path to the given file. The number is the file's alias, and once that alias is assigned, it can be used in commands.
+
+```bash
+[COMMANDS]
+cat {1} | sed 's/replace me/with me' > {o}
+cat {2} | cut -f 1 | sort | uniq > {o}
+
+[FILES]
+1. somefile.1
+2. /path/to/somefile.2
 
 ```
-[command alias] command [flags] {input/output pattern} 
 
-Example
--------
+In this example, we use the aliases of files 1 and 2 to perform different analysis on each file. Then, when the input files need to change, they can be changed in the `[FILES]` section and the pipeline remains the same.
 
-1. cut -f 1 some_file > {o}
+
+### Job Options
+
+The job options section, denoted by `[JOB_OPTIONS]`, is a section that allows the user to specify a global set of options for all jobs. This helps reduce pipeline redundancy.
+
+```bash
+# Each of the commands in this pipeline need to
+# be working in a scratch directory.
+[COMMANDS]
+cat somefile.1.txt | sed 's/replace me/with me' > {o}
+cat somefile.2.txt | sed 's/replace me/with you' > {o}
+cat somefile.3.txt | sed 's/replace you/with me' > {o}
+
+[JOB_OPTIONS]
+set -e
+cd /var/my_project/
+
+# This config will result in the following:
+# ------- Job 1 ---------
+set -e
+cd /var/my_project/
+cat somefile.1.txt | sed 's/replace me/with me' > {o}
 ```
 
-In this example, the command cut is given the alias `1` and cuts column 1 
-from `some_file` and puts it in an output file called `some_file.1`.
+The set of commands in Job Options will be carried over to every job in the pipeline. This can be extremely useful when setting configuration comments for a queue system.
 
-**Note:** The alias for a file can be anything, as long as it's unique in the
-pipeline.
+```bash
+# Each of the commands needs 10GB of RAM
+[COMMANDS]
+cat somefile.1.txt | sed 's/replace me/with me' > {o}
+cat somefile.2.txt | sed 's/replace me/with you' > {o}
+cat somefile.3.txt | sed 's/replace you/with me' > {o}
+
+[JOB_OPTIONS]
+#PBS -l mem=4096mb
+```
+
+Job Options allow users to make their pipelines more clear and less redundant by allowing them to follow the [DRY][dry] principle.
+
+[dry]: https://en.wikipedia.org/wiki/Don%27t_repeat_yourself
+
+
+## Command Structure
+
+Now that all of the concepts and supported sections have been explained, it's time to take a look at the command structure and how to take advantage of Metapipe's advanced features.
 
 
 ### Input Patterns
 
 Consider the following command:
 
-```
+```bash
 [COMMANDS]
 python somescript {1||2||3}
 
@@ -38,12 +141,12 @@ python somescript {1||2||3}
 3. some_file3.txt
 ```
 
-This command will run the python script 3 times in parallel, once with each 
+This command will run the python script 3 times in parallel, once with each
 file specified. The output will look something like this:
 
-```
-Output
-------
+```bash
+# Output
+# ------
 
 python somescript some_file1.txt
 python somescript some_file2.txt
@@ -55,7 +158,7 @@ python somescript some_file3.txt
 Let's say that you have a script with takes multiple files as input. In this
 case the syntax becomes:
 
-```
+```bash
 [COMMANDS]
 python somescript {1,2,3}
 
@@ -64,16 +167,11 @@ python somescript {1,2,3}
 2. some_file2.txt
 3. some_file3.txt
 
-Output
-------
+# Output
+# ------
 
->>> python somescript some_file1.txt some_file2.txt some_file3.txt
+python somescript some_file1.txt some_file2.txt some_file3.txt
 ```
-
-
-#### Multiple steps and file names
-
-[TODO]
 
 
 ### Output Patterns
@@ -81,7 +179,7 @@ Output
 Whenever a script would take an explicit output filename you can use the output
 pattern syntax to tell metapipe where/what it should use.
 
-```
+```bash
 [COMMANDS]
 python somescript -o {o} {1||2||3}
 
@@ -90,8 +188,8 @@ python somescript -o {o} {1||2||3}
 2. some_file2.txt
 3. some_file3.txt
 
-Output
-------
+# Output
+# ------
 
 python somescript -o mp.1.1.output some_file1.txt
 python somescript -o mp.1.2.output some_file2.txt
@@ -109,11 +207,12 @@ pipeline, you can use output patterns to tell metapipe what to look for.
 
 Consider this:
 
-```
+```bash
 [COMMANDS]
+# This command doesn't provide an output filename
+# so metapipe can't automatically track it.
 ./do_count {1||2}
 ./analyze.sh {1.*}
-
 
 [FILES]
 1. foo.txt
@@ -131,9 +230,11 @@ config file is invalid.
 
 We can tell metapipe what the output should look like by using an output pattern.
 
-```
+```bash
 [COMMANDS]
-./do_counts {1||2} {o:*.counts}
+# We've now told Metapipe what the output file name
+# will look like. It can now track the file as normal.
+./do_counts {1||2} #{o:*.counts}
 ./analyze.sh {2.*}
 
 [FILES]
@@ -204,32 +305,25 @@ bash somescript somefile.3 --log mp.1.3-1.output -r mp.1.3-2.output
 
 ```bash
 [COMMANDS]
-# Trim and cut your sample fastq files.
-# Metapipe will handle naming the output files for you!
-# Metapipe will trim all of the files at once! (see parallel)
-trimmomatic -o {o} {*.fastq.gz||}
+# Here we run our analysis script on every gzipped file
+# in the current directory and output the results to a file.
+python my_custom_script.py -o {o} {*.gz||}
 
-# Metapipe will manage your dependencies for you!
-# Take all the outputs of step 1 and feed them to cutadapt.
-cutadapt -o {o} {1.*||}
+# Take all the outputs of step 1 and feed them to cut.
+cut -f 1 {1.*||} > {o}
 
-# Next you need to align them.
-htseq <alignment options> -o {o} {2.*||}
-
-# Of course, now you'll have some custom code to put all the data together. 
-# That's fine too!
-
-# Oh no! You hardcode the output name? No problem! Just tell metapipe 
+# Oh no! You hardcode the output name? No problem! Just tell metapipe
 # what the filename is.
-python my_custom_code.py {3.*} #{o:hardcoded_output.csv}
+python my_other_custom_code.py {2.*} #{o:hardcoded_output.csv}
 
 # Now you want to compare your results to some controls? Ok!
-# Metapipe wil compare your hardcoded_output to all 3 controls at the same time!
-python my_compare_script.py --compare-to {1||2||3} {4.1} 
+# Metapipe wil compare your hardcoded_output to all 3
+# controls at the same time!
+python my_compare_script.py -o {o} $OPTIONS --compare {1||2||3} {3.1}
 
 # Finally, you want to make some pretty graphs? No problem!
 # But wait! You want R 2.0 for this code? Just create an alias for R!
-Rscript my_cool_graphing_code.r {5.*} > {o}
+Rscript my_cool_graphing_code.r {4.*} > {o}
 
 [FILES]
 1. controls.1.csv
@@ -238,4 +332,5 @@ Rscript my_cool_graphing_code.r {5.*} > {o}
 
 [PATHS]
 Rscript ~/path/to/my/custom/R/version
+$OPTIONS -rne --get --no-get -v --V --log-level 1
 ```

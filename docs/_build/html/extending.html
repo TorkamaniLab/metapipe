@@ -154,36 +154,37 @@
 <div class="section" id="the-root-job-class">
 <span id="the-root-job-class"></span><h3>The Root Job Class<a class="headerlink" href="#the-root-job-class" title="Permalink to this headline">¶</a></h3>
 <p>The code for the main job class can be found <a class="reference external" href="https://github.com/TorkamaniLab/metapipe/blob/master/metapipe/models/job.py#L20">here</a>. To create your own job type, simply subclass this as follows:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">metapipe.models</span> <span class="kn">import</span> <span class="n">Job</span>
+<pre class="code highlight python literal-block">
+<span class="kn">from</span> <span class="nn">metapipe.models</span> <span class="kn">import</span> <span class="n">Job</span>
 
 <span class="k">class</span> <span class="nc">MyCustomJob</span><span class="p">(</span><span class="n">Job</span><span class="p">):</span>
 
     <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="s1">&#39;&lt;MyCustomJob: {}&gt;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cmd</span><span class="p">)</span>
-</pre></div>
-</div>
+        <span class="k">return</span> <span class="s">'&lt;MyCustomJob: {}&gt;'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cmd</span><span class="p">)</span>
+</pre>
 <p>There are 6 methods you need to fill in to have a complete job class. Your full job subclass should have the following form:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">MyCustomJob</span><span class="p">(</span><span class="n">Job</span><span class="p">):</span>
+<pre class="code highlight python literal-block">
+<span class="k">class</span> <span class="nc">MyCustomJob</span><span class="p">(</span><span class="n">Job</span><span class="p">):</span>
 
     <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="s1">&#39;&lt;MyCustomJob: {}&gt;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cmd</span><span class="p">)</span>
+        <span class="k">return</span> <span class="s">'&lt;MyCustomJob: {}&gt;'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cmd</span><span class="p">)</span>
 
-    <span class="c1"># Override these...</span>
+    <span class="c"># Override these...</span>
 
-    <span class="nd">@property</span>
+    <span class="nd">&#64;property</span>
     <span class="k">def</span> <span class="nf">cmd</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Returns the command needed to submit the calculations. </span>
-<span class="sd">        Normally, this would be just running the command, however if </span>
-<span class="sd">        using a queue system, then this should return the command to </span>
-<span class="sd">        submit the command to the queue.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot; Returns the command needed to submit the calculations. 
+        Normally, this would be just running the command, however if 
+        using a queue system, then this should return the command to 
+        submit the command to the queue.
+        &quot;&quot;&quot;</span>
         <span class="k">pass</span>
 
     <span class="k">def</span> <span class="nf">submit</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Submits the job to be run. If an external queue system is used,</span>
-<span class="sd">        this method submits itself to that queue. Else it runs the job itself.</span>
-<span class="sd">        :see: call</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot; Submits the job to be run. If an external queue system is used,
+        this method submits itself to that queue. Else it runs the job itself.
+        :see: call
+        &quot;&quot;&quot;</span>
         <span class="k">pass</span>
         
     <span class="k">def</span> <span class="nf">is_running</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -191,9 +192,9 @@
         <span class="k">pass</span>
 
     <span class="k">def</span> <span class="nf">is_queued</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Returns whether the job is queued or not. </span>
-<span class="sd">        This function is only used if jobs are submitted to an external queue.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot; Returns whether the job is queued or not. 
+        This function is only used if jobs are submitted to an external queue.
+        &quot;&quot;&quot;</span>
         <span class="k">pass</span>
         
     <span class="k">def</span> <span class="nf">is_complete</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -203,33 +204,32 @@
     <span class="k">def</span> <span class="nf">is_error</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Checks to see if the job errored out. &quot;&quot;&quot;</span>
         <span class="k">pass</span>
-</pre></div>
-</div>
+</pre>
 <p>The duty of the job types is to submit the jobs when asked by the queue, and to inform the queue about the status of jobs. The queue needs to know when a job is running, queued, complete, or when an error has occurred.</p>
 <p>Each of the <code class="docutils literal"><span class="pre">is_*</span></code> callbacks should return a boolean value, and the cmd property should return the bash command (as an array of strings) that can be called to run the job. The job class has an attribute <code class="docutils literal"><span class="pre">filename</span></code> that contains the value of the bash script containing the job command (i.e. <code class="docutils literal"><span class="pre">['bash',</span> <span class="pre">self.filename]</span></code>).</p>
 <p><strong>IMPORTANT:</strong> All of the above handlers are required for custom job types to function properly.</p>
 <p>Here is the code for the <code class="docutils literal"><span class="pre">cmd</span></code> property of the <code class="docutils literal"><span class="pre">PBSJob</span></code> class:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">PBSJob</span><span class="p">(</span><span class="n">Job</span><span class="p">):</span>
-    <span class="c1">#...</span>
-    <span class="nd">@property</span>
+<pre class="code highlight python literal-block">
+<span class="k">class</span> <span class="nc">PBSJob</span><span class="p">(</span><span class="n">Job</span><span class="p">):</span>
+    <span class="c">#...</span>
+    <span class="nd">&#64;property</span>
     <span class="k">def</span> <span class="nf">cmd</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="p">[</span><span class="s1">&#39;qsub&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">]</span>
-    <span class="c1">#...</span>
-</pre></div>
-</div>
+        <span class="k">return</span> <span class="p">[</span><span class="s">'qsub'</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">]</span>
+    <span class="c">#...</span>
+</pre>
 <p>The <code class="docutils literal"><span class="pre">submit</span></code> call should do any logic pertaining to submitting the job or tracking the number of total submissions. For example, here is the code for submitting a job to the PBS queue:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">PBSJob</span><span class="p">(</span><span class="n">Job</span><span class="p">):</span>
-    <span class="c1">#...</span>
+<pre class="code highlight python literal-block">
+<span class="k">class</span> <span class="nc">PBSJob</span><span class="p">(</span><span class="n">Job</span><span class="p">):</span>
+    <span class="c">#...</span>
     <span class="k">def</span> <span class="nf">submit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">job</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">attempts</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">job</span><span class="o">.</span><span class="n">make</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">attempts</span> <span class="o">+=</span> <span class="mi">1</span>
         <span class="n">out</span> <span class="o">=</span> <span class="n">call</span><span class="p">(</span><span class="n">job</span><span class="o">.</span><span class="n">cmd</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">waiting</span> <span class="o">=</span> <span class="bp">False</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="n">out</span><span class="p">[:</span><span class="n">out</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)]</span>
-    <span class="c1">#...</span>
-</pre></div>
-</div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="n">out</span><span class="p">[:</span><span class="n">out</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="s">'.'</span><span class="p">)]</span>
+    <span class="c">#...</span>
+</pre>
 <p>As you can see, it keeps track of the number of times the job was submitted, and then calls the <code class="docutils literal"><span class="pre">call</span></code> function, provided in the root job module, to execute the job. Since PBS assigns job ids to each job at submission-time, it also captures that information and saves it for later use.</p>
 </div>
 </div>
@@ -240,12 +240,13 @@
 <span id="the-root-queue-class"></span><h3>The Root Queue class<a class="headerlink" href="#the-root-queue-class" title="Permalink to this headline">¶</a></h3>
 <p>As is the case for custom job types, all queues inherit from the root Queue in <code class="docutils literal"><span class="pre">metapipe.models.Queue</span></code>, including the main <code class="docutils literal"><span class="pre">JobQueue</span></code> that is used by the metapipe command line tool.</p>
 <p>To customize the response of the queue to various types of events subclass it and fill in the following methods, all the methods are optional so just omit any handlers that you don&#8217;t need.</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">MyCustomQueue</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<pre class="code highlight python literal-block">
+<span class="k">class</span> <span class="nc">MyCustomQueue</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
                     
     <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="s1">&#39;&lt;MyCustomQueue: jobs=</span><span class="si">%s</span><span class="s1">&gt;&#39;</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">queue</span><span class="p">)</span>
+        <span class="k">return</span> <span class="s">'&lt;MyCustomQueue: jobs=</span><span class="si">%s</span><span class="s">&gt;'</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">queue</span><span class="p">)</span>
                         
-    <span class="c1"># Callbacks...</span>
+    <span class="c"># Callbacks...</span>
         
     <span class="k">def</span> <span class="nf">on_start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Called when the queue is starting up. &quot;&quot;&quot;</span>
@@ -256,10 +257,10 @@
         <span class="k">pass</span>
     
     <span class="k">def</span> <span class="nf">on_locked</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Called when the queue is locked and no jobs can proceed. </span>
-<span class="sd">        If this callback returns True, then the queue will be restarted,</span>
-<span class="sd">        else it will be terminated.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot; Called when the queue is locked and no jobs can proceed. 
+        If this callback returns True, then the queue will be restarted,
+        else it will be terminated.
+        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">True</span>
         
     <span class="k">def</span> <span class="nf">on_tick</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -267,30 +268,29 @@
         <span class="k">pass</span>
     
     <span class="k">def</span> <span class="nf">on_ready</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">job</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Called when a job is ready to be submitted. </span>
-<span class="sd">        :param job: The given job that is ready.</span>
-<span class="sd">        &quot;&quot;&quot;</span> 
+        <span class="sd">&quot;&quot;&quot; Called when a job is ready to be submitted. 
+        :param job: The given job that is ready.
+        &quot;&quot;&quot;</span> 
         <span class="k">pass</span>
         
     <span class="k">def</span> <span class="nf">on_submit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">job</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Called when a job has been submitted. </span>
-<span class="sd">        :param job: The given job that has been submitted.</span>
-<span class="sd">        &quot;&quot;&quot;</span> 
+        <span class="sd">&quot;&quot;&quot; Called when a job has been submitted. 
+        :param job: The given job that has been submitted.
+        &quot;&quot;&quot;</span> 
         <span class="k">pass</span>
         
     <span class="k">def</span> <span class="nf">on_complete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">job</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Called when a job has completed. </span>
-<span class="sd">        :param job: The given job that has completed.</span>
-<span class="sd">        &quot;&quot;&quot;</span> 
+        <span class="sd">&quot;&quot;&quot; Called when a job has completed. 
+        :param job: The given job that has completed.
+        &quot;&quot;&quot;</span> 
         <span class="k">pass</span>
         
     <span class="k">def</span> <span class="nf">on_error</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">job</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; Called when a job has errored. </span>
-<span class="sd">        :param job: The given job that has errored.</span>
-<span class="sd">        &quot;&quot;&quot;</span> 
+        <span class="sd">&quot;&quot;&quot; Called when a job has errored. 
+        :param job: The given job that has errored.
+        &quot;&quot;&quot;</span> 
         <span class="k">pass</span>
-</pre></div>
-</div>
+</pre>
 </div>
 </div>
 <div class="section" id="using-your-custom-code">
@@ -299,21 +299,21 @@
 <div class="section" id="building-your-custom-pipeline">
 <span id="building-your-custom-pipeline"></span><h3>Building your custom pipeline<a class="headerlink" href="#building-your-custom-pipeline" title="Permalink to this headline">¶</a></h3>
 <p>Use the following code to build your pipeline. This code is taken directly from [metapipe&#8217;s app.py][app] tool which is the command line tool that metapipe uses to build pipelines.</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">MyCustomJob</span>
+<pre class="code highlight python literal-block">
+<span class="kn">import</span> <span class="nn">MyCustomJob</span>
 
 <span class="n">JOB_TYPES</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s1">&#39;my_custom_job_type&#39;</span><span class="p">:</span> <span class="n">MyCustomJob</span>
+    <span class="s">'my_custom_job_type'</span><span class="p">:</span> <span class="n">MyCustomJob</span>
 <span class="p">}</span>
 
 <span class="n">parser</span> <span class="o">=</span> <span class="n">Parser</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
 <span class="k">try</span><span class="p">:</span>
     <span class="n">command_templates</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">consume</span><span class="p">()</span>
 <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-    <span class="k">raise</span> <span class="ne">SyntaxError</span><span class="p">(</span><span class="s1">&#39;Invalid config file. </span><span class="se">\n</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">e</span><span class="p">)</span>
+    <span class="k">raise</span> <span class="ne">SyntaxError</span><span class="p">(</span><span class="s">'Invalid config file. </span><span class="se">\n</span><span class="si">%s</span><span class="s">'</span> <span class="o">%</span> <span class="n">e</span><span class="p">)</span>
 
-<span class="n">pipeline</span> <span class="o">=</span> <span class="n">Runtime</span><span class="p">(</span><span class="n">command_templates</span><span class="p">,</span> <span class="n">JOB_TYPES</span><span class="p">,</span> <span class="s1">&#39;my_custom_job_type&#39;</span><span class="p">)</span>
-</pre></div>
-</div>
+<span class="n">pipeline</span> <span class="o">=</span> <span class="n">Runtime</span><span class="p">(</span><span class="n">command_templates</span><span class="p">,</span> <span class="n">JOB_TYPES</span><span class="p">,</span> <span class="s">'my_custom_job_type'</span><span class="p">)</span>
+</pre>
 <p><strong>IMPORTANT:</strong> Adding custom queues is coming soon!</p>
 <p>For more information on how to script metapipe once you have custom jobs, see <a class="reference external" href="scripting.html">Scripting Metapipe</a></p>
 </div>
