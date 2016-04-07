@@ -31,7 +31,7 @@
 
   
     <link rel="top" title="metapipe 0.1 documentation" href="index.html"/>
-        <link rel="next" title="Scripting Metapipe" href="developers.html"/>
+        <link rel="next" title="Scripting Metapipe" href="scripting.html"/>
         <link rel="prev" title="Getting Started" href="getting_started.html"/> 
 
   
@@ -85,23 +85,30 @@
 <li class="toctree-l1"><a class="reference internal" href="what_is_metapipe.html">Metapipe</a></li>
 <li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting Started</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="">Metapipe Syntax</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#structure">Structure</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#section-definitions">Section Definitions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#commands">Commands</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#paths">Paths</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#files">Files</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#job-options">Job Options</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#command-structure">Command Structure</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#input-patterns">Input Patterns</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#running-a-script-with-multiple-inputs">Running a script with multiple inputs</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#multiple-steps-and-file-names">Multiple steps and file names</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#output-patterns">Output Patterns</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#implicit-or-hardcoded-output">Implicit or Hardcoded output</a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="#multiple-inputs-and-outputs">Multiple Inputs and Outputs</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#sample-config-mp-file">Sample config.mp file</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="developers.html">Scripting Metapipe</a></li>
-<li class="toctree-l1"><a class="reference internal" href="developers.html#extending-metapipe">Extending Metapipe</a></li>
+<li class="toctree-l1"><a class="reference internal" href="scripting.html">Scripting Metapipe</a></li>
+<li class="toctree-l1"><a class="reference internal" href="extending.html">Extending Metapipe</a></li>
 </ul>
 
             
@@ -148,89 +155,168 @@
             
   <div class="section" id="metapipe-syntax">
 <span id="metapipe-syntax"></span><h1>Metapipe Syntax<a class="headerlink" href="#metapipe-syntax" title="Permalink to this headline">¶</a></h1>
-<p>The syntax for .mp files is as follows.</p>
-<div class="section" id="structure">
-<span id="structure"></span><h2>Structure<a class="headerlink" href="#structure" title="Permalink to this headline">¶</a></h2>
-<p>Each command in the pipeline should be on their own line and have the following
-structure:</p>
-<div class="highlight-python"><div class="highlight"><pre>[command alias] command [flags] {input/output pattern} 
-
-Example
--------
-
-1. cut -f 1 some_file &gt; {o}
-</pre></div>
+<p>The syntax for Pipeline Config files is as follows.</p>
+<div class="section" id="section-definitions">
+<span id="section-definitions"></span><h2>Section Definitions<a class="headerlink" href="#section-definitions" title="Permalink to this headline">¶</a></h2>
+<p>In each Metapipe file, there are a number of different sections you can specify. Each has their own purpose and function. Each section is denoted with a header in brackets at the top of the section.</p>
+<p>All sections support comments, and in most sections, they are not parsed as input.</p>
+<div class="section" id="commands">
+<span id="commands"></span><h3>Commands<a class="headerlink" href="#commands" title="Permalink to this headline">¶</a></h3>
+<p>The commands section is the only required Metapipe config section. Specified by the <code class="docutils literal"><span class="pre">[COMMANDS]</span></code> header, this is where the various steps of the pipeline are specified. Commands are very similar to normal shell commands, and most shell commands are valid. The only difference is in the input/output of each command. For these sections, use Metapipe&#8217;s command syntax to indicate the location and desired input and output.</p>
+<p><strong>Example:</strong></p>
+<pre class="code highlight bash literal-block">
+<span class="o">[</span>COMMANDS<span class="o">]</span>
+<span class="c"># Here we cat a hardcoded input file into sed
+# and redirect the output to a metapipe output token.
+</span>cat somefile.txt <span class="p">|</span> sed <span class="s1">'s/replace me/with me'</span> &gt; <span class="o">{</span>o<span class="o">}</span>
+</pre>
+<p>Metapipe automatically creates a filename for the given output token and assigns that file an alias. The alias structure is <code class="docutils literal"><span class="pre">command_number.command_iteration-output_number</span></code>, where the output number is optional.</p>
 </div>
-<p>In this example, the command cut is given the alias <code class="docutils literal"><span class="pre">1</span></code> and cuts column 1
-from <code class="docutils literal"><span class="pre">some_file</span></code> and puts it in an output file called <code class="docutils literal"><span class="pre">some_file.1</span></code>.</p>
-<p><strong>Note:</strong> The alias for a file can be anything, as long as it&#8217;s unique in the
-pipeline.</p>
+<div class="section" id="paths">
+<span id="paths"></span><h3>Paths<a class="headerlink" href="#paths" title="Permalink to this headline">¶</a></h3>
+<p>The paths section allows users to simplify their commands by creating aliases or short names to binaries. Paths are structured as a single word alias followed by a space and the rest of the line is considered the path. The paths section is denoted by the <code class="docutils literal"><span class="pre">[PATHS]</span></code> header.</p>
+<pre class="code highlight bash literal-block">
+<span class="o">[</span>COMMANDS<span class="o">]</span>
+<span class="c"># Here we've aliased Python. When the script is generated,
+# the hardcoded path will be substituted in.
+</span>python2 my_script.py
+
+<span class="c"># Here we're using the builtin python and using paths
+# to simplify the arguments.
+</span>python my_script.py somefile
+
+<span class="o">[</span>PATHS<span class="o">]</span>
+python2 /usr/local/bin/python2.7.4
+somefile /a/long/file/path
+</pre>
+<p>Paths can also be used to create pseudo-variables for long configuration options. When doing this, it&#8217;s recommended to use a bash-variable-like syntax because it reminds the reader that the variable is not a literal in the command.</p>
+<p><strong>Reminder</strong>: Paths are substituted in after the inputs have been processed. This means that <code class="docutils literal"><span class="pre">{}</span></code> characters are treated as literals and not as input markers.</p>
+<pre class="code highlight bash literal-block">
+<span class="o">[</span>COMMANDS<span class="o">]</span>
+<span class="c"># Here, the braces represent an output token,
+# but the $OPTIONS variable will be evaluated
+# as a literal {}
+</span>python my_script.py -o <span class="o">{</span>o<span class="o">}</span> <span class="nv">$OPTIONS</span>
+
+<span class="o">[</span>PATHS<span class="o">]</span>
+<span class="nv">$OPTIONS</span> -rfg --do-something --no-save --get --no-get -I <span class="o">{}</span>
+</pre>
+</div>
+<div class="section" id="files">
+<span id="files"></span><h3>Files<a class="headerlink" href="#files" title="Permalink to this headline">¶</a></h3>
+<p>For a given pipeline, there is usually a set of input or auxiliary files. These files go through the analysis and other steps require the output of one command as the input for another. This is where most of the power of Metapipe&#8217;s syntax comes into play. The files section is denoted as <code class="docutils literal"><span class="pre">[FILES]</span></code>.</p>
+<p>Files are specified using a number followed by a period, and then the path to the given file. The number is the file&#8217;s alias, and once that alias is assigned, it can be used in commands.</p>
+<pre class="code highlight bash literal-block">
+<span class="o">[</span>COMMANDS<span class="o">]</span>
+cat <span class="o">{</span>1<span class="o">}</span> <span class="p">|</span> sed <span class="s1">'s/replace me/with me'</span> &gt; <span class="o">{</span>o<span class="o">}</span>
+cat <span class="o">{</span>2<span class="o">}</span> <span class="p">|</span> cut -f <span class="m">1</span> <span class="p">|</span> sort <span class="p">|</span> uniq &gt; <span class="o">{</span>o<span class="o">}</span>
+
+<span class="o">[</span>FILES<span class="o">]</span>
+1. somefile.1
+2. /path/to/somefile.2
+</pre>
+<p>In this example, we use the aliases of files 1 and 2 to perform different analysis on each file. Then, when the input files need to change, they can be changed in the <code class="docutils literal"><span class="pre">[FILES]</span></code> section and the pipeline remains the same.</p>
+</div>
+<div class="section" id="job-options">
+<span id="job-options"></span><h3>Job Options<a class="headerlink" href="#job-options" title="Permalink to this headline">¶</a></h3>
+<p>The job options section, denoted by <code class="docutils literal"><span class="pre">[JOB_OPTIONS]</span></code>, is a section that allows the user to specify a global set of options for all jobs. This helps reduce pipeline redundancy.</p>
+<pre class="code highlight bash literal-block">
+<span class="c"># Each of the commands in this pipeline need to
+# be working in a scratch directory.
+</span><span class="o">[</span>COMMANDS<span class="o">]</span>
+cat somefile.1.txt <span class="p">|</span> sed <span class="s1">'s/replace me/with me'</span> &gt; <span class="o">{</span>o<span class="o">}</span>
+cat somefile.2.txt <span class="p">|</span> sed <span class="s1">'s/replace me/with you'</span> &gt; <span class="o">{</span>o<span class="o">}</span>
+cat somefile.3.txt <span class="p">|</span> sed <span class="s1">'s/replace you/with me'</span> &gt; <span class="o">{</span>o<span class="o">}</span>
+
+<span class="o">[</span>JOB_OPTIONS<span class="o">]</span>
+<span class="nb">set</span> -e
+<span class="nb">cd</span> /var/my_project/
+
+<span class="c"># This config will result in the following:
+# ------- Job 1 ---------
+</span><span class="nb">set</span> -e
+<span class="nb">cd</span> /var/my_project/
+cat somefile.1.txt <span class="p">|</span> sed <span class="s1">'s/replace me/with me'</span> &gt; <span class="o">{</span>o<span class="o">}</span>
+</pre>
+<p>The set of commands in Job Options will be carried over to every job in the pipeline. This can be extremely useful when setting configuration comments for a queue system.</p>
+<pre class="code highlight bash literal-block">
+<span class="c"># Each of the commands needs 10GB of RAM
+</span><span class="o">[</span>COMMANDS<span class="o">]</span>
+cat somefile.1.txt <span class="p">|</span> sed <span class="s1">'s/replace me/with me'</span> &gt; <span class="o">{</span>o<span class="o">}</span>
+cat somefile.2.txt <span class="p">|</span> sed <span class="s1">'s/replace me/with you'</span> &gt; <span class="o">{</span>o<span class="o">}</span>
+cat somefile.3.txt <span class="p">|</span> sed <span class="s1">'s/replace you/with me'</span> &gt; <span class="o">{</span>o<span class="o">}</span>
+
+<span class="o">[</span>JOB_OPTIONS<span class="o">]</span>
+<span class="c">#PBS -l mem=4096mb</span>
+</pre>
+<p>Job Options allow users to make their pipelines more clear and less redundant by allowing them to follow the <a class="reference external" href="https://en.wikipedia.org/wiki/Don%27t_repeat_yourself">DRY</a> principle.</p>
+</div>
+</div>
+<div class="section" id="command-structure">
+<span id="command-structure"></span><h2>Command Structure<a class="headerlink" href="#command-structure" title="Permalink to this headline">¶</a></h2>
+<p>Now that all of the concepts and supported sections have been explained, it&#8217;s time to take a look at the command structure and how to take advantage of Metapipe&#8217;s advanced features.</p>
 <div class="section" id="input-patterns">
 <span id="input-patterns"></span><h3>Input Patterns<a class="headerlink" href="#input-patterns" title="Permalink to this headline">¶</a></h3>
 <p>Consider the following command:</p>
-<div class="highlight-python"><div class="highlight"><pre>[COMMANDS]
-python somescript {1||2||3}
+<pre class="code highlight bash literal-block">
+<span class="o">[</span>COMMANDS<span class="o">]</span>
+python somescript <span class="o">{</span>1<span class="o">||</span>2<span class="o">||</span>3<span class="o">}</span>
 
-[FILES]
+<span class="o">[</span>FILES<span class="o">]</span>
 1. some_file1.txt
 2. some_file2.txt
 3. some_file3.txt
-</pre></div>
-</div>
+</pre>
 <p>This command will run the python script 3 times in parallel, once with each
 file specified. The output will look something like this:</p>
-<div class="highlight-python"><div class="highlight"><pre>Output
-------
-
+<pre class="code highlight bash literal-block">
+<span class="c"># Output
+# ------
+</span>
 python somescript some_file1.txt
 python somescript some_file2.txt
 python somescript some_file3.txt
-</pre></div>
-</div>
+</pre>
 <div class="section" id="running-a-script-with-multiple-inputs">
 <span id="running-a-script-with-multiple-inputs"></span><h4>Running a script with multiple inputs<a class="headerlink" href="#running-a-script-with-multiple-inputs" title="Permalink to this headline">¶</a></h4>
 <p>Let&#8217;s say that you have a script with takes multiple files as input. In this
 case the syntax becomes:</p>
-<div class="highlight-python"><div class="highlight"><pre>[COMMANDS]
-python somescript {1,2,3}
+<pre class="code highlight bash literal-block">
+<span class="o">[</span>COMMANDS<span class="o">]</span>
+python somescript <span class="o">{</span>1,2,3<span class="o">}</span>
 
-[FILES]
+<span class="o">[</span>FILES<span class="o">]</span>
 1. some_file1.txt
 2. some_file2.txt
 3. some_file3.txt
 
-Output
-------
-
-&gt;&gt;&gt; python somescript some_file1.txt some_file2.txt some_file3.txt
-</pre></div>
-</div>
-</div>
-<div class="section" id="multiple-steps-and-file-names">
-<span id="multiple-steps-and-file-names"></span><h4>Multiple steps and file names<a class="headerlink" href="#multiple-steps-and-file-names" title="Permalink to this headline">¶</a></h4>
-<p>[TODO]</p>
+<span class="c"># Output
+# ------
+</span>
+python somescript some_file1.txt some_file2.txt some_file3.txt
+</pre>
 </div>
 </div>
 <div class="section" id="output-patterns">
 <span id="output-patterns"></span><h3>Output Patterns<a class="headerlink" href="#output-patterns" title="Permalink to this headline">¶</a></h3>
 <p>Whenever a script would take an explicit output filename you can use the output
 pattern syntax to tell metapipe where/what it should use.</p>
-<div class="highlight-python"><div class="highlight"><pre>[COMMANDS]
-python somescript -o {o} {1||2||3}
+<pre class="code highlight bash literal-block">
+<span class="o">[</span>COMMANDS<span class="o">]</span>
+python somescript -o <span class="o">{</span>o<span class="o">}</span> <span class="o">{</span>1<span class="o">||</span>2<span class="o">||</span>3<span class="o">}</span>
 
-[FILES]
+<span class="o">[</span>FILES<span class="o">]</span>
 1. some_file1.txt
 2. some_file2.txt
 3. some_file3.txt
 
-Output
-------
-
-python somescript -o metapipe.1.1.output some_file1.txt
-python somescript -o metapipe.1.2.output some_file2.txt
-python somescript -o metapipe.1.3.output some_file3.txt
-</pre></div>
-</div>
+<span class="c"># Output
+# ------
+</span>
+python somescript -o mp.1.1.output some_file1.txt
+python somescript -o mp.1.2.output some_file2.txt
+python somescript -o mp.1.3.output some_file3.txt
+</pre>
 <p>Metapipe will generate the filename with the command&#8217;s alias inside. An upcoming feature will provide more useful output names.</p>
 <div class="section" id="implicit-or-hardcoded-output">
 <span id="implicit-or-hardcoded-output"></span><h4>Implicit or Hardcoded output<a class="headerlink" href="#implicit-or-hardcoded-output" title="Permalink to this headline">¶</a></h4>
@@ -238,16 +324,17 @@ python somescript -o metapipe.1.3.output some_file3.txt
 is not passed through the command, but you need to use for another step in the
 pipeline, you can use output patterns to tell metapipe what to look for.</p>
 <p>Consider this:</p>
-<div class="highlight-python"><div class="highlight"><pre>[COMMANDS]
-./do_count {1||2}
-./analyze.sh {1.*}
+<pre class="code highlight bash literal-block">
+<span class="o">[</span>COMMANDS<span class="o">]</span>
+<span class="c"># This command doesn't provide an output filename
+# so metapipe can't automatically track it.
+</span>./do_count <span class="o">{</span>1<span class="o">||</span>2<span class="o">}</span>
+./analyze.sh <span class="o">{</span>1.*<span class="o">}</span>
 
-
-[FILES]
+<span class="o">[</span>FILES<span class="o">]</span>
 1. foo.txt
 2. bar.txt
-</pre></div>
-</div>
+</pre>
 <p>This set of commands is invalid because the second command (<code class="docutils literal"><span class="pre">./analyze.sh</span></code>)
 doesn&#8217;t know what the output of command 1 is because it isn&#8217;t specified.
 The split command generates output based on the input filenames it is given.</p>
@@ -256,15 +343,17 @@ The split command generates output based on the input filenames it is given.</p>
 this case Metapipe cannot assume the file names generated by step 1 and this
 config file is invalid.</p>
 <p>We can tell metapipe what the output should look like by using an output pattern.</p>
-<div class="highlight-python"><div class="highlight"><pre>[COMMANDS]
-./do_counts {1||2} {o:*.counts}
-./analyze.sh {*.counts}
+<pre class="code highlight bash literal-block">
+<span class="o">[</span>COMMANDS<span class="o">]</span>
+<span class="c"># We've now told Metapipe what the output file name
+# will look like. It can now track the file as normal.
+</span>./do_counts <span class="o">{</span>1<span class="o">||</span>2<span class="o">}</span> <span class="c">#{o:*.counts}
+</span>./analyze.sh <span class="o">{</span>2.*<span class="o">}</span>
 
-[FILES]
+<span class="o">[</span>FILES<span class="o">]</span>
 1. foo.txt
 2. bar.txt
-</pre></div>
-</div>
+</pre>
 <p>The above example tells metapipe that the output of command 1, which is
 hardcoded in the script will have an output that ends in <code class="docutils literal"><span class="pre">.counts</span></code>. Now that
 the output of command 1 is known, command 2 will wait until command 1 finishes.</p>
@@ -275,36 +364,69 @@ but it <em>will</em> match given pattern. This means that later commands will be
 to reference the files by name.</p>
 </div>
 </div>
+<div class="section" id="multiple-inputs-and-outputs">
+<span id="multiple-inputs-and-outputs"></span><h3>Multiple Inputs and Outputs<a class="headerlink" href="#multiple-inputs-and-outputs" title="Permalink to this headline">¶</a></h3>
+<p>Often times a given shell command will either take multiple dynamic files as input, or generate multiple files as output. In either case, metapipe provides a way to manage and track these files.</p>
+<p>For multiple inputs, metapipe expects the number of inputs per command to be the same, and will iterate over them in order.</p>
+<p><strong>Example:</strong></p>
+<pre class="code highlight bash literal-block">
+<span class="c"># Given the following:
+</span><span class="o">[</span>COMMANDS<span class="o">]</span>
+bash somescript <span class="o">{</span>1<span class="o">||</span>2<span class="o">||</span>3<span class="o">}</span> --conf <span class="o">{</span>4<span class="o">||</span>5<span class="o">||</span>6<span class="o">}</span>  &gt; <span class="o">{</span>o<span class="o">}</span>
+
+<span class="o">[</span>FILES<span class="o">]</span>
+1. somefile.1
+2. somefile.2
+3. somefile.3
+
+<span class="c"># Metapipe will return this:
+</span>bash somescript somefile.1 --conf somefile.4  &gt; mp.1.1.output
+bash somescript somefile.2 --conf somefile.5  &gt; mp.1.2.output
+bash somescript somefile.3 --conf somefile.6  &gt; mp.1.3.output
+</pre>
+<p>Metapipe will name the multiple output files as follows (in order from left to right):</p>
+<p><code class="docutils literal"><span class="pre">mp.{command_number}.{sub_command_number}-{output_number}</span></code></p>
+<p><strong>Example:</strong></p>
+<pre class="code highlight bash literal-block">
+<span class="c"># Given an input like the one below:
+</span><span class="o">[</span>COMMANDS<span class="o">]</span>
+bash somescript <span class="o">{</span>1<span class="o">||</span>2<span class="o">||</span>3<span class="o">}</span> --log <span class="o">{</span>o<span class="o">}</span> -r <span class="o">{</span>o<span class="o">}</span>
+
+<span class="o">[</span>FILES<span class="o">]</span>
+1. somefile.1
+2. somefile.2
+3. somefile.3
+
+<span class="c"># metapipe will generate the following:
+</span>bash somescript somefile.1 --log mp.1.1-1.output -r mp.1.1-2.output
+bash somescript somefile.2 --log mp.1.2-1.output -r mp.1.2-2.output
+bash somescript somefile.3 --log mp.1.3-1.output -r mp.1.3-2.output
+</pre>
+</div>
 </div>
 <div class="section" id="sample-config-mp-file">
 <span id="sample-config-mp-file"></span><h2>Sample config.mp file<a class="headerlink" href="#sample-config-mp-file" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-bash"><div class="highlight"><pre><span class="o">[</span>COMMANDS<span class="o">]</span>
-<span class="c1"># Trim and cut your sample fastq files.</span>
-<span class="c1"># Metapipe will handle naming the output files for you!</span>
-<span class="c1"># Metapipe will trim all of the files at once! (see parallel)</span>
-trimmomatic -o <span class="o">{</span>o<span class="o">}</span> <span class="o">{</span>*.fastq.gz<span class="o">||}</span>
+<pre class="code highlight bash literal-block">
+<span class="o">[</span>COMMANDS<span class="o">]</span>
+<span class="c"># Here we run our analysis script on every gzipped file
+# in the current directory and output the results to a file.
+</span>python my_custom_script.py -o <span class="o">{</span>o<span class="o">}</span> <span class="o">{</span>*.gz<span class="o">||}</span>
 
-<span class="c1"># Metapipe will manage your dependencies for you!</span>
-<span class="c1"># Take all the outputs of step 1 and feed them to cutadapt.</span>
-cutadapt -o <span class="o">{</span>o<span class="o">}</span> <span class="o">{</span>metapipe.1.*.output<span class="o">||}</span>
+<span class="c"># Take all the outputs of step 1 and feed them to cut.
+</span>cut -f <span class="m">1</span> <span class="o">{</span>1.*<span class="o">||}</span> &gt; <span class="o">{</span>o<span class="o">}</span>
 
-<span class="c1"># Next you need to align them.</span>
-htseq &lt;alignment options&gt; -o <span class="o">{</span>o<span class="o">}</span> <span class="o">{</span>metapipe.2.*.output<span class="o">||}</span>
+<span class="c"># Oh no! You hardcode the output name? No problem! Just tell metapipe
+# what the filename is.
+</span>python my_other_custom_code.py <span class="o">{</span>2.*<span class="o">}</span> <span class="c">#{o:hardcoded_output.csv}
+</span>
+<span class="c"># Now you want to compare your results to some controls? Ok!
+# Metapipe wil compare your hardcoded_output to all 3
+# controls at the same time!
+</span>python my_compare_script.py -o <span class="o">{</span>o<span class="o">}</span> <span class="nv">$OPTIONS</span> --compare <span class="o">{</span>1<span class="o">||</span>2<span class="o">||</span>3<span class="o">}</span> <span class="o">{</span>3.1<span class="o">}</span>
 
-<span class="c1"># Of course, now you&#39;ll have some custom code to put all the data together. </span>
-<span class="c1"># That&#39;s fine too!</span>
-
-<span class="c1"># Oh no! You hardcode the output name? No problem! Just tell metapipe </span>
-<span class="c1"># what the filename is.</span>
-python my_custom_code.py <span class="o">{</span>metapipe.3.*.output,<span class="o">}</span> <span class="c1">#{o:hardcoded_output.csv}</span>
-
-<span class="c1"># Now you want to compare your results to some controls? Ok!</span>
-<span class="c1"># Metapipe wil compare your hardcoded_output to all 3 controls at the same time!</span>
-python my_compare_script.py --compare-to <span class="o">{</span>1<span class="o">||</span>2<span class="o">||</span>3<span class="o">}</span> <span class="o">{</span>hardcoded_output.csv<span class="o">}</span> 
-
-<span class="c1"># Finally, you want to make some pretty graphs? No problem!</span>
-<span class="c1"># But wait! You want R 2.0 for this code? Just create an alias for R!</span>
-Rscript my_cool_graphing_code.r <span class="o">{</span>metapipe.5.*.output<span class="o">}</span> &gt; <span class="o">{</span>o<span class="o">}</span>
+<span class="c"># Finally, you want to make some pretty graphs? No problem!
+# But wait! You want R 2.0 for this code? Just create an alias for R!
+</span>Rscript my_cool_graphing_code.r <span class="o">{</span>4.*<span class="o">}</span> &gt; <span class="o">{</span>o<span class="o">}</span>
 
 <span class="o">[</span>FILES<span class="o">]</span>
 1. controls.1.csv
@@ -313,8 +435,8 @@ Rscript my_cool_graphing_code.r <span class="o">{</span>metapipe.5.*.output<span
 
 <span class="o">[</span>PATHS<span class="o">]</span>
 Rscript ~/path/to/my/custom/R/version
-</pre></div>
-</div>
+<span class="nv">$OPTIONS</span> -rne --get --no-get -v --V --log-level 1
+</pre>
 </div>
 </div>
 
@@ -325,7 +447,7 @@ Rscript ~/path/to/my/custom/R/version
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="developers.html" class="btn btn-neutral float-right" title="Scripting Metapipe" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="scripting.html" class="btn btn-neutral float-right" title="Scripting Metapipe" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="getting_started.html" class="btn btn-neutral" title="Getting Started" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>

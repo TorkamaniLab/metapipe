@@ -85,7 +85,10 @@
 <li class="toctree-l1"><a class="reference internal" href="what_is_metapipe.html">Metapipe</a></li>
 <li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting Started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="syntax.html">Metapipe Syntax</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="">Scripting Metapipe</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="">Scripting Metapipe</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#the-run-interface">The Run Interface</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="extending.html">Extending Metapipe</a></li>
 </ul>
 
@@ -133,9 +136,18 @@
             
   <div class="section" id="scripting-metapipe">
 <span id="scripting-metapipe"></span><h1>Scripting Metapipe<a class="headerlink" href="#scripting-metapipe" title="Permalink to this headline">¶</a></h1>
-<p>In addition to being a command line tool, metapipe is also a Python module. You can use this module to extend, or script metapipe to fit your specific uses. This section will discuss scripting metapipe, and building/running jobs using Python. For information on how to extend metapipe&#8217;s builtin job types or queue system, see <a class="reference external" href="extending.html">Extending Metapipe</a></p>
-<p>COMING SOON...</p>
-<hr class="docutils" />
+<p>In addition to being a command line tool, metapipe is also a Python module. You can use this module to extend, or script metapipe to fit your specific uses. This section will discuss scripting metapipe, and building/running jobs using Python. For information on how to extend metapipe&#8217;s builtin job types or queue system, see <a class="reference external" href="extending.html">Extending Metapipe</a>.</p>
+<div class="section" id="the-run-interface">
+<span id="the-run-interface"></span><h2>The Run Interface<a class="headerlink" href="#the-run-interface" title="Permalink to this headline">¶</a></h2>
+<p>The first, and easiest way to script Metapipe is by invoking it via the Python interface.</p>
+<pre class="code highlight python literal-block">
+<span class="kn">from</span> <span class="nn">metapipe</span> <span class="kn">import</span> <span class="n">run</span>
+
+<span class="n">config_text</span> <span class="o">=</span> <span class="n">get_config_text</span><span class="p">()</span>
+<span class="n">run</span><span class="p">(</span><span class="n">config_text</span><span class="p">)</span>
+</pre>
+<p>For detailed information, see the <a class="reference external" href="https://github.com/TorkamaniLab/metapipe/blob/master/metapipe/app.py#L90">run method&#8217;s docstring</a>.</p>
+</div>
 </div>
 
 
