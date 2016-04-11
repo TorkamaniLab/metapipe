@@ -47,31 +47,19 @@ Let's say you have a few command-line tools that you want to string together int
 
 ```bash
 [COMMANDS]
-# Trim and cut your sample fastq files.
-# Metapipe will handle naming the output files for you!
-# Metapipe will trim all of the files at once! (see parallel)
-trimmomatic -o {o} {*.fastq.gz||}
+# Let's get the first and third columns from each of
+# our files, and put the output in seperate files.
+cut -f 1,3 {1||2||3} > {o}
 
-# Metapipe will manage your dependencies for you!
-# Take all the outputs of step 1 and feed them to cutadapt.
-cutadapt -o {o} {1.*||}
+# Once that's done, we'll need to take the output and 
+# run each through our custom processing script individually.
+# Here we can give a custom extension to the default output file.
+python3 my_script.py --output {o.processed.csv} -i {1.*||}
 
-htseq <alignment options> -o {o} {2.*||}
-
-# Of course, now you'll have some custom code to put all the data together.
-# That's fine too!
-
-# Oh no! You hardcode the output name? No problem! Just tell metapipe
-# what the filename is.
-python my_custom_code.py {3.*} #{o:hardcoded_output.csv}
-
-# Now you want to compare your results to some controls? Ok!
-# Metapipe wil compare your hardcoded_output to all 3 controls at the same time!
-python my_compare_script.py --compare-to {1||2||3} {4.1}
-
-# Finally, you want to make some pretty graphs? No problem!
-# But wait! You want R 2.0 for this code? Just create an alias for R!
-Rscript my_cool_graphing_code.r {5.*} > {o}
+# Finally, we want to collect each sample and analyze 
+# them all together. We also need to use a custom version 
+# of Python for this.
+custom_python anaylysis.py -o {o.results.txt} {2.*}
 
 [FILES]
 1. controls.1.csv
@@ -79,7 +67,7 @@ Rscript my_cool_graphing_code.r {5.*} > {o}
 3. controls.3.csv
 
 [PATHS]
-Rscript ~/path/to/my/custom/R/version
+custom_python ~/path/to/my/custom/python/version
 ```
 
 Excluding the comments, this entire analysis pipeline is 13 lines long, and extremely readable! What's even better? If you want to change any steps, its super easy! That's the power of Metapipe!
