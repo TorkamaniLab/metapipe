@@ -29,7 +29,7 @@ class Parser(object):
 
         self.files = self._parse(self.files, Grammar.file, True)
         self.paths = self._parse(self.paths, Grammar.path, True)
-        self.job_options = self._parse(self.job_options, Grammar.comment)
+        self.job_options = self._parse(self.job_options, Grammar.line)
         try:
             command_lines = self._parse(self.commands, Grammar.command_lines)[0]
         except IndexError:
@@ -48,7 +48,6 @@ class Parser(object):
 
         self.paths.reverse()
         self.files.reverse()
-        self.job_options.reverse()
         self.commands.reverse()
 
         return ctf.get_command_templates(self.commands, self.files[:],
