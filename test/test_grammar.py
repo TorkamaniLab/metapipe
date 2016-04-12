@@ -118,3 +118,9 @@ def test_multiple_close_inputs():
 def test_full_pipeline_1():
 	res = Grammar.command.parseString(cmd_using_multiple_out)
 	res._in.should.have.length_of(2)
+
+
+def test_multiple_word_paths():
+    res = Grammar.overall.parseString(overall)
+    path = Grammar.path.parseString(''.join(res['PATHS'][4]))
+    path.path.should.equal('module load cat2; cat2')

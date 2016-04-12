@@ -111,9 +111,13 @@ python /usr/bin/python
 # THIS IS also A COMMENT
 bash /usr/bin/bash
 rb /usr/bin/ruby
+cat2 module load cat2; cat2
 
 [JOB_OPTIONS]
 #PBS_O_WORKDIR=~/someuser
+set -e;
+module load python
+# do something
 """
 
 

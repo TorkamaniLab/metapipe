@@ -21,7 +21,7 @@ class Grammar(object):
     """ A container class for the various grammars in the input files. """
 
     _section = lbrack + Word(alphas+'_') + rbrack
-    _line = ~lbrack + Word(printables) + restOfLine
+    line = ~lbrack + Word(printables) + restOfLine
     _non_comment_line = ~pound + Group(Word(printables) + restOfLine)
 
     __command_input_output = (
@@ -51,7 +51,7 @@ class Grammar(object):
     def overall():
         """ The overall grammer for pulling apart the main input files. """
         return ZeroOrMore(Grammar.comment) + Dict(ZeroOrMore(Group(
-            Grammar._section + ZeroOrMore(Group(Grammar._line)))
+            Grammar._section + ZeroOrMore(Group(Grammar.line)))
             ))
 
     @classproperty
@@ -76,7 +76,7 @@ class Grammar(object):
         return (
             Word(approved_printables).setResultsName('alias') +
             Suppress(White()) +
-            Word(approved_printables).setResultsName('path')
+            restOfLine.setResultsName('path')
             )
 
     @classproperty

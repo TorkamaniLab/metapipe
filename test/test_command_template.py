@@ -14,6 +14,9 @@ def test_eval_1():
     templates = parser.consume()
 
     vals = [CommentToken(['#PBS_O_WORKDIR=~/someuser']),
+        CommentToken(['set -e;']),
+        CommentToken(['module load python']),
+        CommentToken(['# do something']),
         PathToken('python', '/usr/bin/python'), 'somescript.py', '-i',
         Input('1', 'somefile.1'),
         Input('2', 'somefile.2'),
@@ -30,6 +33,9 @@ def test_eval_2():
     templates = parser.consume()
 
     vals = [CommentToken(['#PBS_O_WORKDIR=~/someuser']),
+        CommentToken(['set -e;']),
+        CommentToken(['module load python']),
+        CommentToken(['# do something']),
         PathToken('python', '/usr/bin/python'), 'somescript.py', '-i',
         Input('4', 'somefile.4'),
         Input('5', 'somefile.5'),
