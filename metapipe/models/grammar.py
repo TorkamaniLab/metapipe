@@ -76,7 +76,7 @@ class Grammar(object):
         return (
             Word(approved_printables).setResultsName('alias') +
             Suppress(White()) +
-            Word(approved_printables).setResultsName('path')
+            restOfLine.setResultsName('path')
             )
 
     @classproperty
