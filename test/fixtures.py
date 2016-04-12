@@ -114,6 +114,9 @@ rb /usr/bin/ruby
 
 [JOB_OPTIONS]
 #PBS_O_WORKDIR=~/someuser
+set -e;
+module load python
+# do something
 """
 
 

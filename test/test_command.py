@@ -16,7 +16,8 @@ def test_eval_1():
     parser = Parser(overall)
 
     cmds = parser.consume()
-    cmds[0].eval()[0].eval().should.equal('#PBS_O_WORKDIR=~/someuser\n'
+    cmds[0].eval()[0].eval().should.equal('#PBS_O_WORKDIR=~/someuser\nset -e;'
+        '\nmodule load python\n# do something\n'
         '/usr/bin/python somescript.py -i '
         'somefile.1 somefile.2 somefile.3 -o mp.1.1.output '
         '-fgh somefile.txt')
@@ -26,7 +27,8 @@ def test_eval_2():
     parser = Parser(overall)
     cmds = parser.consume()
 
-    cmds[0].eval()[1].eval().should.equal('#PBS_O_WORKDIR=~/someuser\n'
+    cmds[0].eval()[1].eval().should.equal('#PBS_O_WORKDIR=~/someuser\nset -e;'
+        '\nmodule load python\n# do something\n'
         '/usr/bin/python somescript.py -i '
         'somefile.4 somefile.5 somefile.6 -o mp.1.2.output '
         '-fgh somefile.txt')
@@ -41,7 +43,8 @@ def test_eval_3():
 
     cmd = cmds[1].eval()[0]
     cmd.update_dependent_files(old_commands)
-    cmd.eval().should.equal('#PBS_O_WORKDIR=~/someuser\n'
+    cmd.eval().should.equal('#PBS_O_WORKDIR=~/someuser\nset -e;'
+        '\nmodule load python\n# do something\n'
         '/usr/bin/bash somescript.sh -i mp.1.1.output'
         ' -o mp.2.1.output -fgh somefile.txt')
 
@@ -55,7 +58,8 @@ def test_eval_4():
 
     cmd = cmds[1].eval()[1]
     cmd.update_dependent_files(old_commands)
-    cmd.eval().should.equal('#PBS_O_WORKDIR=~/someuser\n'
+    cmd.eval().should.equal('#PBS_O_WORKDIR=~/someuser\nset -e;'
+        '\nmodule load python\n# do something\n'
         '/usr/bin/bash somescript.sh -i mp.1.2.output'
         ' -o mp.2.2.output -fgh somefile.txt')
 
@@ -69,7 +73,8 @@ def test_eval_5():
 
     cmd = cmds[2].eval()[0]
     cmd.update_dependent_files(old_commands)
-    cmd.eval().should.equal('#PBS_O_WORKDIR=~/someuser\n'
+    cmd.eval().should.equal('#PBS_O_WORKDIR=~/someuser\nset -e;'
+        '\nmodule load python\n# do something\n'
         '/usr/bin/ruby somescript.rb -i mp.2.1.output'
         ' >> somefile')
 
@@ -83,7 +88,8 @@ def test_eval_6():
 
     cmd = cmds[2].eval()[1]
     cmd.update_dependent_files(old_commands)
-    cmd.eval().should.equal('#PBS_O_WORKDIR=~/someuser\n'
+    cmd.eval().should.equal('#PBS_O_WORKDIR=~/someuser\nset -e;'
+        '\nmodule load python\n# do something\n'
         '/usr/bin/ruby somescript.rb -i mp.2.2.output'
         ' >> somefile')
 
@@ -97,9 +103,9 @@ def test_eval_7():
 
     cmd = cmds[2].eval()[2]
     cmd.update_dependent_files(old_commands)
-    cmd.eval().should.equal('#PBS_O_WORKDIR=~/someuser\n'
-        '/usr/bin/ruby somescript.rb -i mp.1.1.output'
-        ' mp.1.2.output >> somefile')
+    cmd.eval().should.equal('#PBS_O_WORKDIR=~/someuser\nset -e;'
+        '\nmodule load python\n# do something\n/usr/bin/ruby somescript.rb -i '
+        'mp.1.1.output mp.1.2.output >> somefile')
 
 
 def test_eval_8():
@@ -111,7 +117,8 @@ def test_eval_8():
 
     cmd = cmds[3].eval()[0]
     cmd.update_dependent_files(old_commands)
-    cmd.eval().should.equal('#PBS_O_WORKDIR=~/someuser\n'
+    cmd.eval().should.equal('#PBS_O_WORKDIR=~/someuser\nset -e;'
+        '\nmodule load python\n# do something\n'
         'cut -f *.counts > something.file')
 
 
@@ -124,7 +131,8 @@ def test_eval_9():
 
     cmd = cmds[4].eval()[0]
     cmd.update_dependent_files(old_commands)
-    cmd.eval().should.equal('#PBS_O_WORKDIR=~/someuser\n'
+    cmd.eval().should.equal('#PBS_O_WORKDIR=~/someuser\nset -e;'
+        '\nmodule load python\n# do something\n'
         'paste *.counts > some.file # some.file')
 
 
@@ -137,7 +145,8 @@ def test_eval_10():
 
     cmd = cmds[5].eval()[0]
     cmd.update_dependent_files(old_commands)
-    cmd.eval().should.equal('#PBS_O_WORKDIR=~/someuser\n'
+    cmd.eval().should.equal('#PBS_O_WORKDIR=~/someuser\nset -e;'
+        '\nmodule load python\n# do something\n'
         './somescript somefile.1 somefile.2 '
         'somefile.3 somefile.4')
 
@@ -151,7 +160,8 @@ def test_eval_11():
 
     cmd = cmds[5].eval()[1]
     cmd.update_dependent_files(old_commands)
-    cmd.eval().should.equal('#PBS_O_WORKDIR=~/someuser\n'
+    cmd.eval().should.equal('#PBS_O_WORKDIR=~/someuser\nset -e;'
+        '\nmodule load python\n# do something\n'
         './somescript somefile.1.counts somefile.2.counts '
         'somefile.3.counts somefile.4.counts')
 
@@ -165,7 +175,8 @@ def test_eval_12():
 
     cmd = cmds[6].eval()[0]
     cmd.update_dependent_files(old_commands)
-    cmd.eval().should.equal('#PBS_O_WORKDIR=~/someuser\n'
+    cmd.eval().should.equal('#PBS_O_WORKDIR=~/someuser\nset -e;'
+        '\nmodule load python\n# do something\n'
         '/usr/bin/ruby somescript.rb -i somefile.1.counts')
 
 
@@ -178,7 +189,8 @@ def test_eval_13():
 
     cmd = cmds[6].eval()[1]
     cmd.update_dependent_files(old_commands)
-    cmd.eval().should.equal('#PBS_O_WORKDIR=~/someuser\n'
+    cmd.eval().should.equal('#PBS_O_WORKDIR=~/someuser\nset -e;'
+        '\nmodule load python\n# do something\n'
         '/usr/bin/ruby somescript.rb -i somefile.2.counts')
 
 
@@ -191,7 +203,8 @@ def test_eval_14():
 
     cmd = cmds[6].eval()[2]
     cmd.update_dependent_files(old_commands)
-    cmd.eval().should.equal('#PBS_O_WORKDIR=~/someuser\n'
+    cmd.eval().should.equal('#PBS_O_WORKDIR=~/someuser\nset -e;'
+        '\nmodule load python\n# do something\n'
         '/usr/bin/ruby somescript.rb -i somefile.3.counts')
 
 
@@ -204,7 +217,8 @@ def test_eval_14():
 
     cmd = cmds[6].eval()[3]
     cmd.update_dependent_files(old_commands)
-    cmd.eval().should.equal('#PBS_O_WORKDIR=~/someuser\n'
+    cmd.eval().should.equal('#PBS_O_WORKDIR=~/someuser\nset -e;'
+        '\nmodule load python\n# do something\n'
         '/usr/bin/ruby somescript.rb -i somefile.4.counts')
 
 
@@ -217,7 +231,8 @@ def test_eval_15():
 
     cmd = cmds[7].eval()[0]
     cmd.update_dependent_files(old_commands)
-    cmd.eval().should.equal('#PBS_O_WORKDIR=~/someuser\n'
+    cmd.eval().should.equal('#PBS_O_WORKDIR=~/someuser\nset -e;'
+        '\nmodule load python\n# do something\n'
         '/usr/bin/python somescript.py -i somefile.1.counts'
         ' somefile.2.counts somefile.3.counts somefile.4.counts # *.bam')
 
@@ -231,7 +246,8 @@ def test_eval_16():
 
     cmd = cmds[8].eval()[0]
     cmd.update_dependent_files(old_commands)
-    cmd.eval().should.equal('#PBS_O_WORKDIR=~/someuser\n'
+    cmd.eval().should.equal('#PBS_O_WORKDIR=~/someuser\nset -e;'
+        '\nmodule load python\n# do something\n'
         'cat somefile.1.bam somefile.2.bam somefile.bam')
 
 
