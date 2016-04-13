@@ -14,6 +14,8 @@ def test_make_script():
     script.should.equal("""#! /usr/bin/sh
 set -e;
 
+
+
 python - <<END
 import pickle
 

@@ -1,6 +1,8 @@
 #! {{shell}}
 set -e;
 
+{{options}}
+
 python - <<END
 import pickle
 

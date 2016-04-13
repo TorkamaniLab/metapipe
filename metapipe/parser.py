@@ -23,6 +23,7 @@ class Parser(object):
 
         self.commands = ['\n'.join(self._get('commands', lowered))]
         self.job_options = self._get('job_options', lowered)
+        self.global_options = self._get('options', lowered)
 
         self.files = self._get('files', lowered)
         self.paths = self._get('paths', lowered)
@@ -30,6 +31,7 @@ class Parser(object):
         self.files = self._parse(self.files, Grammar.file, True)
         self.paths = self._parse(self.paths, Grammar.path, True)
         self.job_options = self._parse(self.job_options, Grammar.line)
+
         try:
             command_lines = self._parse(self.commands, Grammar.command_lines)[0]
         except IndexError:
@@ -58,7 +60,11 @@ class Parser(object):
         the items as a list.
         """
         try:
-            txt_lines = [''.join(f) for f in parser_result[key].asList()]
+            list_data = parser_result[key].asList()
+            if any(isinstance(obj, str) for obj in list_data):
+                txt_lines = [''.join(list_data)]
+            else:
+                txt_lines = [''.join(f) for f in list_data]
         except KeyError:
             txt_lines = []
         return txt_lines
