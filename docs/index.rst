@@ -10,12 +10,13 @@ Contents:
 
 .. toctree::
    :maxdepth: 2
-   
+
    what_is_metapipe.md
    getting_started.md
    syntax.md
    scripting.md
    extending.md
+   reporting.md
 
 
 Indices and tables

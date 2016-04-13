@@ -25,6 +25,8 @@ cat somefile.txt | sed 's/replace me/with me' > {o}
 
 Metapipe automatically creates a filename for the given output token and assigns that file an alias. The alias structure is `command_number.command_iteration-output_number`, where the output number is optional.
 
+**Important:** Commands are *NOT* run sequentially. As commands are parsed, they are evaluated based on what inputs they take in and what outputs they generate. For more information: see [Command Structure](#command-structure). Commands are run as soon as they are deemed ready and any command that does not specify inputs via Metapipe's input patterns will be run immediately.
+
 
 ### Paths
 
@@ -107,7 +109,7 @@ cat somefile.1.txt | sed 's/replace me/with me' > {o}
 The set of commands in Job Options will be carried over to every job in the pipeline. This can be extremely useful when setting configuration comments for a queue system.
 
 ```bash
-# Each of the commands needs 10GB of RAM
+# Each of the commands needs 4GB of RAM
 [COMMANDS]
 cat somefile.1.txt | sed 's/replace me/with me' > {o}
 cat somefile.2.txt | sed 's/replace me/with you' > {o}
