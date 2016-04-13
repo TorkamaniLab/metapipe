@@ -107,7 +107,7 @@ cat somefile.1.txt | sed 's/replace me/with me' > {o}
 The set of commands in Job Options will be carried over to every job in the pipeline. This can be extremely useful when setting configuration comments for a queue system.
 
 ```bash
-# Each of the commands needs 10GB of RAM
+# Each of the commands needs 4GB of RAM
 [COMMANDS]
 cat somefile.1.txt | sed 's/replace me/with me' > {o}
 cat somefile.2.txt | sed 's/replace me/with you' > {o}
