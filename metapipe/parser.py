@@ -43,6 +43,7 @@ class Parser(object):
             self.commands.append([comments.asList(),
                 self._parse([''.join(command)], Grammar.command)])
 
+        self.job_options = [opt.asList() for opt in self.job_options]
 
         self.paths = ctf.get_paths(self.paths)
         self.files = ctf.get_files(self.files)
