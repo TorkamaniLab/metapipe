@@ -217,3 +217,9 @@ def test_consume_multiple_inputs():
                                 filename='somefile.6'))
     res[0]._dependencies.should.have.length_of(0)
 
+
+def test_consume_global_opts():
+    parser = Parser(overall)
+    res = parser.consume()
+    print(parser.global_options)
+    parser.global_options.should.have.length_of(2)

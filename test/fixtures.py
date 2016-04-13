@@ -118,6 +118,10 @@ cat2 module load cat2; cat2
 set -e;
 module load python
 # do something
+
+[OPTIONS]
+module load python;
+set -e
 """
 
 

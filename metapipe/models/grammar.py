@@ -99,3 +99,11 @@ class Grammar(object):
                     listAllMatches=True)
                 )
             )
+
+    @classproperty
+    @staticmethod
+    def option_line():
+        """ Grammar for commands found in the overall input files. """
+        return Combine(Grammar.line)
+
+

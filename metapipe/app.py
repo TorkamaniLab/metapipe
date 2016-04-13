@@ -96,6 +96,7 @@ def run(config, output=sys.stdout, job_type='local', report_type='text', shell='
         command_templates = parser.consume()
     except ValueError as e:
         raise SyntaxError('Invalid config file. \n%s' % e)
+    options = '\n'.join(parser.global_options)
 
     queue_type = QUEUE_TYPES[report_type]
     pipeline = Runtime(command_templates, queue_type, JOB_TYPES, job_type)
@@ -103,7 +104,8 @@ def run(config, output=sys.stdout, job_type='local', report_type='text', shell='
     template = env.get_template('output_script.tmpl.sh')
     with open(temp, 'wb') as f:
         pickle.dump(pipeline, f, 2)
-        script = template.render(shell=shell, temp=os.path.abspath(temp))
+        script = template.render(shell=shell,
+            temp=os.path.abspath(temp), options=options)
 
     if run_now:
         output = output if output != sys.stdout else PIPELINE_ALIAS
