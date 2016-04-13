@@ -25,6 +25,8 @@ cat somefile.txt | sed 's/replace me/with me' > {o}
 
 Metapipe automatically creates a filename for the given output token and assigns that file an alias. The alias structure is `command_number.command_iteration-output_number`, where the output number is optional.
 
+**Important:** Commands are *NOT* run sequentially. As commands are parsed, they are evaluated based on what inputs they take in and what outputs they generate. For more information: see [Command Structure](#command-structure). Commands are run as soon as they are deemed ready and any command that does not specify inputs via Metapipe's input patterns will be run immediately.
+
 
 ### Paths
 
