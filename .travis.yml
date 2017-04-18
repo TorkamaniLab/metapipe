@@ -17,4 +17,3 @@ deploy:
   on:
     tags: true
     distributions: sdist bdist_wheel
-    branch: master
