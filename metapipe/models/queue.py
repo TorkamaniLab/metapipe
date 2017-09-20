@@ -14,8 +14,7 @@ class BaseQueue(object):
     subclass it and fill in the callbacks you need.
     """
 
-    MAX_CONCURRENT_JOBS = 10000
-
+    MAX_CONCURRENT_JOBS = 10
     def __init__(self, name=''):
         self.name = name
         self.queue = []

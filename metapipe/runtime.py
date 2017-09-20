@@ -12,13 +12,12 @@ from metapipe.models import JobTemplate
 class Runtime(object):
 
     def __init__(self, command_templates, queue_type, job_types,
-            job_type='local', sleep_time=1):
+            job_type='local', sleep_time=1, max_jobs=10):
         self.complete_jobs = []
         self.queue = queue_type()
         self.sleep_time = sleep_time
 
-        if job_type == 'local':
-            self.queue.MAX_CONCURRENT_JOBS = 10
+        self.queue.MAX_CONCURRENT_JOBS = max_jobs
 
         job_templates = []
         for command_template in command_templates:
