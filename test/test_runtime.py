@@ -165,7 +165,7 @@ def test_run_7():
 
     pipeline = Runtime(cmds, ReportingJobQueue, JOB_TYPES, 'mock', sleep_time=0.01)
     iters = pipeline.run()
-    iters.should.equal(23)
+    iters.should.equal(24)
 
 
 def test_run_8():
@@ -174,7 +174,7 @@ def test_run_8():
 
     pipeline = Runtime(cmds, ReportingJobQueue, JOB_TYPES, 'mock', sleep_time=0.01)
     iters = pipeline.run()
-    iters.should.equal(23)
+    iters.should.equal(24)
 
 
 def test_run_9():
@@ -183,7 +183,7 @@ def test_run_9():
 
     pipeline = Runtime(cmds, ReportingJobQueue, JOB_TYPES, 'mock', sleep_time=0.01)
     iters = pipeline.run()
-    iters.should.equal(23)
+    iters.should.equal(25)
 
 
 def test_run_10():
@@ -192,7 +192,7 @@ def test_run_10():
 
     pipeline = Runtime(cmds, ReportingJobQueue, JOB_TYPES, 'mock', sleep_time=0.01)
     iters = pipeline.run()
-    iters.should.equal(23)
+    iters.should.equal(25)
 
 
 def test_run_11():

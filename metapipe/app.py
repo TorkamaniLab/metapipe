@@ -8,6 +8,8 @@ from __future__ import print_function
 
 import argparse, pickle, os, sys
 
+from multiprocessing import cpu_count
+
 import pyparsing
 
 from .parser import Parser
@@ -63,6 +65,10 @@ def main():
                    'queue on a cluster, etc).\nOptions: {}. '
                    '(Default: "%(default)s)"'.format(JOB_TYPES.keys()),
                    default='local')
+    parser.add_argument('-p', '--max-jobs',
+                   help='The maximum number of concurrent jobs allowed'
+                   'on a node. Defaults to maximum avaialble cores.',
+                   default=None)
     parser.add_argument('--report-type',
                    help='The output report type. By default metapipe will '
                    'print updates to the console. \nOptions: {}. '
@@ -84,13 +90,16 @@ def main():
         print('No valid config file found.')
         return -1
 
-    run(config, args.output, args.job_type, args.report_type, args.shell,
-        args.temp, args.run)
+    run(config, args.max_jobs, args.output, args.job_type, args.report_type,
+        args.shell, args.temp, args.run)
 
 
-def run(config, output=sys.stdout, job_type='local', report_type='text', shell='/bin/bash',
-        temp='.metapipe', run_now=False):
+def run(config, max_jobs, output=sys.stdout, job_type='local',
+        report_type='text', shell='/bin/bash', temp='.metapipe', run_now=False):
     """ Create the metapipe based on the provided input. """
+    if max_jobs == None:
+        max_jobs = cpu_count()
+
     parser = Parser(config)
     try:
         command_templates = parser.consume()
@@ -99,7 +108,7 @@ def run(config, output=sys.stdout, job_type='local', report_type='text', shell='
     options = '\n'.join(parser.global_options)
 
     queue_type = QUEUE_TYPES[report_type]
-    pipeline = Runtime(command_templates, queue_type, JOB_TYPES, job_type)
+    pipeline = Runtime(command_templates,queue_type,JOB_TYPES,job_type,max_jobs)
 
     template = env.get_template('output_script.tmpl.sh')
     with open(temp, 'wb') as f:
