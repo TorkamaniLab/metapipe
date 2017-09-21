@@ -4,7 +4,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='metapipe',
-    version='1.2-9',
+    version='1.3',
     packages=find_packages(),
     description='A pipeline for building analysis pipelines.',
     url='https://github.com/TorkamaniLab/metapipe',
