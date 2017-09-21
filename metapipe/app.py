@@ -66,8 +66,8 @@ def main():
                    '(Default: "%(default)s)"'.format(JOB_TYPES.keys()),
                    default='local')
     parser.add_argument('-p', '--max-jobs',
-                   help='The maximum number of concurrent jobs allowed'
-                   'on a node. Defaults to maximum avaialble cores.',
+                   help='The maximum number of concurrent jobs allowed. '
+                   'Defaults to maximum available cores.',
                    default=None)
     parser.add_argument('--report-type',
                    help='The output report type. By default metapipe will '
